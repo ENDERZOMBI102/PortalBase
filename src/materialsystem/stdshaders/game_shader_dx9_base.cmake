@@ -56,6 +56,6 @@ function(target_use_game_shader_dx9_base target)
 		${target} PRIVATE
 		"$<${IS_WINDOWS}:version;winmm>"
 		mathlib
-		"${LIBPUBLIC}/shaderlib${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/shaderlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	)
 endfunction()

@@ -1198,29 +1198,29 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		$<${IS_LINUX}:rt>
 		$<${IS_WINDOWS}:winmm>
 		"$<$<AND:${IS_WINDOWS},${BUILD_REPLAY}>:wsock32;Ws2_32>"
-		"${LIBPUBLIC}/particles${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/particles${CMAKE_STATIC_LIBRARY_SUFFIX}"
 
-		"${LIBPUBLIC}/bitmap${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/choreoobjects${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/dmxloader${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/bitmap${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/choreoobjects${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/dmxloader${CMAKE_STATIC_LIBRARY_SUFFIX}"
 		mathlib
-		"${LIBPUBLIC}/matsys_controls${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/matsys_controls${CMAKE_STATIC_LIBRARY_SUFFIX}"
 		tier1
-		"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/tier3${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/tier3${CMAKE_STATIC_LIBRARY_SUFFIX}"
 		vgui_controls
-		"${LIBPUBLIC}/vtf${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/vtf${CMAKE_STATIC_LIBRARY_SUFFIX}"
 		steam_api
 
-		#"$<${IS_POSIX}:${LIBCOMMON}/libcrypto${STATIC_LIB_EXT}>"
+		#"$<${IS_POSIX}:${LIBCOMMON}/libcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}>"
 
-		#"$<${IS_WINDOWS}:${LIBCOMMON}/libcurl${STATIC_LIB_EXT}>"
-		"$<$<OR:${IS_WINDOWS},${IS_LINUX}>:${LIBPUBLIC}/libz${STATIC_LIB_EXT}>"
+		#"$<${IS_WINDOWS}:${LIBCOMMON}/libcurl${CMAKE_STATIC_LIBRARY_SUFFIX}>"
+		"$<$<OR:${IS_WINDOWS},${IS_LINUX}>:${LIBPUBLIC}/libz${CMAKE_STATIC_LIBRARY_SUFFIX}>"
 
-		#"$<${IS_LINUX}:${LIBCOMMON}/libcurl${STATIC_LIB_EXT}>"
-		#"$<${IS_LINUX}:${LIBCOMMON}/libcurlssl${STATIC_LIB_EXT}>"
+		#"$<${IS_LINUX}:${LIBCOMMON}/libcurl${CMAKE_STATIC_LIBRARY_SUFFIX}>"
+		#"$<${IS_LINUX}:${LIBCOMMON}/libcurlssl${CMAKE_STATIC_LIBRARY_SUFFIX}>"
 
-		#"$<${IS_LINUX}:${LIBCOMMON}/libssl${STATIC_LIB_EXT}>"
+		#"$<${IS_LINUX}:${LIBCOMMON}/libssl${CMAKE_STATIC_LIBRARY_SUFFIX}>"
 
 	)
 endfunction()

@@ -53,5 +53,5 @@ target_compile_definitions(
 target_link_libraries(
 	serverplugin_empty PRIVATE
 	mathlib
-	"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )

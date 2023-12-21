@@ -49,8 +49,8 @@ target_include_directories(
 
 target_link_libraries(
 	captioncompiler PRIVATE
-	"${LIBPUBLIC}/appframework${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/appframework${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	mathlib
-	"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
-	"${LIBPUBLIC}/tier3${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${LIBPUBLIC}/tier3${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )

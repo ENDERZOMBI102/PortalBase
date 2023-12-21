@@ -16,7 +16,7 @@ set_target_properties(
 
 target_link_libraries(
 	tgadiff PRIVATE
-	"${LIBPUBLIC}/bitmap${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/bitmap${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	mathlib
-	"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )

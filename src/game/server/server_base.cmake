@@ -984,12 +984,12 @@ function(target_use_server_base target EXCLUDE_SOURCES)
 		${target} PRIVATE
 		$<${IS_WINDOWS}:winmm>
 
-		"${LIBPUBLIC}/choreoobjects${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/particles${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/dmxloader${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/choreoobjects${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/particles${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/dmxloader${CMAKE_STATIC_LIBRARY_SUFFIX}"
 		mathlib
-		"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/tier3${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/tier3${CMAKE_STATIC_LIBRARY_SUFFIX}"
 		steam_api
 	)
 

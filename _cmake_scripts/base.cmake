@@ -10,21 +10,10 @@ set(IS_SOURCESDK 1)
 
 if (WIN32)
 	set(IS_WINDOWS 1)
-endif()
-
-if (UNIX)
+	set(CMAKE_IMPORT_LIBRARY_SUFFIX ".lib")
+elseif (LINUX)
 	set(IS_LINUX 1)
-	set(IS_POSIX 1)
-endif()
-
-if (${IS_WINDOWS})
-	set(_DLL_EXT ".dll")
-	set(STATIC_LIB_EXT ".lib")
-	set(IMPLIB_EXT ".lib")
-elseif(${IS_LINUX})
-	set(_DLL_EXT ".so")
-	set(STATIC_LIB_EXT ".a")
-	set(IMPLIB_EXT ".so")
+	set(CMAKE_IMPORT_LIBRARY_SUFFIX ".so")
 endif()
 
 option(RETAIL "Build in retail mode" OFF)
@@ -40,6 +29,6 @@ add_compile_definitions(
 	$<$<BOOL:${STAGING_ONLY}>:STAGING_ONLY>
 	$<${TF_BETA}:TF_BETA>
 	$<${RAD_TELEMETRY_DISABLED}:RAD_TELEMETRY_DISABLED>
-	_DLL_EXT=${_DLL_EXT}
+	_DLL_EXT=${CMAKE_SHARED_LIBRARY_SUFFIX}
 	FRAME_POINTER_OMISSION_DISABLED
 )

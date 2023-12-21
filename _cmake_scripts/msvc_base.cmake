@@ -6,7 +6,7 @@ if (MSVC_TOOLSET_VERSION LESS 140)
 endif()
 
 if (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-	message(FATAL_ERROR "Source SDK 2013 only supports 32-bit generation")
+	message( FATAL_ERROR "Aurora Source only supports 32-bit generation for now" )
 endif()
 
 # No frame pointer optimization

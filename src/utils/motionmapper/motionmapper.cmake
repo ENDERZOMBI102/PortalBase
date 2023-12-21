@@ -76,6 +76,6 @@ target_link_libraries(
 	motionmapper PRIVATE
 	winmm
 	mathlib
-	"${LIBPUBLIC}/nvtristrip${STATIC_LIB_EXT}"
-	"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/nvtristrip${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )

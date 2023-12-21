@@ -97,7 +97,7 @@ target_link_libraries(
 		ws2_32
 
 		mathlib
-		"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
-		"${LIBPUBLIC}/vmpi${STATIC_LIB_EXT}"
-		"${LIBCOMMON}/lzma${STATIC_LIB_EXT}"
+		"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBPUBLIC}/vmpi${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		"${LIBCOMMON}/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )

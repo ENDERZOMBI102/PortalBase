@@ -166,12 +166,12 @@ target_link_libraries(
 	odbccp32
 	winmm
 
-	"${LIBPUBLIC}/bitmap${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/bitmap${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	fgdlib
 	mathlib
-	"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
-	"${LIBPUBLIC}/vtf${STATIC_LIB_EXT}"
-	$<$<BOOL:${WIN32}>:"${LIBCOMMON}/lzma${STATIC_LIB_EXT}">
+	"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${LIBPUBLIC}/vtf${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	$<$<BOOL:${WIN32}>:"${LIBCOMMON}/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}">
 )
 
 target_vcpkg_dependency( vbsp PRIVATE liblzma )

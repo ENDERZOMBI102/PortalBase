@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-
-set( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE )
+cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
 
 if (APPLE)
 	message( FATAL_ERROR "Aurora Source has discontinued OSX support, please use either Windows or Linux." )
 endif()
+
+set( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE )
+
+message( NOTICE "Running CMake v${CMAKE_VERSION}" )
 
 project(
 	AuroraSource

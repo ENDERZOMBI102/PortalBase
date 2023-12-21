@@ -28,6 +28,6 @@ target_include_directories(
 
 target_link_libraries(
 	vice PRIVATE
-	"${LIBPUBLIC}/tier2${STATIC_LIB_EXT}"
+	"${LIBPUBLIC}/tier2${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	mathlib
 )
