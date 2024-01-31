@@ -1,5 +1,8 @@
 # ziglang.cmake
 
+find_program( ZIG_PATH "zig" REQUIRED )
+message( NOTICE "Zig found at ${ZIG_PATH}" )
+
 # add_zig_library( TARGET <name> [SHARED|STATIC] SOURCES source1 [source2, ...] )
 function( add_zig_library )
 	cmake_parse_arguments( ZIG_LIB "SHARED;STATIC" "TARGET" "SOURCES" ${ARGN} )
@@ -23,7 +26,7 @@ function( add_zig_library )
 	endif ()
 	# add target
 	add_custom_target( ${ZIG_LIB_TARGET}
-		COMMAND zig build-lib ${type} -Bsymbolic -target ${VCPKG_TARGET_TRIPLET} ${ZIG_LIB_SOURCES}
+		COMMAND ${ZIG_PATH} build-lib ${type} -Bsymbolic -target ${VCPKG_TARGET_TRIPLET} ${ZIG_LIB_SOURCES}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		SOURCES ${ZIG_LIB_SOURCES}
 		VERBATIM
@@ -47,7 +50,7 @@ function( add_zig_executable )
 	endif ()
 	# add target
 	add_custom_target( ${ZIG_EXEC_TARGET}
-		COMMAND zig build-exe -Bsymbolic -target ${VCPKG_TARGET_TRIPLET} ${ZIG_EXEC_SOURCES}
+		COMMAND ${ZIG_PATH} build-exe -Bsymbolic -target ${VCPKG_TARGET_TRIPLET} ${ZIG_EXEC_SOURCES}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		SOURCES ${ZIG_EXEC_SOURCES}
 		VERBATIM
