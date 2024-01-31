@@ -16,3 +16,11 @@ function(target_strip_symbols target)
 		)
 	endif()
 endfunction()
+
+
+function( postbuild_copy Target Dest )
+	add_custom_command(
+		TARGET ${Target}
+		POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_PROPERTY:${Target},OUTPUT_NAME>" "${Dest}"
+	)
+endfunction()
