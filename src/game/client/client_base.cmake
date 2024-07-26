@@ -553,6 +553,10 @@ set( CLIENT_BASE_SOURCE_FILES
 	"${CLIENT_BASE_DIR}/toolframework_client.cpp"
 	"${CLIENT_BASE_DIR}/toolframework_client.h"
 
+	# DevUI Panels
+	"${CLIENT_BASE_DIR}/devui_panels/gameconsole.cpp"
+	"${CLIENT_BASE_DIR}/devui_panels/gameconsole.hpp"
+
 	# Header Files
 	"${CLIENT_BASE_DIR}/animationlayer.h"
 	"${CLIENT_BASE_DIR}/baseanimatedtextureproxy.h"
@@ -1210,6 +1214,7 @@ function( target_use_client_base target EXCLUDE_SOURCES )
 			vgui_controls
 			"${LIBPUBLIC}/vtf${CMAKE_STATIC_LIBRARY_SUFFIX}"
 			steam_api
+			devui
 
 			#"$<${IS_POSIX}:${LIBCOMMON}/libcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}>"
 

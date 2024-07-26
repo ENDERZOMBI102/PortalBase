@@ -169,6 +169,9 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "sixense/in_sixense.h"
 #endif
 
+// ImGui System
+#include "imgui_system.hpp"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "shaderapihack.hpp"
 #include "tier0/memdbgon.h"
@@ -1094,6 +1097,9 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 #endif
 	HookHapticMessages(); // Always hook the messages
 
+	// Initialize ImGui
+	g_pImguiSystem->Init();
+
 	return true;
 }
 
@@ -1168,6 +1174,9 @@ void CHLClient::PostInit()
 //-----------------------------------------------------------------------------
 void CHLClient::Shutdown( void )
 {
+	// Shutdown ImGui
+	g_pImguiSystem->Shutdown();
+
     if (g_pAchievementsAndStatsInterface)
     {
         g_pAchievementsAndStatsInterface->ReleasePanel();

@@ -4,3 +4,6 @@
 [submodule "thirdparty/sourcepp"]
 	path = thirdparty/sourcepp
 	url = git@github.com:craftablescience/sourcepp.git
+[submodule "thirdparty/imgui"]
+	path = thirdparty/imgui
+	url = git@github.com:ocornut/imgui.git
