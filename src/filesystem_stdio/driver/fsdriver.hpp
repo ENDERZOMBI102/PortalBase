@@ -74,7 +74,8 @@ struct FileDescriptor { // NOLINT(*-pro-type-member-init)
 
 class CFsDriver : public CRefCounted<> {
 public:
-	~CFsDriver() override = 0;
+	CFsDriver() = default;
+	~CFsDriver() override = default;
 	// metadata
 	[[nodiscard]]
 	virtual auto GetNativePath() const -> const char* = 0;

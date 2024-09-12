@@ -10,7 +10,7 @@
 
 
 CPackFsDriver::CPackFsDriver( int32 pId, const char* pAbsolute, const char* pPath )
-	: m_iId{ pId }, m_szNativePath{ V_strdup( pPath ) }, m_PackFile{ vpkpp::PackFile::open( pAbsolute, {} ) } { }
+	: m_iId{ pId }, m_szNativePath{ V_strdup( pPath ) }, m_PackFile{ vpkpp::PackFile::open( pAbsolute, {} ) }, CFsDriver() { }
 auto CPackFsDriver::GetNativePath() const -> const char* {
 	return this->m_szNativePath;
 }

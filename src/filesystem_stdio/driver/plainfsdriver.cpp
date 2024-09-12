@@ -15,7 +15,7 @@
 
 
 CPlainFsDriver::CPlainFsDriver( int32 pId, const char* pAbsolute, const char* pPath )
-	: m_iId( pId ), m_szNativePath( V_strdup( pPath ) ), m_szNativeAbsolutePath( V_strdup( pAbsolute ) ) { }
+	: m_iId( pId ), m_szNativePath( V_strdup( pPath ) ), m_szNativeAbsolutePath( V_strdup( pAbsolute ) ), CFsDriver() { }
 auto CPlainFsDriver::GetNativePath() const -> const char* {
 	return this->m_szNativePath;
 }
