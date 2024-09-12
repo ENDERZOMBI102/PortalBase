@@ -27,6 +27,9 @@ void Error( PRINTF_FORMAT_STRING char const* pMsg, ... );
 #include <string.h>
 #include <time.h>
 
+#if IsWindows()
+	#include <minwindef.h>
+#endif
 
 // Tools should use this as the read path ID. It'll look into the paths specified by gameinfo.txt
 #define TOOLS_READ_PATH_ID "GAME"

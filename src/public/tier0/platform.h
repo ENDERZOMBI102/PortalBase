@@ -376,6 +376,10 @@ FIXME: Enable this when we no longer fear change =)
 // Pull in the /analyze code annotations.
 #include "annotations.h"
 
+#if IsWindows()
+	#include <direct.h>
+#endif
+
 //-----------------------------------------------------------------------------
 // Convert int<-->pointer, avoiding 32/64-bit compiler warnings:
 //-----------------------------------------------------------------------------

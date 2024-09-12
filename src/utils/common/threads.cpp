@@ -15,6 +15,7 @@
 	#include <processthreadsapi.h>
 	#include <synchapi.h>
 	#include <handleapi.h>
+	//#include <WinBase.h>
 #elif defined( PLATFORM_POSIX )
 	#include <pthread.h>
 #else
@@ -106,6 +107,7 @@ static int enter;
 
 void SetLowPriority() {
 	#if IsWindows()
+		#define IDLE_PRIORITY_CLASS 0x00000040 // WinBase.h
 		SetPriorityClass( GetCurrentProcess(), IDLE_PRIORITY_CLASS );
 	#elif IsPosix()
 		nice(19);
@@ -190,6 +192,19 @@ void RunThreads_Start( RunThreadsFn fn, void* pUserData, ERunThreadsPriority ePr
 				0,                       // [inp]                  DWORD dwCreationFlags,
 				nullptr                  // [out]                LPDWORD lpThreadId
 			);
+
+			#define THREAD_PRIORITY_LOWEST THREAD_BASE_PRIORITY_MIN
+			#define THREAD_PRIORITY_BELOW_NORMAL ( THREAD_PRIORITY_LOWEST + 1 )
+			#define THREAD_PRIORITY_NORMAL 0
+			#define THREAD_PRIORITY_HIGHEST THREAD_BASE_PRIORITY_MAX
+			#define THREAD_PRIORITY_ABOVE_NORMAL ( THREAD_PRIORITY_HIGHEST - 1 )
+			#define THREAD_PRIORITY_ERROR_RETURN ( MAXLONG )
+
+			#define THREAD_PRIORITY_TIME_CRITICAL THREAD_BASE_PRIORITY_LOWRT
+			#define THREAD_PRIORITY_IDLE THREAD_BASE_PRIORITY_IDLE
+
+			#define THREAD_MODE_BACKGROUND_BEGIN 0x00010000
+			#define THREAD_MODE_BACKGROUND_END 0x00020000
 		#elif IsPosix()
 			pthread_create( &g_ThreadHandles[ i ], nullptr, InternalRunThreadsFn, &g_RunThreadsData[i] );
 			#define SetThreadPriority      pthread_setschedprio
@@ -210,6 +225,7 @@ void RunThreads_Start( RunThreadsFn fn, void* pUserData, ERunThreadsPriority ePr
 
 void RunThreads_End() {
 	#if IsWindows()
+		#define INFINITE 0xFFFFFFFF // WinBase.h
 		WaitForMultipleObjects( numthreads, g_ThreadHandles, true, INFINITE );
 	#endif
 	for ( auto handle : g_ThreadHandles ) {

@@ -18,6 +18,7 @@
 	#define _getcwd getcwd
 #elif defined( PLATFORM_WINDOWS )
 	#include <direct.h>
+	#include <stringapiset.h>
 #endif
 
 #if defined( PLATFORM_WINDOWS ) && !defined( CP_UTF8 )

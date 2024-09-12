@@ -128,6 +128,10 @@ typedef float vec_t;
 	#define fpmin __builtin_fminf
 	#define fpmax __builtin_fmaxf
 #else
+	#include <minwindef.h>
+	#undef min
+	#undef max
+
 	#define fpmin std::min
     #define fpmax std::max
 #endif

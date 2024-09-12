@@ -5,7 +5,7 @@
 //
 // $NoKeywords: $
 //=============================================================================//
-
+#include "tier0/memalloc.h"
 
 #if !defined( STEAM ) && !defined( NO_MALLOC_OVERRIDE )
 	#undef PROTECTED_THINGS_ENABLE// allow use of _vsnprintf
@@ -31,7 +31,7 @@
 
 		#include "memdbgoff.h"
 		#include "tier0/dbg.h"
-		#include "tier0/memalloc.h"
+		//#include "tier0/memalloc.h"
 		#include <cassert>
 		#include <stdio.h>
 		#include <string.h>
