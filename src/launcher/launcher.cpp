@@ -8,12 +8,15 @@
 #include "memdbgon.h"
 
 
-SpewRetval_t LauncherSpewFunc( SpewType_t spewType, char const* pMsg );
+SpewRetval_t LauncherSpewFunc( SpewType_t pSpewType, char const* pMsg );
 
 //-----------------------------------------------------------------------------
 //   Main entry point
 //-----------------------------------------------------------------------------
 DLL_EXPORT int LauncherMain( int argc, char* argv[] ) {
+	// always use the same locale, prevents some character issues
+	setlocale( LC_ALL, "en_US.UTF_8" );
+
 	// first init the CommandLine
 	CommandLine()->CreateCmdLine( argc, argv );
 
@@ -37,8 +40,8 @@ DLL_EXPORT int LauncherMain( int argc, char* argv[] ) {
 	return app.Run();
 }
 
-SpewRetval_t LauncherSpewFunc( SpewType_t spewType, char const* pMsg ) {
-	switch ( spewType ) {
+SpewRetval_t LauncherSpewFunc( SpewType_t pSpewType, char const* pMsg ) {
+	switch ( pSpewType ) {
 		case SPEW_MESSAGE:
 			printf( "[I] %s", pMsg );
 			break;
