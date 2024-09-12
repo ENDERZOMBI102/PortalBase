@@ -102,15 +102,19 @@ auto CPlainFsDriver::Close( const FileDescriptor* pDesc ) -> void {
 	close( static_cast<int>( pDesc->m_Handle ) );
 }
 
-auto CPlainFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> void {
+auto CPlainFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool {
 	auto path{ V_strdup( pWildcard ) };
 	V_StripFilename( path );
 	const auto dir{ opendir( path ) }; // FIXME: This errors for globs like `path/*/nom?.txt`
+	if ( dir == nullptr ) {
+		return false;
+	}
 	dirent* entry{ nullptr };
 	while ( (entry = readdir( dir )) != nullptr ) {  // TODO: Finish impl this
 		Log( "%s: %s", __FUNCTION__, entry->d_name );
 	}
 	closedir( dir );
+	return true;
 }
 auto CPlainFsDriver::Create( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* { return {}; }
 auto CPlainFsDriver::Remove( const FileDescriptor* pDesc ) -> void { }

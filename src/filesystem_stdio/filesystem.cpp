@@ -511,14 +511,23 @@ void CFileSystemStdio::UnloadModule( CSysModule* pModule ) {
 // ---- File searching operations -----
 const char* CFileSystemStdio::FindFirst( const char* pWildCard, FileFindHandle_t* pHandle ) {
 	CUtlVector<const char*> paths{ 10 };
-	for ( const auto& [_, searchPath] : m_SearchPaths ) {
-		for ( const auto driver : searchPath->m_Drivers ) {
-			driver->ListDir( pWildCard, paths );
+	if ( V_IsAbsolutePath( pWildCard ) ) {
+		s_RootFsDriver->ListDir( pWildCard, paths );
+	} else {
+		for ( const auto& [_, searchPath] : m_SearchPaths ) {
+			for ( const auto driver : searchPath->m_Drivers ) {
+				driver->ListDir( pWildCard, paths );
+			}
 		}
 	}
-	*pHandle = m_FindStates.AddToTail();
-	m_FindStates[*pHandle].m_Paths.Swap( paths );
-	return paths[0];
+	if ( paths.Count() == 0 ) {
+		return nullptr;
+	}
+
+	const auto index{ m_FindStates.AddToTail() };
+	*pHandle = index;
+	m_FindStates[index].m_Paths.Swap( paths );
+	return m_FindStates[index].m_Paths[0];
 }
 const char* CFileSystemStdio::FindNext( FileFindHandle_t handle ) {
 	auto& state{ m_FindStates[handle] };
@@ -553,23 +562,28 @@ void CFileSystemStdio::FindClose( FileFindHandle_t handle ) {
 }
 
 const char* CFileSystemStdio::FindFirstEx( const char* pWildCard, const char* pPathID, FileFindHandle_t* pHandle ) {
-	const auto& searchPath{ m_SearchPaths[pPathID] };
 	CUtlVector<const char*> paths{ 10 };
-	for ( const auto driver : searchPath->m_Drivers ) {
-		driver->ListDir( pWildCard, paths );
+	if ( V_IsAbsolutePath( pWildCard ) ) {
+		s_RootFsDriver->ListDir( pWildCard, paths );
+	} else {
+		const auto& searchPath{ m_SearchPaths[pPathID] };
+		for ( const auto driver : searchPath->m_Drivers ) {
+			driver->ListDir( pWildCard, paths );
+		}
 	}
-	*pHandle = m_FindStates.AddToTail();
-	m_FindStates[*pHandle].m_Paths.Swap( paths );
-	return paths[0];
+	if ( paths.Count() == 0 ) {
+		return nullptr;
+	}
+
+	const auto index{ m_FindStates.AddToTail() };
+	*pHandle = index;
+	m_FindStates[index].m_Paths.Swap( paths );
+	return m_FindStates[index].m_Paths[0];
 }
 
 // ---- File name and directory operations ----
 const char* CFileSystemStdio::GetLocalPath( const char* pFileName, char* pDest, int maxLenInChars ) {
-	// TODO: Check if correct
-	GetCurrentDirectory( pDest, maxLenInChars );
-	V_MakeAbsolutePath( pDest, maxLenInChars, ".temp/", pDest );
-	V_MakeAbsolutePath( pDest, maxLenInChars, pFileName, pDest );
-	return pDest;
+	return nullptr;
 }
 
 bool CFileSystemStdio::FullPathToRelativePath( const char* pFullpath, char* pDest, int maxLenInChars ) { AssertUnreachable(); return {}; }
@@ -583,7 +597,10 @@ bool CFileSystemStdio::GetCurrentDirectory( char* pDirectory, int maxlen ) {
 }
 
 // ---- Filename dictionary operations ----
-FileNameHandle_t CFileSystemStdio::FindOrAddFileName( char const* pFileName ) { AssertUnreachable(); return {}; }
+FileNameHandle_t CFileSystemStdio::FindOrAddFileName( char const* pFileName ) {
+	AssertUnreachable();
+	return {};
+}
 bool CFileSystemStdio::String( const FileNameHandle_t& handle, char* buf, int buflen ) { AssertUnreachable(); return {}; }
 
 // ---- Global Asynchronous file operations ----

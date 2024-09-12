@@ -27,7 +27,7 @@ public:
 	auto Flush( const FileDescriptor* pDesc ) -> bool override;
 	auto Close( const FileDescriptor* pDesc ) -> void override;
 	// generic ops
-	auto ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> void override;
+	auto ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool override;
 	auto Create ( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* override;
 	auto Remove ( const FileDescriptor* pDesc ) -> void override;
 	auto Stat   ( const FileDescriptor* pDesc ) -> std::optional<StatData> override;

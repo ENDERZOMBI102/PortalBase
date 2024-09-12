@@ -67,7 +67,7 @@ auto CPackFsDriver::Close( const FileDescriptor* pDesc ) -> void {
 	delete[] reinterpret_cast<const char*>( pDesc->m_Handle );
 }
 
-auto CPackFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> void {
+auto CPackFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool {
 	const auto& entries{ m_PackFile->getBakedEntries() };
 	const auto patternLen{ V_strlen( pWildcard ) };
 	std::string key;
@@ -77,6 +77,7 @@ auto CPackFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pRe
 			pResult.AddToTail( V_strdup( key.c_str() ) );
 		}
 	}
+	return true;
 }
 auto CPackFsDriver::Create( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* {
 	AssertFatalMsg( false, "Not supported!!" );

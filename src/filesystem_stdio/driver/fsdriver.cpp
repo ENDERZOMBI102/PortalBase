@@ -14,7 +14,7 @@ static CMemoryPoolMT g_DescriptorArena{ sizeof( FileDescriptor ), 10, UTLMEMORYP
 
 auto FileDescriptor::Make() -> FileDescriptor* {
 	auto desc{ static_cast<FileDescriptor*>( g_DescriptorArena.AllocZero( sizeof( FileDescriptor ) ) ) };
-	return std::construct_at( desc );
+	return new(desc) FileDescriptor;
 }
 
 auto FileDescriptor::Free( FileDescriptor* desc ) -> void {
@@ -25,6 +25,9 @@ auto FileDescriptor::Free( FileDescriptor* desc ) -> void {
 auto FileDescriptor::CleanupArena() -> void {
 	g_DescriptorArena.Clear();
 }
+
+CFsDriver::CFsDriver() = default;
+CFsDriver::~CFsDriver() = default;
 
 auto CreateFsDriver( const int pId, const char* pAbsolute, const char* pPath ) -> CFsDriver* {
 	if ( std::filesystem::is_directory( pAbsolute ) ) {

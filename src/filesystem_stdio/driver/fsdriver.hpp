@@ -74,8 +74,8 @@ struct FileDescriptor { // NOLINT(*-pro-type-member-init)
 
 class CFsDriver : public CRefCounted<> {
 public:
-	CFsDriver() = default;
-	~CFsDriver() override = default;
+	CFsDriver();
+	~CFsDriver() override;
 	// metadata
 	[[nodiscard]]
 	virtual auto GetNativePath() const -> const char* = 0;
@@ -95,7 +95,7 @@ public:
 	virtual auto Flush( const FileDescriptor* pDesc ) -> bool = 0;
 	virtual auto Close( const FileDescriptor* pDesc ) -> void = 0;
 	// generic ops
-	virtual auto ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> void;
+	virtual auto ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool = 0;
 	virtual auto Create ( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* = 0;
 	virtual auto Remove ( const FileDescriptor* pDesc ) -> void = 0;
 	virtual auto Stat   ( const FileDescriptor* pDesc ) -> std::optional<StatData> = 0;
