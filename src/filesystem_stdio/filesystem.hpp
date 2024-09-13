@@ -11,16 +11,16 @@
 class CFileSystemStdio : public IFileSystem {
 public: // IAppSystem
 	// Here's where the app systems get to learn about each other
-	 virtual bool Connect( CreateInterfaceFn factory ) override;
-	 virtual void Disconnect() override;
+	 bool Connect( CreateInterfaceFn factory ) override;
+	 void Disconnect() override;
 
 	 // Here's where systems can access other interfaces implemented by this object
 	 // Returns NULL if it doesn't implement the requested interface
-	 virtual void* QueryInterface( const char* pInterfaceName ) override;
+	 void* QueryInterface( const char* pInterfaceName ) override;
 
 	 // Init, shutdown
-	 virtual InitReturnVal_t Init() override;
-	 virtual void Shutdown() override;
+	 InitReturnVal_t Init() override;
+	 void Shutdown() override;
 public: // IBaseFileSystem
 	int Read( void* pOutput, int size, FileHandle_t file ) override;
 	int Write( void const* pInput, int size, FileHandle_t file ) override;
