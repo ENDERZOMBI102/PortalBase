@@ -3,29 +3,34 @@
 //
 #include "queuedloader.hpp"
 #include "dbg.h"
+#include "strtools.h"
 
 
 namespace {
 	CQueuedLoader s_QueuedLoader{};
-	//	IQueuedLoader* g_pQueuedLoader{ &s_QueuedLoader };
-	//	EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CQueuedLoader, IQueuedLoader, QUEUEDLOADER_INTERFACE_VERSION, s_QueuedLoader );
-}// namespace
+}
 
 
 // ---------------
-// AppSystem
+// CQueuedLoader
 // ---------------
-bool CQueuedLoader::Connect( CreateInterfaceFn factory ) { return false; }
-void CQueuedLoader::Disconnect() {}
-void* CQueuedLoader::QueryInterface( const char* pInterfaceName ) { return nullptr; }
+bool CQueuedLoader::Connect( CreateInterfaceFn factory ) { return true; }
+void CQueuedLoader::Disconnect() { }
+void* CQueuedLoader::QueryInterface( const char* pInterfaceName ) {
+	if ( V_strcmp( pInterfaceName, QUEUEDLOADER_INTERFACE_VERSION ) == 0 ) {
+		return this;
+	}
+	return nullptr;
+}
 InitReturnVal_t CQueuedLoader::Init() { return INIT_OK; }
-void CQueuedLoader::Shutdown() {}
+void CQueuedLoader::Shutdown() { }
 
-// ---------------
-// IBaseFilesystem
-// ---------------
-void CQueuedLoader::InstallLoader( ResourcePreload_t type, IResourcePreload* pLoader ) { AssertUnreachable(); }
-void CQueuedLoader::InstallProgress( ILoaderProgress* pProgress ) { AssertUnreachable(); }
+void CQueuedLoader::InstallLoader( ResourcePreload_t pType, IResourcePreload* pLoader ) {
+	m_ResourcePreloaders.Insert( pType, pLoader );
+}
+void CQueuedLoader::InstallProgress( ILoaderProgress* pProgress ) {
+	AssertUnreachable();
+}
 
 // Set bOptimizeReload if you want appropriate data (such as static prop lighting)
 // to persist - rather than being purged and reloaded - when going from map A to map A.
@@ -33,18 +38,26 @@ bool CQueuedLoader::BeginMapLoading( const char* pMapName, bool bLoadForHDR, boo
 	AssertUnreachable();
 	return {};
 }
-void CQueuedLoader::EndMapLoading( bool bAbort ) { AssertUnreachable(); }
+void CQueuedLoader::EndMapLoading( bool bAbort ) {
+	AssertUnreachable();
+}
 bool CQueuedLoader::AddJob( const LoaderJob_t* pLoaderJob ) {
 	AssertUnreachable();
 	return {};
 }
 
 // injects a resource into the map's reslist, rejected if not understood
-void CQueuedLoader::AddMapResource( const char* pFilename ) { AssertUnreachable(); }
+void CQueuedLoader::AddMapResource( const char* pFilename ) {
+	AssertUnreachable();
+}
 
 // dynamically load a map resource
-void CQueuedLoader::DynamicLoadMapResource( const char* pFilename, DynamicResourceCallback_t pCallback, void* pContext, void* pContext2 ) { AssertUnreachable(); }
-void CQueuedLoader::QueueDynamicLoadFunctor( CFunctor* pFunctor ) { AssertUnreachable(); }
+void CQueuedLoader::DynamicLoadMapResource( const char* pFilename, DynamicResourceCallback_t pCallback, void* pContext, void* pContext2 ) {
+	AssertUnreachable();
+}
+void CQueuedLoader::QueueDynamicLoadFunctor( CFunctor* pFunctor ) {
+	AssertUnreachable();
+}
 bool CQueuedLoader::CompleteDynamicLoad() {
 	AssertUnreachable();
 	return {};
@@ -91,4 +104,10 @@ int CQueuedLoader::GetSpewDetail() const {
 	return {};
 }
 
-void CQueuedLoader::PurgeAll() { AssertUnreachable(); }
+void CQueuedLoader::PurgeAll() {
+	AssertUnreachable();
+}
+
+IQueuedLoader* g_pQueuedLoader{ &s_QueuedLoader };
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CQueuedLoader, IQueuedLoader, QUEUEDLOADER_INTERFACE_VERSION, s_QueuedLoader );
+

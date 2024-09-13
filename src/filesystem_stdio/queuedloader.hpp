@@ -3,6 +3,7 @@
 //
 #pragma once
 #include "filesystem/IQueuedLoader.h"
+#include "utldict.h"
 
 
 class CQueuedLoader : public IQueuedLoader {
@@ -17,9 +18,10 @@ public:  // IAppSystem
 	// Init, shutdown
 	InitReturnVal_t Init() override;
 	void Shutdown() override;
+
 public:  // IQueuedLoader
-	void InstallLoader( ResourcePreload_t type, IResourcePreload * pLoader ) override;
-	void InstallProgress( ILoaderProgress * pProgress ) override;
+	void InstallLoader( ResourcePreload_t pType, IResourcePreload* pLoader ) override;
+	void InstallProgress( ILoaderProgress* pProgress ) override;
 
 	// Set bOptimizeReload if you want appropriate data (such as static prop lighting)
 	// to persist - rather than being purged and reloaded - when going from map A to map A.
@@ -32,7 +34,7 @@ public:  // IQueuedLoader
 
 	// dynamically load a map resource
 	void DynamicLoadMapResource( const char* pFilename, DynamicResourceCallback_t pCallback, void* pContext, void* pContext2 ) override;
-	void QueueDynamicLoadFunctor( CFunctor * pFunctor ) override;
+	void QueueDynamicLoadFunctor( CFunctor* pFunctor ) override;
 	bool CompleteDynamicLoad() override;
 
 	// callback is asynchronous
@@ -40,17 +42,26 @@ public:  // IQueuedLoader
 	// provides data if loaded, caller owns data
 	bool ClaimAnonymousJob( const char* pFilename, void** pData, int* pDataSize, LoaderError_t* pError = nullptr ) override;
 
+	[[nodiscard]]
 	bool IsMapLoading() const override;
+	[[nodiscard]]
 	bool IsSameMapLoading() const override;
+	[[nodiscard]]
 	bool IsFinished() const override;
 
 	// callers can expect that jobs are not immediately started when batching
+	[[nodiscard]]
 	bool IsBatching() const override;
 
+	[[nodiscard]]
 	bool IsDynamic() const override;
 
 	// callers can conditionalize operational spew
+	[[nodiscard]]
 	int GetSpewDetail() const override;
 
 	void PurgeAll() override;
+
+private:
+	CUtlMap<ResourcePreload_t, IResourcePreload*> m_ResourcePreloaders{};
 };
