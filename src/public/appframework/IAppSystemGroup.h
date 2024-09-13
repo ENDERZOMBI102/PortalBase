@@ -114,7 +114,7 @@ protected:
 	AppModule_t LoadModule( CreateInterfaceFn factory );
 
 	// Method to add various global singleton systems
-	IAppSystem* AddSystem( AppModule_t module, const char* pInterfaceName );
+	IAppSystem* AddSystem( AppModule_t pModule, const char* pInterfaceName );
 	void AddSystem( IAppSystem* pAppSystem, const char* pInterfaceName );
 
 	// Simpler method of doing the LoadModule/AddSystem thing.
