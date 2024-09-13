@@ -379,15 +379,9 @@ FSReturnCode_t LoadGameInfoFile(
 }
 
 
-static void FileSystem_AddLoadedSearchPath(
-	CFSSearchPathsInit& initInfo,
-	const char* pPathID,
-	const char* fullLocationPath,
-	bool bLowViolence ) {
-
+static void FileSystem_AddLoadedSearchPath( CFSSearchPathsInit& initInfo, const char* pPathID, const char* fullLocationPath, bool bLowViolence ) {
 	// Check for mounting LV game content in LV builds only
 	if ( V_stricmp( pPathID, "game_lv" ) == 0 ) {
-
 		// Not in LV build, don't mount
 		if ( !initInfo.m_bLowViolence ) {
 			return;
