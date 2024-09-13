@@ -41,7 +41,6 @@
 	#include <cstdint>
 	#include <strings.h>
 	#include <unistd.h>
-	#include <getopt.h>
 	#include <cerrno>
 	#include <csignal>
 	#include <cctype>
@@ -64,14 +63,14 @@
 	#endif
 
 	static bool s_bShowDiag;
-	#define DEBUG_MSG( ... ) if ( s_bShowDiag ) fprintf( stderr, ##__VA_ARGS__ )
+	#define DEBUG_MSG( ... ) if ( s_bShowDiag ) fprintf( stderr, ## __VA_ARGS__ )
 	#define DEBUG_BREAK() __asm__ __volatile__( "int $3" )
 
 	#define WRAP( fn, ret, ... )        \
-		ret __real_##fn( __VA_ARGS__ ); \
-		ret __wrap_##fn( __VA_ARGS__ )
+		ret __real_## fn( __VA_ARGS__ ); \
+		ret __wrap_## fn( __VA_ARGS__ )
 
-	#define CALL( fn ) __real_##fn
+	#define CALL( fn ) __real_## fn
 
 	// Needed by pathmatch code
 	extern "C" int __real_access( const char* pathname, int mode );
@@ -88,48 +87,51 @@
 	static inline uint32_t utf8codepoint( const char** _str ) {
 		const char* str = *_str;
 		uint32_t retval = 0;
-		auto octet = (uint32_t) ( (uint8_t) *str );
+		auto octet = static_cast<uint32_t>( static_cast<uint8_t>( *str ) );
 		uint32_t octet2, octet3, octet4;
 
-		if ( octet == 0 ) // null terminator, end of string.
+		if ( octet == 0 ) {  // null terminator, end of string.
 			return 0;
-
-		else if ( octet < 128 ) { // one octet char: 0 to 127
-			( *_str )++;// skip to next possible start of codepoint.
+		}
+		if ( octet < 128 ) {  // one octet char: 0 to 127
+			( *_str )++;      // skip to next possible start of codepoint.
 			return octet;
 		}
 
-		else if ( ( octet > 127 ) && ( octet < 192 ) ) { // bad (starts with 10xxxxxx).
+		if ( octet > 127 && octet < 192 ) {  // bad (starts with 10xxxxxx).
 			// Apparently each of these is supposed to be flagged as a bogus
 			//  char, instead of just resyncing to the next valid codepoint.
-			( *_str )++;// skip to next possible start of codepoint.
+			( *_str )++;  // skip to next possible start of codepoint.
 			return UNICODE_BOGUS_CHAR_VALUE;
 		}
-
-		else if ( octet < 224 ) { // two octets
-			octet -= ( 128 + 64 );
-			octet2 = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet2 & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+		if ( octet < 224 ) {  // two octets
+			octet -= 128 + 64;
+			octet2 = static_cast<uint32_t>( static_cast<uint8_t>( *++str ) );
+			if ( ( octet2 & 128 + 64 ) != 128 ) { // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
+			}
 
-			*_str += 2; // skip to next possible start of codepoint.
-			retval = ( ( octet << 6 ) | ( octet2 - 128 ) );
-			if ( ( retval >= 0x80 ) && ( retval <= 0x7FF ) )
+			*_str += 2;  // skip to next possible start of codepoint.
+			retval = octet << 6 | octet2 - 128;
+			if ( retval >= 0x80 && retval <= 0x7FF ) {
 				return retval;
+			}
 		}
 
-		else if ( octet < 240 ) { // three octets
-			octet -= ( 128 + 64 + 32 );
-			octet2 = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet2 & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+		else if ( octet < 240 ) {  // three octets
+			octet -= 128 + 64 + 32;
+			octet2 = static_cast<uint32_t>( static_cast<uint8_t>( *++str ) );
+			if ( ( octet2 & ( 128 + 64 ) ) != 128 ) { // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
+			}
 
-			octet3 = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet3 & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			octet3 = static_cast<uint32_t>( static_cast<uint8_t>( *++str ) );
+			if ( ( octet3 & ( 128 + 64 ) ) != 128 ) { // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
+			}
 
-			*_str += 3; // skip to next possible start of codepoint.
-			retval = ( ( ( octet << 12 ) ) | ( ( octet2 - 128 ) << 6 ) | ( ( octet3 - 128 ) ) );
+			*_str += 3;  // skip to next possible start of codepoint.
+			retval = octet << 12 | octet2 - 128 << 6 | octet3 - 128;
 
 			// There are seven "UTF-16 surrogates" that are illegal in UTF-8.
 			switch ( retval ) {
@@ -146,78 +148,79 @@
 			}
 
 			// 0xFFFE and 0xFFFF are illegal, too, so we check them at the edge.
-			if ( ( retval >= 0x800 ) && ( retval <= 0xFFFD ) )
+			if ( retval >= 0x800 && retval <= 0xFFFD ) {
 				return retval;
+			}
 		}
 
-		else if ( octet < 248 ) { // four octets
+		else if ( octet < 248 ) {  // four octets
 			octet -= ( 128 + 64 + 32 + 16 );
-			octet2 = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet2 & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			octet2 = static_cast<uint32_t>( static_cast<uint8_t>( *++str ) );
+			if ( ( octet2 & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
-			octet3 = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet3 & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			octet3 = static_cast<uint32_t>( static_cast<uint8_t>( *++str ) );
+			if ( ( octet3 & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
-			octet4 = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet4 & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			octet4 = static_cast<uint32_t>( static_cast<uint8_t>( *++str ) );
+			if ( ( octet4 & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
-			*_str += 4; // skip to next possible start of codepoint.
-			retval = ( ( ( octet << 18 ) ) | ( ( octet2 - 128 ) << 12 ) |
-					   ( ( octet3 - 128 ) << 6 ) | ( ( octet4 - 128 ) ) );
-			if ( ( retval >= 0x10000 ) && ( retval <= 0x10FFFF ) )
+			*_str += 4;  // skip to next possible start of codepoint.
+			retval = octet << 18 | octet2 - 128 << 12 | octet3 - 128 << 6 | octet4 - 128;
+			if ( retval >= 0x10000 && retval <= 0x10FFFF ) {
 				return retval;
+			}
 		}
 
 		// Five and six octet sequences became illegal in rfc3629.
 		//  We throw the codepoint away, but parse them to make sure we move
 		//  ahead the right number of bytes and don't overflow the buffer.
 
-		else if ( octet < 252 ) { // five octets
+		else if ( octet < 252 ) {  // five octets
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
-			*_str += 5; // skip to next possible start of codepoint.
+			*_str += 5;  // skip to next possible start of codepoint.
 			return UNICODE_BOGUS_CHAR_VALUE;
 		}
 
-		else { // six octets
+		else {  // six octets
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
 			octet = (uint32_t) ( ( uint8_t ) * ( ++str ) );
-			if ( ( octet & ( 128 + 64 ) ) != 128 ) // Format isn't 10xxxxxx?
+			if ( ( octet & ( 128 + 64 ) ) != 128 )  // Format isn't 10xxxxxx?
 				return UNICODE_BOGUS_CHAR_VALUE;
 
-			*_str += 6; // skip to next possible start of codepoint.
+			*_str += 6;  // skip to next possible start of codepoint.
 			return UNICODE_BOGUS_CHAR_VALUE;
 		}
 
@@ -240,12 +243,11 @@
 
 	[[gnu::always_inline]]
 	static inline void locate_case_fold_mapping( const uint32_t from, uint32_t* to ) {
-		const uint8_t hashed = ( ( from ^ ( from >> 8 ) ) & 0xFF );
+		const uint8_t hashed = ( from ^ ( from >> 8 ) ) & 0xFF;
 		const CaseFoldHashBucket* bucket = &case_fold_hash[ hashed ];
 		const CaseFoldMapping* mapping = bucket->list;
-		uint32_t i;
 
-		for ( i = 0; i < bucket->count; i++, mapping++ ) {
+		for ( uint32_t i = 0; i < bucket->count; i++, mapping++ ) {
 			if ( mapping->from == from ) {
 				to[ 0 ] = mapping->to0;
 				to[ 1 ] = mapping->to1;
@@ -262,21 +264,22 @@
 
 	[[gnu::always_inline]]
 	static inline uint32_t* fold_utf8( const char* str ) {
-		auto* retval = new uint32_t[ ( strlen( str ) * 3 ) + 1 ];
+		auto* retval = new uint32_t[ strlen( str ) * 3 + 1 ];
 		uint32_t* dst = retval;
 		while ( *str ) {
 			const char ch = *str;
 			if ( ch & 0x80 ) { // high bit set? UTF-8 sequence!
 				uint32_t fold[ 3 ];
 				locate_case_fold_mapping( utf8codepoint( &str ), fold );
-				*( dst++ ) = fold[ 0 ];
+				*dst++ = fold[ 0 ];
 				if ( fold[ 1 ] ) {
-					*( dst++ ) = fold[ 1 ];
-					if ( fold[ 2 ] )
-						*( dst++ ) = fold[ 2 ];
+					*dst++ = fold[ 1 ];
+					if ( fold[ 2 ] ) {
+						*dst++ = fold[ 2 ];
+					}
 				}
 			} else { // simple ASCII test.
-				*( dst++ ) = (uint32_t) ( ( ( ch >= 'A' ) && ( ch <= 'Z' ) ) ? ch + 32 : ch );
+				*dst++ = static_cast<uint32_t>( ch >= 'A' && ch <= 'Z' ? ch + 32 : ch );
 				str++;
 			}
 		}
@@ -287,18 +290,21 @@
 	[[gnu::always_inline]]
 	static inline int utf8casecmp_loop( const uint32_t* folded1, const uint32_t* folded2 ) {
 		while ( true ) {
-			const uint32_t ch1 = *( folded1++ );
-			const uint32_t ch2 = *( folded2++ );
-			if ( ch1 < ch2 )
+			const uint32_t ch1 = *folded1++;
+			const uint32_t ch2 = *folded2++;
+			if ( ch1 < ch2 ) {
 				return -1;
-			else if ( ch1 > ch2 )
+			}
+			if ( ch1 > ch2 ) {
 				return 1;
-			else if ( ch1 == 0 )
-				return 0;// complete match.
+			}
+			if ( ch1 == 0 ) {
+				return 0;  // complete match.
+			}
 		}
 	}
 
-	#ifdef UTF8_PATHMATCH
+	#if defined( UTF8_PATHMATCH )
 		static int utf8casecmp( const char* str1, const char* str2 ) {
 			uint32_t* folded1 = fold_utf8( str1 );
 			uint32_t* folded2 = fold_utf8( str2 );
@@ -313,7 +319,7 @@
 	// gets closed when it goes out of scope.
 	class CDirPtr {
 	public:
-		CDirPtr() { m_pDir = nullptr; }
+		CDirPtr() = default;
 		CDirPtr( DIR* pDir ) : m_pDir( pDir ) {}
 		~CDirPtr() { Close(); }
 
@@ -327,13 +333,15 @@
 
 	private:
 		void Close() {
-			if ( m_pDir ) closedir( m_pDir );
+			if ( m_pDir ) {
+				closedir( m_pDir );
+			}
 		}
 
-		DIR* m_pDir;
+		DIR* m_pDir{};
 	};
 
-	// Object used to temporarily slice a path into a smaller componentent
+	// Object used to temporarily slice a path into a smaller components
 	// and then repair it when going out of scope. Typically used as an unnamed
 	// temp object that is a parameter to a function.
 	class CDirTrimmer {
@@ -346,7 +354,7 @@
 		}
 		~CDirTrimmer() { m_pPath[ m_idx ] = m_c; }
 
-		operator const char*() { return m_pPath; }
+		operator const char*() const { return m_pPath; }
 
 	private:
 		size_t m_idx;
@@ -378,17 +386,19 @@
 		}
 
 		// Modify the pPath string
-		if ( pPath[ nNextSlash ] == '/' )
+		if ( pPath[ nNextSlash ] == '/' ) {
 			bIsDir = true;
+		}
 
 		// See if we have an immediate match
 		if ( __real_access( CDirTrimmer( pPath, nNextSlash ), F_OK ) == 0 ) {
-			if ( !bIsDir )
+			if ( !bIsDir ) {
 				return true;
+			}
 
-			bool bRet = Descend( pPath, nNextSlash, bAllowBasenameMismatch, nLevel + 1 );
-			if ( bRet )
+			if ( Descend( pPath, nNextSlash, bAllowBasenameMismatch, nLevel + 1 ) ) {
 				return true;
+			}
 		}
 
 		// Start enumerating dirents
@@ -399,7 +409,7 @@
 			nStartIdx++;
 		} else {
 			// we either start at root or cwd
-			const char* pRoot = ".";
+			auto pRoot = ".";
 			if ( *pPath == '/' ) {
 				pRoot = "/";
 				nStartIdx++;
@@ -408,30 +418,32 @@
 		}
 
 		errno = 0;
-		struct dirent* pEntry = spDir ? readdir( spDir ) : nullptr;
+		dirent* pEntry = spDir ? readdir( spDir ) : nullptr;
 		char* pszComponent = pPath + nStartIdx;
-		size_t cbComponent = nNextSlash - nStartIdx;
+		const size_t cbComponent = nNextSlash - nStartIdx;
 		while ( pEntry ) {
 			DEBUG_MSG( "\t(%zu) comparing %s with %s\n", nLevel, pEntry->d_name, (const char*) CDirTrimmer( pszComponent, cbComponent ) );
 
 			// the candidate must match the target, but not be a case-identical match (we would
 			// have looked there in the short-circuit code above, so don't look again)
-			bool bMatches = ( strcasecmp( CDirTrimmer( pszComponent, cbComponent ), pEntry->d_name ) == 0 &&
-							  strcmp( CDirTrimmer( pszComponent, cbComponent ), pEntry->d_name ) != 0 );
+			bool bMatches = strcasecmp( CDirTrimmer( pszComponent, cbComponent ), pEntry->d_name ) == 0 &&
+							strcmp( CDirTrimmer( pszComponent, cbComponent ), pEntry->d_name ) != 0;
 
 			if ( bMatches ) {
-				char* pSrc = pEntry->d_name;
+				const char* pSrc = pEntry->d_name;
 				char* pDst = &pPath[ nStartIdx ];
 				// found a match; copy it in.
 				while ( *pSrc && ( *pSrc != '/' ) ) {
 					*pDst++ = *pSrc++;
 				}
 
-				if ( !bIsDir )
+				if ( !bIsDir ) {
 					return true;
+				}
 
-				if ( Descend( pPath, nNextSlash, bAllowBasenameMismatch, nLevel + 1 ) )
+				if ( Descend( pPath, nNextSlash, bAllowBasenameMismatch, nLevel + 1 ) ) {
 					return true;
+				}
 
 				// If descend fails, try more directories
 			}
@@ -446,8 +458,9 @@
 		// since we might be opening for write.  Note that if
 		// the filename matches case insensitive, that will be
 		// preferred over preserving the input name
-		if ( !bIsDir && bAllowBasenameMismatch )
+		if ( !bIsDir && bAllowBasenameMismatch ) {
 			return true;
+		}
 
 		return false;
 	}
@@ -457,7 +470,7 @@
 		typedef std::map<std::string, std::pair<std::string, time_t>>::iterator resultCacheItr_t;
 		static resultCache_t resultCache;
 		static const int k_cMaxCacheLifetimeSeconds = 2;
-	#endif// DO_PATHMATCH_CACHE
+	#endif
 
 	PathMod_t pathmatch( const char* pszIn, char** ppszOut, bool bAllowBasenameMismatch, char* pszOutBuf, size_t OutBufLen ) {
 		// Path matching can be very expensive, and the cost is unpredictable because it
@@ -465,17 +478,19 @@
 		// it should be disabled whenever possible, and only enabled in environments (such
 		// as running with loose files such as out of Perforce) where it is needed.
 		static const char* s_pszPathMatchEnabled = getenv( "ENABLE_PATHMATCH" );
-		if ( !s_pszPathMatchEnabled )
+		if ( !s_pszPathMatchEnabled ) {
 			return kPathUnchanged;
+		}
 
 		static const char* s_pszDbgPathMatch = getenv( "DBG_PATHMATCH" );
 
-		s_bShowDiag = ( s_pszDbgPathMatch != nullptr );
+		s_bShowDiag = s_pszDbgPathMatch != nullptr;
 
 		*ppszOut = nullptr;
 
-		if ( __real_access( pszIn, F_OK ) == 0 )
+		if ( __real_access( pszIn, F_OK ) == 0 ) {
 			return kPathUnchanged;
+		}
 
 		#ifdef DO_PATHMATCH_CACHE
 			resultCacheItr_t cachedResult = resultCache.find( pszIn );
@@ -536,10 +551,11 @@
 			// Try the lower casing of the remaining path
 			char* pBasename = p;
 			while ( *p ) {
-				if ( *p == '/' )
+				if ( *p == '/' ) {
 					pBasename = p + 1;
+				}
 
-				*p = tolower( *p );
+				*p = static_cast<char>( tolower( *p ) );
 				p++;
 			}
 			if ( __real_access( pPath, F_OK ) == 0 ) {
@@ -590,7 +606,7 @@
 	class CWrap {
 	public:
 		CWrap( const char* pSuppliedPath, bool bAllowMismatchedBasename )
-			: m_pSuppliedPath( pSuppliedPath ), m_pBestMatch( nullptr ) {
+			: m_pSuppliedPath( pSuppliedPath ) {
 			m_eResult = pathmatch( m_pSuppliedPath, &m_pBestMatch, bAllowMismatchedBasename, m_BestMatchBuf, sizeof( m_BestMatchBuf ) );
 			if ( m_pBestMatch == nullptr ) {
 				m_pBestMatch = const_cast<char*>( m_pSuppliedPath );
@@ -598,8 +614,9 @@
 		}
 
 		~CWrap() {
-			if ( ( m_pBestMatch != m_pSuppliedPath ) && ( m_pBestMatch != m_BestMatchBuf ) )
+			if ( m_pBestMatch != m_pSuppliedPath && m_pBestMatch != m_BestMatchBuf ) {
 				free( m_pBestMatch );
+			}
 		}
 
 		[[nodiscard]]
@@ -612,8 +629,8 @@
 		operator const char*() const { return GetBest(); }
 	private:
 		const char* m_pSuppliedPath;
-		char* m_pBestMatch;
-		char m_BestMatchBuf[ 512 ];
+		char* m_pBestMatch{};
+		char m_BestMatchBuf[512] { };
 		PathMod_t m_eResult;
 	};
 

@@ -13,7 +13,7 @@ SpewRetval_t LauncherSpewFunc( SpewType_t pSpewType, char const* pMsg );
 //-----------------------------------------------------------------------------
 //   Main entry point
 //-----------------------------------------------------------------------------
-DLL_EXPORT int LauncherMain( int argc, char* argv[] ) {
+DLL_EXPORT int LauncherMain( const int argc, char* argv[] ) {
 	// always use the same locale, prevents some character issues
 	setlocale( LC_ALL, "en_US.UTF_8" );
 

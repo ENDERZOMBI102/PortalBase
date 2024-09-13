@@ -21,12 +21,11 @@ enum LoaderPriority_t {
 	LOADERPRIORITY_DURINGPRELOAD = 2,// job must be complete during preload phase
 };
 
-typedef void ( *QueuedLoaderCallback_t )( void* pContext, void* pContext2, const void* pData, int nSize, LoaderError_t loaderError );
-
-typedef void ( *DynamicResourceCallback_t )( const char* pFilename, void* pContext, void* pContext2 );
+using QueuedLoaderCallback_t = void(*)( void* pContext, void* pContext2, const void* pData, int nSize, LoaderError_t loaderError );
+using DynamicResourceCallback_t = void(*)( const char* pFilename, void* pContext, void* pContext2 );
 
 struct LoaderJob_t {
-	LoaderJob_t() {
+	LoaderJob_t() { // NOLINT(*-pro-type-member-init)
 		memset( this, 0, sizeof( *this ) );
 	}
 
@@ -55,6 +54,7 @@ enum ResourcePreload_t {
 
 abstract_class IResourcePreload {
 public:
+	virtual ~IResourcePreload() = default;
 	// Called during preload phase for ALL the resources expected by the level.
 	// Caller should not do i/o but generate AddJob() requests. Resources that already exist
 	// and are not referenced by this function would be candidates for purge.
@@ -74,32 +74,38 @@ public:
 
 // Default implementation
 class CResourcePreload : public IResourcePreload {
-	void PurgeUnreferencedResources() { }
-	void OnEndMapLoading( bool bAbort ) { }
-	void PurgeAll() { }
+	void PurgeUnreferencedResources() override { }
+	void OnEndMapLoading( bool bAbort ) override { }
+	void PurgeAll() override { }
 };
 
 // UI can install progress notification
 abstract_class ILoaderProgress {
 public:
-	// implementation must ignore UpdateProgress() if not scoped by Begin/End
+	virtual ~ILoaderProgress() = default;
 	virtual void BeginProgress() = 0;
 	virtual void EndProgress() = 0;
+	/**
+	 * Update the state of the progress.
+	 * @note implementation must ignore calls if not scoped by Begin/End
+	 */
 	virtual void UpdateProgress( float progress ) = 0;
 };
 
 // spew detail
-#define LOADER_DETAIL_NONE 0
-#define LOADER_DETAIL_TIMING ( 1 << 0 )
-#define LOADER_DETAIL_COMPLETIONS ( 1 << 1 )
-#define LOADER_DETAIL_LATECOMPLETIONS ( 1 << 2 )
-#define LOADER_DETAIL_PURGES ( 1 << 3 )
+enum LoaderSpewDetail {
+	LOADER_DETAIL_NONE = 0,
+	LOADER_DETAIL_TIMING = 1 << 0,
+	LOADER_DETAIL_COMPLETIONS = 1 << 1,
+	LOADER_DETAIL_LATECOMPLETIONS = 1 << 2,
+	LOADER_DETAIL_PURGES = 1 << 3
+};
 
 #define QUEUEDLOADER_INTERFACE_VERSION "QueuedLoaderVersion004"
 abstract_class IQueuedLoader : public IAppSystem {
 public:
-	virtual void InstallLoader( ResourcePreload_t type, IResourcePreload * pLoader ) = 0;
-	virtual void InstallProgress( ILoaderProgress * pProgress ) = 0;
+	virtual void InstallLoader( ResourcePreload_t type, IResourcePreload* pLoader ) = 0;
+	virtual void InstallProgress( ILoaderProgress* pProgress ) = 0;
 
 	// Set bOptimizeReload if you want appropriate data (such as static prop lighting)
 	// to persist - rather than being purged and reloaded - when going from map A to map A.
@@ -112,7 +118,7 @@ public:
 
 	// dynamically load a map resource
 	virtual void DynamicLoadMapResource( const char* pFilename, DynamicResourceCallback_t pCallback, void* pContext, void* pContext2 ) = 0;
-	virtual void QueueDynamicLoadFunctor( CFunctor * pFunctor ) = 0;
+	virtual void QueueDynamicLoadFunctor( CFunctor* pFunctor ) = 0;
 	virtual bool CompleteDynamicLoad() = 0;
 
 	// callback is asynchronous
@@ -120,16 +126,22 @@ public:
 	// provides data if loaded, caller owns data
 	virtual bool ClaimAnonymousJob( const char* pFilename, void** pData, int* pDataSize, LoaderError_t* pError = nullptr ) = 0;
 
+	[[nodiscard]]
 	virtual bool IsMapLoading() const = 0;
+	[[nodiscard]]
 	virtual bool IsSameMapLoading() const = 0;
+	[[nodiscard]]
 	virtual bool IsFinished() const = 0;
 
 	// callers can expect that jobs are not immediately started when batching
+	[[nodiscard]]
 	virtual bool IsBatching() const = 0;
 
+	[[nodiscard]]
 	virtual bool IsDynamic() const = 0;
 
 	// callers can conditionalize operational spew
+	[[nodiscard]]
 	virtual int GetSpewDetail() const = 0;
 
 	virtual void PurgeAll() = 0;

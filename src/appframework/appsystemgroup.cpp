@@ -101,7 +101,7 @@ AppModule_t CAppSystemGroup::LoadModule( CreateInterfaceFn factory ) {
 	return this->m_Modules.AddToTail( module );
 }
 
-IAppSystem* CAppSystemGroup::AddSystem( AppModule_t module, const char* pInterfaceName ) {
+IAppSystem* CAppSystemGroup::AddSystem( AppModule_t pModule, const char* pInterfaceName ) {
 	auto index{ this->m_SystemDict.Find( pInterfaceName ) };
 	if ( index == CUtlDict<int, uint16>::InvalidIndex() ) {
 		index = this->m_Systems.AddToTail();
@@ -110,7 +110,7 @@ IAppSystem* CAppSystemGroup::AddSystem( AppModule_t module, const char* pInterfa
 	}
 
 	int retCode;
-	const auto mod{ this->m_Modules[ module ] };
+	const auto mod{ this->m_Modules[ pModule ] };
 	auto system{ reinterpret_cast<IAppSystem*>( mod.m_Factory( pInterfaceName, &retCode ) ) };
 	if ( retCode != IFACE_OK ) {
 		Warning( "Failed to load system for interface `%s` from module `%s`.\n", pInterfaceName, mod.m_pModuleName ? mod.m_pModuleName : "N/A" );
@@ -187,7 +187,7 @@ void CAppSystemGroup::RemoveAllSystems() { AssertUnreachable(); }
 bool CAppSystemGroup::ConnectSystems() {
 	const auto factory{ GetFactory() };
 
-	for ( int i{0}; i < m_Systems.Size(); i += 1 ) {
+	for ( int i{0}; i < m_Systems.Count(); i += 1 ) {
 		if (! m_Systems[i]->Connect( factory ) ) {
 			s_FailedSystemIndex = i;
 			m_nErrorStage = AppSystemGroupStage_t::CONNECTION;
@@ -198,13 +198,13 @@ bool CAppSystemGroup::ConnectSystems() {
 	return true;
 }
 void CAppSystemGroup::DisconnectSystems() {
-	for ( int i{0}; i < m_Systems.Size(); i += 1 ) {
+	for ( int i{0}; i < m_Systems.Count(); i += 1 ) {
 		m_Systems[i]->Disconnect();
 	}
 }
 
 InitReturnVal_t CAppSystemGroup::InitSystems() {
-	for ( int i{0}; i < m_Systems.Size(); i += 1 ) {
+	for ( int i{0}; i < m_Systems.Count(); i += 1 ) {
 		if ( m_Systems[i]->Init() != InitReturnVal_t::INIT_OK ) {
 			s_FailedSystemIndex = i;
 			m_nErrorStage = AppSystemGroupStage_t::INITIALIZATION;
@@ -215,7 +215,7 @@ InitReturnVal_t CAppSystemGroup::InitSystems() {
 	return InitReturnVal_t::INIT_OK;
 }
 void CAppSystemGroup::ShutdownSystems() {
-	for ( int i{0}; i < m_Systems.Size(); i += 1 ) {
+	for ( int i{0}; i < m_Systems.Count(); i += 1 ) {
 		m_Systems[i]->Shutdown();
 	}
 }

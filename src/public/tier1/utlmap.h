@@ -38,7 +38,7 @@ public:
 	};
 };
 
-template<typename K, typename T, typename I = unsigned short>
+template<typename K, typename T, typename I = uint16>
 class CUtlMap : public base_utlmap_t {
 public:
 	using KeyType_t = K;
