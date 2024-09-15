@@ -2,17 +2,15 @@
 // Created by ENDERZOMBI102 on 09/09/2024.
 //
 #pragma once
-#include "tier0/platform.h"
 
 
 namespace Wildcard {
 	/**
-	 * Performs unoptimized wildcard matching.
-	 * @param pString
-	 * @param pPattern
-	 * @param pStringLen
-	 * @param pPatternLen
+	 * Performs wildcard matching, also known as globbing.
+	 * @param pString The string to check.
+	 * @param pPattern The pattern to match against.
+	 * @param pPartial If `true`, return `true` as long as the leading part of the wildcard is respected.
 	 * @return
 	 */
-	auto SimpleMatch( const char* pString, const char* pPattern, int32 pStringLen, int32 pPatternLen ) -> bool;
+	auto Match( const char* pString, const char* pPattern, bool pPartial = false ) -> bool;
 }
