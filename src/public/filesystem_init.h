@@ -18,7 +18,7 @@
 	#define PATHSEPARATOR( c ) ( ( c ) == '\\' || ( c ) == '/' )
 #else
 	#define PATHSEPARATOR( c ) ( ( c ) == '/' )
-#endif//_WIN32
+#endif
 
 
 enum FSReturnCode_t {
