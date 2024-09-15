@@ -134,6 +134,10 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 	// parse the options
 	const auto mode{ parseOpenMode( pOptions ) };
 
+	if ( V_strstr( pFileName, ".so" ) == nullptr ) {
+		Warning( "CFileSystemStdio::Open(%s, %s, %s)\n", pFileName, pOptions, pathID );
+	}
+
 	// absolute paths get special treatment
 	if ( V_IsAbsolutePath( pFileName ) ) {
 		const auto desc{ s_RootFsDriver->Open( pFileName, mode ) };
