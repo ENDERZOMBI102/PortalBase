@@ -95,10 +95,8 @@ public:
 	virtual auto Flush( const FileDescriptor* pDesc ) -> bool = 0;
 	virtual auto Close( const FileDescriptor* pDesc ) -> void = 0;
 	// generic ops
-	virtual auto ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool = 0;
+	virtual auto ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool = 0;
 	virtual auto Create ( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* = 0;
 	virtual auto Remove ( const FileDescriptor* pDesc ) -> void = 0;
 	virtual auto Stat   ( const FileDescriptor* pDesc ) -> std::optional<StatData> = 0;
 };
-
-auto CreateFsDriver( int pId, const char* pAbsolute, const char* pPath ) -> CFsDriver*;

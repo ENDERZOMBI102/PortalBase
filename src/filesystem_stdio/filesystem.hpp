@@ -117,7 +117,7 @@ public: // IFileSystem
 	void CreateDirHierarchy( const char* path, const char* pathID = nullptr ) override;
 
 	// File I/O and info
-	bool IsDirectory( const char* pFileName, const char* pathID = nullptr ) override;
+	bool IsDirectory( const char* pFileName, const char* pPathID = nullptr ) override;
 
 	void FileTimeToString( char* pStrip, int maxCharsIncludingTerminator, long fileTime ) override;
 

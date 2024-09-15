@@ -2,15 +2,17 @@
 // Created by ENDERZOMBI102 on 22/02/2024.
 //
 #include "filesystem.hpp"
-#include "driver/fsdriver.hpp"
 #include "interface.h"
-#include "platform.h"
+#include "driver/fsdriver.hpp"
+#include "driver/packfsdriver.hpp"
+#include "driver/plainfsdriver.hpp"
 #include "tier0/icommandline.h"
+#include "platform.h"
 #include "utlbuffer.h"
 #include <algorithm>
 #include <utility>
 // memdbgon must be the last include file in a .cpp file!!!
-#include "tier0/memdbgon.h"
+#include "tier0/memdbgon.h""wildcard/wildcard.hpp"
 
 
 namespace {
@@ -48,6 +50,17 @@ namespace {
 
 		return mode;
 	}
+	auto createFsDriver( const int pId, const char* pAbsolute, const char* pPath ) -> CFsDriver* {
+		if ( s_FullFileSystem.IsDirectory( pAbsolute ) ) {
+			return new CPlainFsDriver( pId, pAbsolute, pPath );
+		}
+
+		if ( V_strcmp( V_GetFileExtension( pPath ), "vpk" ) == 0 || V_strcmp( V_GetFileExtension( pPath ), "bsp" ) == 0 ) {
+			return new CPackFsDriver( pId, pAbsolute, pPath );
+		}
+
+		return {};
+	}
 }
 
 // ---------------
@@ -69,7 +82,7 @@ auto CFileSystemStdio::Init() -> InitReturnVal_t {
 		return InitReturnVal_t::INIT_OK;
 	}
 
-	s_RootFsDriver = CreateFsDriver( 0, "/", "/" );
+	s_RootFsDriver = new CPlainFsDriver( 0, "/", "/" );
 
 	return InitReturnVal_t::INIT_OK;
 }
@@ -292,6 +305,8 @@ FilesystemMountRetval_t CFileSystemStdio::MountSteamContent( int nExtraAppId ) {
 
 // ---- Search path manipulation ----
 void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, SearchPathAdd_t addType ) {
+	// TODO: Add driver deduplication, currently, we're creating one each time a path is requested,
+	//       regardless to if it was already created for a preceding request.
 	AssertFatalMsg( pPath, "Was given an empty path!!" );
 
 	// calculate base dir (current `-game` dir)
@@ -308,14 +323,27 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 	}
 
 	// if the path is non-existent, do nothing
-	if (! this->FileExists( absolute ) ) {
-		return;
+	if (! FileExists( absolute ) ) {
+		// was a vpk requested?
+		if ( V_strcmp( V_GetFileExtension( absolute ), "vpk" ) != 0 ) {
+			// no, nothing to do
+			return;
+		}
+		// yes, but doesn't exist, check if there is a `_dir` one instead
+		char tmp[1024];
+		V_StripExtension( absolute, tmp, std::size( tmp ) );
+		V_strcat_safe( tmp, "_dir.vpk" );
+		if (! FileExists( tmp ) ) {
+			// it doesn't exist, we failed.
+			return;
+		}
+		V_strcpy( absolute, tmp );
 	}
 
 	m_LastId += 1;
 
 	// try all possibilities
-	auto driver{ CreateFsDriver( m_LastId, absolute, pPath ) };
+	auto driver{ createFsDriver( m_LastId, absolute, pPath ) };
 	AssertFatalMsg( driver, "Unsupported path entry: %s", absolute );
 	if (! driver ) {
 		return;
@@ -328,6 +356,7 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 	pathID = V_strlower( V_strdup( pathID ) );
 
 	if ( m_SearchPaths.Find( pathID ) == CUtlDict<SearchPath*>::InvalidIndex() ) {
+		// `Insert` does a `V_strdup`, so we can safely delete ours afterward.
 		m_SearchPaths.Insert( pathID, new SearchPath );
 	}
 
@@ -462,7 +491,19 @@ bool CFileSystemStdio::RenameFile( char const* pOldPath, char const* pNewPath, c
 
 void CFileSystemStdio::CreateDirHierarchy( const char* path, const char* pathID ) { AssertUnreachable(); }
 
-bool CFileSystemStdio::IsDirectory( const char* pFileName, const char* pathID ) { AssertUnreachable(); return {}; }
+bool CFileSystemStdio::IsDirectory( const char* pFileName, const char* pPathID ) {
+	// try to open the file
+	const auto desc{ static_cast<FileDescriptor*>( Open( pFileName, "r", pPathID ) ) };
+	if ( desc ) {
+		desc->m_Driver->AddRef();
+		const auto stat{ desc->m_Driver->Stat( desc ) };
+		desc->m_Driver->Release();
+		Close( desc );
+		return stat.has_value() && stat->m_Type == FileType::Directory;
+	}
+
+	return false;
+}
 
 void CFileSystemStdio::FileTimeToString( char* pStrip, int maxCharsIncludingTerminator, long fileTime ) { AssertUnreachable(); }
 

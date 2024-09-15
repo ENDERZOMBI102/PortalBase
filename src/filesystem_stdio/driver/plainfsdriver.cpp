@@ -4,12 +4,11 @@
 #include "plainfsdriver.hpp"
 #include <dirent.h>
 #include <fcntl.h>
-#include <filesystem>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <utility>
 #include "strtools.h"
 #include "dbg.h"
+#include "wildcard/wildcard.hpp"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -102,18 +101,27 @@ auto CPlainFsDriver::Close( const FileDescriptor* pDesc ) -> void {
 	close( static_cast<int>( pDesc->m_Handle ) );
 }
 
-auto CPlainFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool {
-	auto path{ V_strdup( pWildcard ) };
+// TODO: Verify if this is feature-complete
+auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool {
+	auto path{ V_strdup( pPattern ) };
 	V_StripFilename( path );
-	const auto dir{ opendir( path ) }; // FIXME: This errors for globs like `path/*/nom?.txt`
+
+	// first check if we can open the dir
+	const auto dir{ opendir( path ) };
 	if ( dir == nullptr ) {
 		return false;
 	}
-	dirent* entry{ nullptr };
-	while ( (entry = readdir( dir )) != nullptr ) {  // TODO: Finish impl this
-		Log( "%s: %s", __FUNCTION__, entry->d_name );
+	char buffer[1024];
+	// iterate in it
+	for ( const auto* entry{ readdir( dir ) }; entry != nullptr; entry = readdir( dir ) ) {
+		V_ComposeFileName( path, entry->d_name, buffer, 1024 );
+		if ( Wildcard::Match( buffer, pPattern, true ) ) {
+			// printf( "%s: %s -> %s | %s\n", __FUNCTION__, pPattern, buffer, entry->d_name );
+			pResult.AddToTail( V_strdup( entry->d_name ) );
+		}
 	}
 	closedir( dir );
+	delete[] path;
 	return true;
 }
 auto CPlainFsDriver::Create( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* { return {}; }
@@ -122,7 +130,7 @@ auto CPlainFsDriver::Stat( const FileDescriptor* pDesc ) -> std::optional<StatDa
 	// get stat data
 	struct stat64 it {};
 	if ( fstat64( static_cast<int>( pDesc->m_Handle ), &it ) != 0 ) {
-		return {};// error happened :/
+		return {};  // error happened :/
 	}
 
 		// find the type

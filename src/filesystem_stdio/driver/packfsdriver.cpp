@@ -67,13 +67,12 @@ auto CPackFsDriver::Close( const FileDescriptor* pDesc ) -> void {
 	delete[] reinterpret_cast<const char*>( pDesc->m_Handle );
 }
 
-auto CPackFsDriver::ListDir( const char* pWildcard, CUtlVector<const char*>& pResult ) -> bool {
+auto CPackFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool {
 	const auto& entries{ m_PackFile->getBakedEntries() };
-	const auto patternLen{ V_strlen( pWildcard ) };
 	std::string key;
 	for ( auto entry{ entries.cbegin() }; entry != entries.cend(); ++entry ) {
 		entry.key( key );
-		if ( Wildcard::SimpleMatch( key.c_str(), pWildcard, static_cast<int32>( key.size() ), patternLen ) ) {
+		if ( Wildcard::Match( key.c_str(), pPattern ) ) {
 			pResult.AddToTail( V_strdup( key.c_str() ) );
 		}
 	}

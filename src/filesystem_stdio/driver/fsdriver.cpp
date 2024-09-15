@@ -2,10 +2,7 @@
 // Created by ENDERZOMBI102 on 30/06/2024.
 //
 #include "fsdriver.hpp"
-#include "packfsdriver.hpp"
-#include "plainfsdriver.hpp"
 #include "tier1/mempool.h"
-#include <filesystem>
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -28,15 +25,3 @@ auto FileDescriptor::CleanupArena() -> void {
 
 CFsDriver::CFsDriver() = default;
 CFsDriver::~CFsDriver() = default;
-
-auto CreateFsDriver( const int pId, const char* pAbsolute, const char* pPath ) -> CFsDriver* {
-	if ( std::filesystem::is_directory( pAbsolute ) ) {
-		return new CPlainFsDriver( pId, pAbsolute, pPath );
-	}
-
-	if ( V_strcmp( V_GetFileExtension( pPath ), "vpk" ) == 0 || V_strcmp( V_GetFileExtension( pPath ), "bsp" ) == 0 ) {
-		return new CPackFsDriver( pId, pAbsolute, pPath );
-	}
-
-	return {};
-}
