@@ -3612,9 +3612,7 @@ void Panel::ApplyAutoResizeSettings( KeyValues* inResourceData ) {
 					Warning( "Resize parent (panel(%s) -> parent(%s)) not sized yet!!!\n", GetName(), GetParent()->GetName() );
 				}
 			}
-			{
-#endif
-			}
+		#endif
 	}
 
 	int nPinnedCornerOffsetX = 0, nPinnedCornerOffsetY = 0;
