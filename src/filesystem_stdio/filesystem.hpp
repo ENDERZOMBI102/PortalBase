@@ -178,7 +178,7 @@ public: // IFileSystem
 	//--------------------------------------------------------
 
 	FileNameHandle_t FindOrAddFileName( char const* pFileName ) override;
-	bool String( const FileNameHandle_t& handle, char* buf, int buflen ) override;
+	bool String( const FileNameHandle_t& pHandle, char* pBuf, int pBufLen ) override;
 
 	//--------------------------------------------------------
 	// Asynchronous file operations
@@ -450,4 +450,6 @@ private:
 	FileWarningLevel_t m_WarningLevel{ FileWarningLevel_t::FILESYSTEM_WARNING_QUIET };
 	// Warnings output
 	FileWarningFunc_t m_Warning{ nullptr };
+	// Filename dictionary
+	CUtlFilenameSymbolTable m_Filenames{};
 };

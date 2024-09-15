@@ -546,7 +546,7 @@ public:
 	virtual const char* RelativePathToFullPath( const char* pFileName, const char* pPathID, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars, PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t* pPathType = nullptr ) = 0;
 	template<size_t maxLenInChars>
 	const char* RelativePathToFullPath_safe( const char* pFileName, const char* pPathID, OUT_Z_ARRAY char( &pDest )[ maxLenInChars ], PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t* pPathType = nullptr ) {
-		return RelativePathToFullPath( pFileName, pPathID, pDest, (int) maxLenInChars, pathFilter, pPathType );
+		return RelativePathToFullPath( pFileName, pPathID, pDest, static_cast<int>( maxLenInChars ), pathFilter, pPathType );
 	}
 
 	// Returns the search path, each path is separated by ;s. Returns the length of the string returned
@@ -554,7 +554,7 @@ public:
 	virtual int GetSearchPath( const char* pathID, bool bGetPackFiles, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars ) = 0;
 	template<size_t maxLenInChars>
 	int GetSearchPath_safe( const char* pathID, bool bGetPackFiles, OUT_Z_ARRAY char( &pDest )[ maxLenInChars ] ) {
-		return GetSearchPath( pathID, bGetPackFiles, pDest, (int) maxLenInChars );
+		return GetSearchPath( pathID, bGetPackFiles, pDest, static_cast<int>( maxLenInChars ) );
 	}
 
 	// interface for custom pack files > 4Gb

@@ -19,7 +19,7 @@ enum class FileType {
  * Stats of a "file".
  */
 struct StatData {
-	FileType m_Type;        // Type of file
+	FileType m_Type;    // Type of file
 	uint64_t m_AccTime; // Access time in ns (unix time)
 	uint64_t m_ModTime; // Modification time in ns (unix time)
 	uint64_t m_Length;  // File Length in bytes

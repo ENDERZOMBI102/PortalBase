@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <utility>
 // memdbgon must be the last include file in a .cpp file!!!
-#include "tier0/memdbgon.h""wildcard/wildcard.hpp"
+#include "tier0/memdbgon.h"
 
 
 namespace {
@@ -168,7 +168,7 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 		}
 	} else {
 		// else, look into all clients
-		for ( const auto& [_, searchPath] : this->m_SearchPaths ) {
+		for ( const auto& [_, searchPath] : m_SearchPaths ) {
 			for ( const auto& driver : searchPath->m_Drivers ) {
 				const auto desc{ driver->Open( pFileName, mode ) };
 				// only add to vector if we actually got an open file
@@ -277,11 +277,15 @@ bool CFileSystemStdio::SetFileWritable( char const* pFileName, bool writable, co
 long CFileSystemStdio::GetFileTime( const char* pFileName, const char* pPathID ) { AssertUnreachable(); return {}; }
 
 bool CFileSystemStdio::ReadFile( const char* pFileName, const char* pPath, CUtlBuffer& buf, int nMaxBytes, int nStartingByte, FSAllocFunc_t pfnAlloc ) {
-	// FIXME: Probably not very "optimal" performance
 	const auto handle{ Open( pFileName, "r", pPath ) };
 	if ( handle == nullptr ) {
 		return false;
 	}
+	// do we need to advance to a specific byte?
+	if ( nStartingByte ) {
+		Seek( handle, nStartingByte, FILESYSTEM_SEEK_HEAD );
+	}
+	// read all to a buffer
 	const auto res{ ReadToBuffer( handle, buf, nMaxBytes, pfnAlloc ) };
 	Close( handle );
 	return res;
@@ -307,6 +311,9 @@ FilesystemMountRetval_t CFileSystemStdio::MountSteamContent( int nExtraAppId ) {
 void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, SearchPathAdd_t addType ) {
 	// TODO: Add driver deduplication, currently, we're creating one each time a path is requested,
 	//       regardless to if it was already created for a preceding request.
+	// TODO: When adding a vpk, the path should be stripped of `_dir` and `.vpk`,
+	//       then try to check if either `_dir.vpk` or `.vpk` exist and add that.
+	//       if it is a `_dir` (chunked) vpk, then mark it as chunked and search for all the numbered ones (does vpkpp handle this?)
 	AssertFatalMsg( pPath, "Was given an empty path!!" );
 
 	// calculate base dir (current `-game` dir)
@@ -523,9 +530,15 @@ int CFileSystemStdio::FPrintf( FileHandle_t file, PRINTF_FORMAT_STRING const cha
 
 // ---- Dynamic library operations ----
 CSysModule* CFileSystemStdio::LoadModule( const char* pFileName, const char* pPathID, bool bValidatedDllOnly ) {
+	// ensure the filename has a `.so`
+	char filepath[1024];
+	V_strcpy_safe( filepath, pFileName );
+	V_SetExtension( filepath, ".so", std::size( filepath ) );
+
 	// try from search paths TODO: Handle extraction if needed
 	char* absolute;
-	const auto handle{ OpenEx( pFileName, "rb", 0, pPathID, &absolute ) };
+	// if ( RelativePathToFullPath_safe( pFileName, pPathID, absolute ) )
+	const auto handle{ OpenEx( filepath, "rb", 0, pPathID, &absolute ) };
 	if ( handle ) {
 		Close( handle );
 		const auto res{ Sys_LoadModule( absolute ) };
@@ -538,7 +551,7 @@ CSysModule* CFileSystemStdio::LoadModule( const char* pFileName, const char* pPa
 
 	GetCurrentDirectory( path, MAX_PATH );
 	V_MakeAbsolutePath( path, MAX_PATH, "bin/", path );
-	V_MakeAbsolutePath( path, MAX_PATH, pFileName, path );
+	V_MakeAbsolutePath( path, MAX_PATH, filepath, path );
 
 	if ( FileExists( path ) ) {
 		return Sys_LoadModule( path );
@@ -639,10 +652,11 @@ bool CFileSystemStdio::GetCurrentDirectory( char* pDirectory, int maxlen ) {
 
 // ---- Filename dictionary operations ----
 FileNameHandle_t CFileSystemStdio::FindOrAddFileName( char const* pFileName ) {
-	AssertUnreachable();
-	return {};
+	return m_Filenames.FindOrAddFileName( pFileName );
 }
-bool CFileSystemStdio::String( const FileNameHandle_t& handle, char* buf, int buflen ) { AssertUnreachable(); return {}; }
+bool CFileSystemStdio::String( const FileNameHandle_t& pHandle, char* pBuf, int pBufLen ) {
+	return m_Filenames.String( pHandle, pBuf, pBufLen );
+}
 
 // ---- Global Asynchronous file operations ----
 FSAsyncStatus_t CFileSystemStdio::AsyncReadMultiple( const FileAsyncRequest_t* pRequests, int nRequests, FSAsyncControl_t* phControls ) { AssertUnreachable(); return {}; }
@@ -723,7 +737,9 @@ FileHandle_t CFileSystemStdio::OpenEx( const char* pFileName, const char* pOptio
 	if (! (pFileName && pOptions) ) {
 		return nullptr;
 	}
-	Warning( "CFileSystemStdio::OpenEx(%s, %s, %d, %s)\n", pFileName, pOptions, flags, pathID );
+	if ( V_strstr( pFileName, ".so" ) == nullptr ) {
+		Warning( "CFileSystemStdio::OpenEx(%s, %s, %d, %s)\n", pFileName, pOptions, flags, pathID );
+	}
 
 	const auto desc{ static_cast<FileDescriptor*>( Open( pFileName, pOptions, pathID ) ) };
 	if ( desc && ppszResolvedFilename ) {
@@ -756,7 +772,9 @@ int CFileSystemStdio::ReadEx( void* pOutput, int sizeDest, int size, FileHandle_
 }
 int CFileSystemStdio::ReadFileEx( const char* pFileName, const char* pPath, void** ppBuf, bool bNullTerminate, bool bOptimalAlloc, int nMaxBytes, int nStartingByte, FSAllocFunc_t pfnAlloc ) { AssertUnreachable(); return {}; }
 
-FileNameHandle_t CFileSystemStdio::FindFileName( char const* pFileName ) { AssertUnreachable(); return {}; }
+FileNameHandle_t CFileSystemStdio::FindFileName( char const* pFileName ) {
+	return m_Filenames.FindFileName( pFileName );
+}
 
 #if defined( TRACK_BLOCKING_IO )
 	void CFileSystemStdio::EnableBlockingFileAccessTracking( bool state ) { AssertUnreachable(); }
@@ -783,8 +801,10 @@ bool CFileSystemStdio::GetFileTypeForFullPath( char const* pFullPath, wchar_t* b
 bool CFileSystemStdio::ReadToBuffer( FileHandle_t hFile, CUtlBuffer& buf, int nMaxBytes, FSAllocFunc_t pfnAlloc ) {
 	AssertMsg( !buf.IsReadOnly(), "was given a read-only buffer!" );
 	int total{ static_cast<int>( Size( hFile ) ) };
+	total = nMaxBytes == 0 ? total : std::min( total, nMaxBytes );
 
-	buf.EnsureCapacity( std::min( total, nMaxBytes ) );
+	buf.EnsureCapacity( total );
+	buf.SeekPut( CUtlBuffer::SEEK_HEAD, total );
 	return Read( buf.Base(), buf.Size(), hFile ) == total;
 }
 
@@ -833,7 +853,7 @@ void CFileSystemStdio::EnableWhitelistFileTracking( bool bEnable, bool bCacheAll
 	Warning( "CFileSystemStdio::EnableWhitelistFileTracking: not implemented\n" );
 }
 
-void CFileSystemStdio::RegisterFileWhitelist( IPureServerWhitelist * pWhiteList, IFileList * *pFilesToReload ) { AssertUnreachable(); }
+void CFileSystemStdio::RegisterFileWhitelist( IPureServerWhitelist* pWhiteList, IFileList* *pFilesToReload ) { AssertUnreachable(); }
 
 void CFileSystemStdio::MarkAllCRCsUnverified() { AssertUnreachable(); }
 

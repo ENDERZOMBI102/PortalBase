@@ -37,7 +37,7 @@ auto CPackFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor*
 	const auto& entry{ *maybeEntry };
 
 	auto desc{ FileDescriptor::Make() };
-	desc->m_Handle = reinterpret_cast<uintptr_t>( V_strdup( pPath ) );
+	desc->m_Handle = 0;
 	desc->m_Size = static_cast<int64>( entry.length );
 	return desc;
 }
@@ -45,7 +45,8 @@ auto CPackFsDriver::Read( const FileDescriptor* pDesc, void* pBuffer, uint32 pCo
 	AssertFatalMsg( pDesc, "Was given a `NULL` file handle!" );
 	AssertFatalMsg( pBuffer, "Was given a `NULL` buffer ptr!" );
 
-	const auto maybeData{ m_PackFile->readEntry( reinterpret_cast<const char*>( pDesc->m_Handle ) ) };
+	// ReSharper disable once CppDFANullDereference
+	const auto maybeData{ m_PackFile->readEntry( pDesc->m_Path ) };
 	if (! maybeData ) {
 		return -1;
 	}
@@ -64,7 +65,7 @@ auto CPackFsDriver::Flush( const FileDescriptor* pDesc ) -> bool {
 	std::unreachable();
 }
 auto CPackFsDriver::Close( const FileDescriptor* pDesc ) -> void {
-	delete[] reinterpret_cast<const char*>( pDesc->m_Handle );
+	// NO-OP
 }
 
 auto CPackFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool {
@@ -87,5 +88,14 @@ auto CPackFsDriver::Remove( const FileDescriptor* pDesc ) -> void {
 	std::unreachable();
 }
 auto CPackFsDriver::Stat( const FileDescriptor* pDesc ) -> std::optional<StatData> {
-	return {};
+	AssertFatalMsg( pDesc, "Was given a `NULL` file handle!" );
+
+	// ReSharper disable once CppDFANullDereference
+	const auto maybeEntry{ m_PackFile->findEntry( pDesc->m_Path ) };
+	if (! maybeEntry ) {
+		return {};
+	}
+	const auto& entry{ *maybeEntry };
+	// TODO: We currently only expose regular files from vpks, should also expose folders!
+	return StatData{ .m_Type = FileType::Regular, .m_Length = entry.length };
 }
