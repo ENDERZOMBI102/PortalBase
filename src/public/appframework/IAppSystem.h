@@ -54,7 +54,7 @@ public:
 
 	// Here's where systems can access other interfaces implemented by this object
 	// Returns NULL if it doesn't implement the requested interface
-	virtual void* QueryInterface( const char* pInterfaceName ) { return NULL; }
+	virtual void* QueryInterface( const char* pInterfaceName ) { return nullptr; }
 
 	// Init, shutdown
 	virtual InitReturnVal_t Init() { return INIT_OK; }
@@ -68,22 +68,20 @@ public:
 template<class IInterface>
 class CTier0AppSystem : public CBaseAppSystem<IInterface> {
 public:
-	CTier0AppSystem( bool bIsPrimaryAppSystem = true ) {
+	explicit CTier0AppSystem( const bool bIsPrimaryAppSystem = true ) {
 		m_bIsPrimaryAppSystem = bIsPrimaryAppSystem;
 	}
 
 protected:
 	// NOTE: a single DLL may have multiple AppSystems it's trying to
-	// expose. If this is true, you must return true from only
-	// one of those AppSystems; not doing so will cause all static
-	// libraries connected to it to connect/disconnect multiple times
-
+	//       expose. If this is true, you must return true from only
+	//       one of those AppSystems; not doing so will cause all static
+	//       libraries connected to it to connect/disconnect multiple times
 	// NOTE: We don't do this as a virtual function to avoid
-	// having to up the version on all interfaces
+	//       having to up the version on all interfaces
 	bool IsPrimaryAppSystem() { return m_bIsPrimaryAppSystem; }
-
 private:
-	bool m_bIsPrimaryAppSystem;
+	bool m_bIsPrimaryAppSystem{ false };
 };
 
 
