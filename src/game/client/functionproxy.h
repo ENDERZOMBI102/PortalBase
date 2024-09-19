@@ -5,12 +5,10 @@
 //
 // $NoKeywords: $
 //=============================================================================//
-
-#ifndef FUNCTIONPROXY_H
-#define FUNCTIONPROXY_H
-
+#pragma once
 #include "materialsystem/imaterialproxy.h"
 #include "materialsystem/imaterialvar.h"
+
 
 class IMaterialVar;
 class C_BaseEntity;
@@ -19,33 +17,32 @@ class C_BaseEntity;
 //-----------------------------------------------------------------------------
 // Helper class to deal with floating point inputs
 //-----------------------------------------------------------------------------
-class CFloatInput
-{
+class CFloatInput {
 public:
-	bool  Init( IMaterial *pMaterial, KeyValues *pKeyValues, const char *pKeyName, float flDefault = 0.0f );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues, const char* pKeyName, float flDefault = 0.0f );
+	[[nodiscard]]
 	float GetFloat() const;
 
 private:
-	float m_flValue;
-	IMaterialVar *m_pFloatVar;
-	int	m_FloatVecComp;
+	float m_flValue{};
+	IMaterialVar* m_pFloatVar{};
+	int m_FloatVecComp{};
 };
 
 
 //-----------------------------------------------------------------------------
 // Result proxy; a result (with vector friendliness)
 //-----------------------------------------------------------------------------
-class CResultProxy : public IMaterialProxy
-{
+class CResultProxy : public IMaterialProxy {
 public:
 	CResultProxy();
-	virtual ~CResultProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void Release( void ) { delete this; }
-	virtual IMaterial *GetMaterial();
+	~CResultProxy() override;
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues ) override;
+	void Release() override { delete this; }
+	IMaterial* GetMaterial() override;
 
 protected:
-	C_BaseEntity *BindArgToEntity( void *pArg );
+	C_BaseEntity* BindArgToEntity( void* pArg );
 	void SetFloatResult( float result );
 
 	IMaterialVar* m_pResult;
@@ -56,12 +53,11 @@ protected:
 //-----------------------------------------------------------------------------
 // Base functional proxy; two sources (one is optional) and a result
 //-----------------------------------------------------------------------------
-class CFunctionProxy : public CResultProxy
-{
+class CFunctionProxy : public CResultProxy {
 public:
 	CFunctionProxy();
-	virtual ~CFunctionProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
+	~CFunctionProxy() override;
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues ) override;
 
 protected:
 	void ComputeResultType( MaterialVarType_t& resultType, int& vecSize );
@@ -69,6 +65,3 @@ protected:
 	IMaterialVar* m_pSrc1;
 	IMaterialVar* m_pSrc2;
 };
-
-#endif // FUNCTIONPROXY_H
-

@@ -183,10 +183,10 @@ public:
 	virtual int GetIntersectingSurfaces(
 		const model_t* model,
 		const Vector& vCenter,
-		const float radius,
-		const bool bOnlyVisibleSurfaces,// Only return surfaces visible to vCenter.
+		float radius,
+		bool bOnlyVisibleSurfaces,// Only return surfaces visible to vCenter.
 		SurfInfo* pInfos,
-		const int nMaxInfos ) = 0;
+		int nMaxInfos ) = 0;
 
 	// Get the lighting intensivty for a specified point
 	// If bClamp is specified, the resulting Vector is restricted to the 0.0 to 1.0 for each element
@@ -300,14 +300,17 @@ public:
 	// The .bsp file can have mod-specified data lumps. These APIs are for working with such game lumps.
 
 	// Get mod-specified lump version id for the specified game data lump
+	[[nodiscard]]
 	virtual int GameLumpVersion( int lumpId ) const = 0;
 	// Get the raw size of the specified game data lump.
+	[[nodiscard]]
 	virtual int GameLumpSize( int lumpId ) const = 0;
 	// Loads a game lump off disk, writing the data into the buffer pointed to bye pBuffer
 	// Returns false if the data can't be read or the destination buffer is too small
 	virtual bool LoadGameLump( int lumpId, void* pBuffer, int size ) = 0;
 
 	// Returns the number of leaves in the level
+	[[nodiscard]]
 	virtual int LevelLeafCount() const = 0;
 
 	// Gets a way to perform spatial queries on the BSP tree
@@ -373,7 +376,7 @@ public:
 	// Computes light due to dynamic lighting at a point
 	// If the normal isn't specified, then it'll return the maximum lighting
 	// If pBoxColors is specified (it's an array of 6), then it'll copy the light contribution at each box side.
-	virtual void ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector* pBoxColors = NULL ) = 0;
+	virtual void ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector* pBoxColors = nullptr ) = 0;
 
 	// Activates/deactivates an occluder...
 	virtual void ActivateOccluder( int nOccluderIndex, bool bActive ) = 0;
@@ -447,6 +450,7 @@ public:
 	// Passes in the actual size of the viewport
 	virtual void GrabPreColorCorrectedFrame( int x, int y, int width, int height ) = 0;
 
+	[[nodiscard]]
 	virtual bool IsHammerRunning() const = 0;
 
 	// Inserts szCmdString into the command buffer as if it was typed by the client to his/her console.
@@ -486,7 +490,7 @@ public:
 	virtual void ChangeTeam( const char* pTeamName ) = 0;
 
 	// Causes the engine to read in the user's configuration on disk
-	virtual void ReadConfiguration( const bool readDefault = false ) = 0;
+	virtual void ReadConfiguration( bool readDefault = false ) = 0;
 
 	virtual void SetAchievementMgr( IAchievementMgr * pAchievementMgr ) = 0;
 	virtual IAchievementMgr* GetAchievementMgr() = 0;
@@ -545,6 +549,7 @@ public:
 	virtual void FlashWindow() = 0;
 
 	// Client version from the steam.inf, this will be compared to the GC version
+	[[nodiscard]]
 	virtual int GetClientVersion() const = 0;// engines build
 
 	// Is App Active
@@ -653,6 +658,7 @@ public:
 	// Shutdown a .spr file
 	virtual void ShutdownSprite( CEngineSprite * pSprite ) = 0;
 	// Returns sizeof( CEngineSprite ) so the engine can allocate appropriate memory
+	[[nodiscard]]
 	virtual int GetSpriteSize() const = 0;
 
 	// Called when a player starts or stops talking.
@@ -722,7 +728,7 @@ public:
 	// Matchmaking
 	virtual void SetupGameProperties( CUtlVector<XUSER_CONTEXT> & contexts, CUtlVector<XUSER_PROPERTY> & properties ) = 0;
 	virtual uint GetPresenceID( const char* pIDName ) = 0;
-	virtual const char* GetPropertyIdString( const uint id ) = 0;
+	virtual const char* GetPropertyIdString( uint id ) = 0;
 	virtual void GetPropertyDisplayString( uint id, uint value, char* pOutput, int nBytes ) = 0;
 
 	#if IsWindows()

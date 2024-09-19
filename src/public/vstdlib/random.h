@@ -10,7 +10,6 @@
 #include "pcgengine.hpp"
 #include "tier0/basetypes.h"
 #include "tier0/threadtools.h"
-#include "tier1/interface.h"
 #include "vstdlib/vstdlib.h"
 
 #if defined( _MSC_VER )

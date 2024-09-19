@@ -18,20 +18,20 @@ public:
 	// Static list of helpers
 	static CHudElementHelper* m_sHelpers;
 	// Create all the hud elements
-	static void CreateAllElements( void );
-
+	static void CreateAllElements();
+	using CHudElementFactory = CHudElement* (*)();
 public:
 	// Construction
-	CHudElementHelper( CHudElement* ( *pfnCreate )(void), int depth );
+	CHudElementHelper( CHudElementFactory pfnCreate, int depth );
 
 	// Accessors
-	CHudElementHelper* GetNext( void );
+	CHudElementHelper* GetNext();
 
 private:
 	// Next factory in list
 	CHudElementHelper* m_pNext;
 	// Creation function to use for this technology
-	CHudElement* ( *m_pfnCreate )( void );
+	CHudElementFactory m_pfnCreate;
 
 	//Depth used to determine hud panel ordering
 	int m_iDepth;
@@ -42,29 +42,29 @@ private:
 // It them hooks that function up to the helper list so that the CHud objects can create
 //  the elements by name, with no header file dependency, etc.
 #define DECLARE_HUDELEMENT( className )              \
-	static CHudElement* Create_##className( void ) { \
+	static CHudElement* Create_##className() { \
 		return new className( #className );          \
 	};                                               \
 	static CHudElementHelper g_##className##_Helper( Create_##className, 50 );
 
 #define DECLARE_HUDELEMENT_DEPTH( className, depth ) \
-	static CHudElement* Create_##className( void ) { \
+	static CHudElement* Create_##className() { \
 		return new className( #className );          \
 	};                                               \
 	static CHudElementHelper g_##className##_Helper( Create_##className, depth );
 
 #define DECLARE_NAMED_HUDELEMENT( className, panelName ) \
-	static CHudElement* Create_##panelName( void ) {     \
+	static CHudElement* Create_##panelName() {     \
 		return new className( #panelName );              \
 	};                                                   \
 	static CHudElementHelper g_##panelName##_Helper( Create_##panelName, 50 );
 
 // This macro can be used to get a pointer to a specific hud element
 #define GET_HUDELEMENT( className ) \
-	(className*) gHUD.FindElement( #className )
+	dynamic_cast<className*>( gHUD.FindElement( #className ) )
 
 #define GET_NAMED_HUDELEMENT( className, panelName ) \
-	(className*) gHUD.FindElement( #panelName )
+	dynamic_cast<className*>( gHUD.FindElement( #panelName ) )
 
 
 // Things that inherit from vgui::Panel, too, will have ambiguous new operators

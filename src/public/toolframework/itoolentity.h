@@ -152,7 +152,8 @@ public:
 	virtual void EnableParticleSystems( bool bEnable ) = 0;
 
 	// Is the game rendering in 3rd person mode?
-	virtual bool IsRenderingThirdPerson() const = 0;
+	[[nodiscard]]
+    virtual bool IsRenderingThirdPerson() const = 0;
 };
 
 #define VCLIENTTOOLS_INTERFACE_VERSION "VCLIENTTOOLS001"

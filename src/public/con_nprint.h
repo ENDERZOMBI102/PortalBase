@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Debug overlay / notfication printing
+// Purpose: Debug overlay / notification printing
 //
 //=============================================================================//
 #pragma once

@@ -13,9 +13,8 @@ class IMaterial;
 class VMatrix;
 class ITexture;
 
-#define MAKE_MATERIALVAR_FOURCC( ch0, ch1, ch2, ch3 )              \
-	( (unsigned long) ( ch0 ) | ( (unsigned long) ( ch1 ) << 8 ) | \
-	  ( (unsigned long) ( ch2 ) << 16 ) | ( (unsigned long) ( ch3 ) << 24 ) )
+#define MAKE_MATERIALVAR_FOURCC( ch0, ch1, ch2, ch3 ) \
+	( (uint32) ( ch0 ) | ( (uint32) ( ch1 ) << 8 ) | ( (uint32) ( ch2 ) << 16 ) | ( (uint32) ( ch3 ) << 24 ) )
 
 // This fourcc is reserved.
 #define FOURCC_UNKNOWN MAKE_MATERIALVAR_FOURCC( 'U', 'N', 'K', 'N' )
@@ -36,11 +35,11 @@ enum MaterialVarType_t {
 	MATERIAL_VAR_TYPE_MATERIAL,
 };
 
-typedef unsigned short MaterialVarSym_t;
+using MaterialVarSym_t = uint16;
 
 class IMaterialVar {
 public:
-	typedef unsigned long FourCC;
+	using FourCC = uint32;
 
 protected:
 	// base data and accessors
@@ -69,9 +68,11 @@ public:
 	static bool SymbolMatches( char const* pName, MaterialVarSym_t symbol );
 	static void DeleteUnreferencedTextures( bool enable );
 
-	virtual ITexture* GetTextureValue( void ) = 0;
+	virtual ITexture* GetTextureValue() = 0;
 
-	virtual char const* GetName( void ) const = 0;
+	[[nodiscard]]
+	virtual char const* GetName() const = 0;
+	[[nodiscard]]
 	virtual MaterialVarSym_t GetNameAsSymbol() const = 0;
 
 	virtual void SetFloatValue( float val ) = 0;
@@ -79,7 +80,8 @@ public:
 	virtual void SetIntValue( int val ) = 0;
 
 	virtual void SetStringValue( char const* val ) = 0;
-	virtual char const* GetStringValue( void ) const = 0;
+	[[nodiscard]]
+	virtual char const* GetStringValue() const = 0;
 
 	// Use FourCC values to pass app-defined data structures between
 	// the proxy and the shader. The shader should ignore the data if
@@ -97,15 +99,17 @@ public:
 	// revisit: is this a good interface for textures?
 	virtual void SetTextureValue( ITexture* ) = 0;
 
-	virtual IMaterial* GetMaterialValue( void ) = 0;
+	virtual IMaterial* GetMaterialValue() = 0;
 	virtual void SetMaterialValue( IMaterial* ) = 0;
 
+	[[nodiscard]]
 	virtual bool IsDefined() const = 0;
 	virtual void SetUndefined() = 0;
 
 	// Matrix
 	virtual void SetMatrixValue( VMatrix const& matrix ) = 0;
 	virtual const VMatrix& GetMatrixValue() = 0;
+	[[nodiscard]]
 	virtual bool MatrixIsIdentity() const = 0;
 
 	// Copy....
@@ -119,15 +123,19 @@ public:
 	virtual void SetVecComponentValue( float fVal, int nComponent ) = 0;
 
 protected:
-	virtual int GetIntValueInternal( void ) const = 0;
-	virtual float GetFloatValueInternal( void ) const = 0;
+	[[nodiscard]]
+	virtual int GetIntValueInternal() const = 0;
+	[[nodiscard]]
+	virtual float GetFloatValueInternal() const = 0;
+	[[nodiscard]]
 	virtual float const* GetVecValueInternal() const = 0;
 	virtual void GetVecValueInternal( float* val, int numcomps ) const = 0;
+	[[nodiscard]]
 	virtual int VectorSizeInternal() const = 0;
 
 public:
-	ALWAYS_INLINE MaterialVarType_t GetType( void ) const {
-		return (MaterialVarType_t) m_Type;
+	ALWAYS_INLINE MaterialVarType_t GetType() const {
+		return static_cast<MaterialVarType_t>( m_Type );
 	}
 
 	ALWAYS_INLINE bool IsTexture() const {
@@ -139,12 +147,12 @@ public:
 	}
 
 	// NOTE: Fast methods should only be called in thread-safe situations
-	ALWAYS_INLINE int GetIntValueFast( void ) const {
+	ALWAYS_INLINE int GetIntValueFast() const {
 		// Set methods for float and vector update this
 		return m_intVal;
 	}
 
-	ALWAYS_INLINE float GetFloatValueFast( void ) const {
+	ALWAYS_INLINE float GetFloatValueFast() const {
 		return m_VecVal[ 0 ];
 	}
 
@@ -163,47 +171,47 @@ public:
 		return m_nNumVectorComps;
 	}
 
-#ifdef FAST_MATERIALVAR_ACCESS
-	ALWAYS_INLINE int GetIntValue( void ) const {
-		return GetIntValueFast();
-	}
+	#ifdef FAST_MATERIALVAR_ACCESS
+		ALWAYS_INLINE int GetIntValue() const {
+			return GetIntValueFast();
+		}
 
-	ALWAYS_INLINE float GetFloatValue( void ) const {
-		return GetFloatValueFast();
-	}
+		ALWAYS_INLINE float GetFloatValue() const {
+			return GetFloatValueFast();
+		}
 
-	ALWAYS_INLINE float const* GetVecValue() const {
-		return GetVecValueFast();
-	}
+		ALWAYS_INLINE float const* GetVecValue() const {
+			return GetVecValueFast();
+		}
 
-	ALWAYS_INLINE void GetVecValue( float* val, int numcomps ) const {
-		GetVecValueFast( val, numcomps );
-	}
+		ALWAYS_INLINE void GetVecValue( float* val, int numcomps ) const {
+			GetVecValueFast( val, numcomps );
+		}
 
-	ALWAYS_INLINE int VectorSize() const {
-		return VectorSizeFast();
-	}
-#else// !FAST_MATERIALVAR_ACCESS
-	ALWAYS_INLINE int GetIntValue( void ) const {
-		return GetIntValueInternal();
-	}
+		ALWAYS_INLINE int VectorSize() const {
+			return VectorSizeFast();
+		}
+	#else// !FAST_MATERIALVAR_ACCESS
+		ALWAYS_INLINE int GetIntValue() const {
+			return GetIntValueInternal();
+		}
 
-	ALWAYS_INLINE float GetFloatValue( void ) const {
-		return GetFloatValueInternal();
-	}
+		ALWAYS_INLINE float GetFloatValue() const {
+			return GetFloatValueInternal();
+		}
 
-	ALWAYS_INLINE float const* GetVecValue() const {
-		return GetVecValueInternal();
-	}
+		ALWAYS_INLINE float const* GetVecValue() const {
+			return GetVecValueInternal();
+		}
 
-	ALWAYS_INLINE void GetVecValue( float* val, int numcomps ) const {
-		return GetVecValueInternal( val, numcomps );
-	}
+		ALWAYS_INLINE void GetVecValue( float* val, int numcomps ) const {
+			GetVecValueInternal( val, numcomps );
+		}
 
-	ALWAYS_INLINE int VectorSize() const {
-		return VectorSizeInternal();
-	}
-#endif
+		ALWAYS_INLINE int VectorSize() const {
+			return VectorSizeInternal();
+		}
+	#endif
 
 private:
 	ALWAYS_INLINE void SetTempIndex( int nIndex ) {
