@@ -970,7 +970,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 
 	// Hook up the gaussian random number generator
-	s_GaussianRandomStream.AttachToStream( random );
+	// FIXME: This causes a deadlock when using valve's libs
+	// s_GaussianRandomStream.AttachToStream( random );
 
 	// Initialize the console variables.
 	ConVar_Register( FCVAR_CLIENTDLL );
@@ -1006,19 +1007,19 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	IGameSystem::Add( PerfVisualBenchmark() );
 	IGameSystem::Add( MumbleSystem() );
 
-        {
-            // MaterialSystem hack
-            CMaterialConfigWrapper wrapper;
+    if ( IsWindows() ) {
+        // MaterialSystem hacky code to increase pixel constants
+        CMaterialConfigWrapper wrapper;
 
-            Msg( "Applying shader-api hack!\n" );
-            Msg( "Before hack:\n" );
-            wrapper.PrintPixelConstants();
-            wrapper.SetNumPixelConstants(225);
-            wrapper.SetNumBooleanPixelConstants(225);
-            wrapper.SetNumIntegerPixelConstants(225);
-            Msg( "After hack:\n" );
-            wrapper.PrintPixelConstants();
-        }
+        Msg( "Applying shader-api hack!\n" );
+        Msg( "Before hack:\n" );
+        wrapper.PrintPixelConstants();
+        wrapper.SetNumPixelConstants(225);
+        wrapper.SetNumBooleanPixelConstants(225);
+        wrapper.SetNumIntegerPixelConstants(225);
+        Msg( "After hack:\n" );
+        wrapper.PrintPixelConstants();
+    }
 
 	#if defined( TF_CLIENT_DLL )
 	IGameSystem::Add( CustomTextureToolCacheGameSystem() );
