@@ -1,13 +1,18 @@
 - Portals & related
 - VTF 7.6 support
 - Ship Strata Source's VTex2 instead of vtex
-- Lux shaders ( PBR!! )
-- UScript scripting layer
+- Lux shaders ( PBR!! (like i would use it, lol) )
+- UScript scripting system
+  - with vscript compatability "layer"
 - Mapbase's improvements
 - DOOMgeneric
+  - Sounds fun no?
 - Replace vgui with RmlUI and ImGUI
+  - rmlui for user-modifiable ui, while imgui is for internals and tools
+- Qt 6 for engine tools
 - Reimplement most DLLs
   - launcher
   - tier0
   - vstdlib
-  - FileSystem_Stdio
+  - filesystem_stdio
+  - inputsystem
