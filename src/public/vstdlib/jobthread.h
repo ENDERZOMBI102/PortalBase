@@ -27,7 +27,6 @@
 //
 //=============================================================================
 #pragma once
-
 #include "tier0/threadtools.h"
 #include "tier0/vprof_telemetry.h"
 #include "tier1/functors.h"
@@ -35,11 +34,10 @@
 #include "tier1/utllinkedlist.h"
 #include "tier1/utlvector.h"
 #include <climits>
-
 #include "vstdlib/vstdlib.h"
 
 
-#if defined( AddJob )// windows.h print function collisions
+#if defined( AddJob )  // windows.h print function collisions
 	#undef AddJob
 	#undef GetJob
 #endif
@@ -75,10 +73,10 @@ enum JobStatusEnum_t {
 typedef int JobStatus_t;
 
 enum JobFlags_t {
-	JF_IO = ( 1 << 0 ),            // The job primarily blocks on IO or hardware
-	JF_BOOST_THREAD = ( 1 << 1 ),  // Up the thread priority to max allowed while processing task
-	JF_SERIAL = ( 1 << 2 ),        // Job cannot be executed out of order relative to other "strict" jobs
-	JF_QUEUE = ( 1 << 3 ),         // Queue it, even if not an IO job
+	JF_IO = 1 << 0,            // The job primarily blocks on IO or hardware
+	JF_BOOST_THREAD = 1 << 1,  // Up the thread priority to max allowed while processing task
+	JF_SERIAL = 1 << 2,        // Job cannot be executed out of order relative to other "strict" jobs
+	JF_QUEUE = 1 << 3,         // Queue it, even if not an IO job
 };
 
 enum JobPriority_t {
@@ -87,25 +85,25 @@ enum JobPriority_t {
 	JP_HIGH
 };
 
-static const uint32 TP_MAX_POOL_THREADS = 64;
+static constexpr uint32 TP_MAX_POOL_THREADS = 64;
 struct ThreadPoolStartParams_t {
 	explicit ThreadPoolStartParams_t( bool bIOThreads = false, unsigned nThreads = -1, int* pAffinities = nullptr, ThreeState_t fDistribute = TRS_NONE, unsigned nStackSize = -1, int iThreadPriority = SHRT_MIN )
-		: bIOThreads( bIOThreads ), nThreads( nThreads ), fDistribute( fDistribute ),
-		  nStackSize( nStackSize ), iThreadPriority( iThreadPriority ), nThreadsMax( -1 ) {
+		: nThreads( nThreads ), fDistribute( fDistribute ), nStackSize( nStackSize ),
+		  iThreadPriority( iThreadPriority ), bIOThreads( bIOThreads ) {
 		this->bExecOnThreadPoolThreadsOnly = false;
 
-		this->bUseAffinityTable = ( pAffinities != nullptr ) && ( fDistribute == TRS_TRUE ) && ( nThreads != -1 );
+		this->bUseAffinityTable = pAffinities != nullptr && fDistribute == TRS_TRUE && nThreads != -1;
 		if ( this->bUseAffinityTable ) {
 			// user supplied an optional 1:1 affinity mapping to override normal distribute behavior
 			nThreads = std::min( TP_MAX_POOL_THREADS, nThreads );
-			for ( unsigned int i = 0; i < nThreads; i++ ) {
+			for ( uint i = 0; i < nThreads; i++ ) {
 				this->iAffinityTable[ i ] = pAffinities[ i ];
 			}
 		}
 	}
 
 	int nThreads;
-	uint32 nThreadsMax;
+	uint32 nThreadsMax{ static_cast<uint32>( -1 ) };
 	ThreeState_t fDistribute;
 	int nStackSize;
 	int iThreadPriority;
@@ -122,7 +120,7 @@ struct ThreadPoolStartParams_t {
 //
 //-----------------------------------------------------------------------------
 
-typedef bool ( *JobFilter_t )( CJob* );
+using JobFilter_t = bool (*)( CJob* );
 
 //---------------------------------------------------------
 // Messages supported through the CallWorker() method
@@ -137,12 +135,12 @@ enum ThreadPoolMessages_t {
 
 abstract_class IThreadPool : public IRefCounted {
 public:
-	virtual ~IThreadPool() { };
+	virtual ~IThreadPool() = default;
 
 	//-----------------------------------------------------
 	// Thread functions
 	//-----------------------------------------------------
-	virtual bool Start( const ThreadPoolStartParams_t& startParams = ThreadPoolStartParams_t() ) = 0;
+	virtual bool Start( const ThreadPoolStartParams_t& startParams = ThreadPoolStartParams_t{} ) = 0;
 	virtual bool Stop( int timeout = TT_INFINITE ) = 0;
 
 	//-----------------------------------------------------

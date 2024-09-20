@@ -8,16 +8,22 @@
 #endif
 #include "jobthread.hpp"
 
-CThreadPool::CThreadPool()
-	: m_pPendingJob( nullptr ), m_Exit( true ) { }
+// FIXME: This file is not completely thread-safe, please make it
+CThreadPool::CThreadPool() {
+	m_Queue.SetLessFunc( []( CJob* const &pA, CJob* const &pB ) -> bool {
+		return pA->GetPriority() < pB->GetPriority();
+	});
+};
 CThreadPool::~CThreadPool() = default;
 
 bool CThreadPool::Start( const ThreadPoolStartParams_t& startParams ) {
+	m_Threads.EnsureCapacity( startParams.nThreads );
+	m_IdleEvents.EnsureCount( startParams.nThreads );
+
 	for ( auto i{0}; i < startParams.nThreads; i += 1 ) {
-		int iThread = this->m_Threads.AddToTail();
-		this->m_IdleEvents.AddToTail();
-		this->m_Threads[ iThread ] = CreateSimpleThread( PoolThreadFunc, this, startParams.nStackSize );
-		this->m_IdleEvents[ iThread ].Wait();
+		m_Threads.AddToTail();
+		m_Threads[i] = CreateSimpleThread( PoolThreadFunc, this, startParams.nStackSize );
+		m_IdleEvents[i].Wait();
 	}
 
 	if ( startParams.fDistribute == ThreeState_t::TRS_TRUE ) {
@@ -27,22 +33,23 @@ bool CThreadPool::Start( const ThreadPoolStartParams_t& startParams ) {
 	return true;
 }
 bool CThreadPool::Stop( int timeout ) {
+	// tell the threads to stop
 	this->m_Exit.Set();
+	// wait for them to finish
 	#if IsWindows()
 		return WaitForMultipleObjects( m_Threads.Count(), (HANDLE*) m_Threads.Base(), true, timeout );
 	#else
 		auto flag{ true };
-		// FIXME: Timeout is not accumulated!
+		// FIXME: Timeout is not comulative!
 		for ( const auto& thread : this->m_Threads ) {
-//			flag = ThreadJoin( thread, timeout ) && flag;
+			flag = ThreadJoin( thread, timeout ) && flag;
 		}
 		return flag;
 	#endif
 }
 
-unsigned int CThreadPool::GetJobCount() {
-	AssertUnreachable();
-	return {};
+uint32 CThreadPool::GetJobCount() {
+	return m_Queue.Count();
 }
 int CThreadPool::NumThreads() {
 	return this->m_Threads.Count();
@@ -52,98 +59,73 @@ int CThreadPool::NumIdleThreads() {
 }
 
 int CThreadPool::SuspendExecution() {
-	/*if ( !ThreadInMainThread() ) {
+	if ( !ThreadInMainThread() ) {
 		Assert( 0 );
 		return 0;
 	}
 
 	// If not already suspended
-	if ( m_nSuspend == 0 ) {
-		// Make sure state is correct
-		int curCount = Suspend();
-		Resume();
-		Assert( curCount == 0 );
-
-		if ( curCount == 0 ) {
-			CallWorker( AF_SUSPEND );
-
-			// Because worker must signal before suspending, we could reach
-			// here with the thread not actually suspended
-			while ( Suspend() == 0 ) {
-				Resume();
-				ThreadSleep();
-			}
-			Resume();
+	if ( m_State != State::SUSPENDED ) {
+		if ( (m_State = State::SUSPENDED) != State::SUSPENDED ) {
+			// suspension failed...
+			return 0;
 		}
 
-	#if IsDebug()
-		curCount = Suspend();
-		Resume();
-		Assert( curCount > 0 );
-	#endif
+		// managed to change state! let's wait for the threads to pause
+		for ( auto thread : m_Threads ) {
+			// TODO: wait for them
+		}
 	}
 
-	return m_nSuspend++;*/
-	AssertUnreachable();
-	return {};
+	return 1;
 }
 int CThreadPool::ResumeExecution() {
-	/*if ( !ThreadInMainThread() ) {
+	if ( !ThreadInMainThread() ) {
 		Assert( 0 );
 		return 0;
 	}
 
-	AssertMsg( m_nSuspend >= 1, "Attempted resume when not suspended" );
-	int result = m_nSuspend--;
-	if ( m_nSuspend == 0 ) {
-		Resume();
+	AssertMsg( m_State != State::SUSPENDED, "Attempted resume when not suspended" );
+
+	if ( m_State == State::SUSPENDED ) {
+		if ( (m_State = State::EXECUTING) != State::EXECUTING ) {
+			// resume failed (somehow)...
+			return 0;
+		}
+
+		// managed to change state! let's wait for the threads to resume
+		for ( auto thread : m_Threads ) {
+			// TODO: wait for them
+		}
 	}
-	return result;*/
-	AssertUnreachable();
-	return {};
+	return 0;
 }
 
-int CThreadPool::YieldWait( CThreadEvent * *pEvents, int nEvents, bool bWaitAll, unsigned timeout ) { AssertUnreachable(); return {}; }
-int CThreadPool::YieldWait( CJob**, int nJobs, bool bWaitAll, unsigned timeout ) { AssertUnreachable(); return {}; }
-void CThreadPool::Yield( unsigned timeout ) { AssertUnreachable(); }
+int CThreadPool::YieldWait( CThreadEvent * *pEvents, int nEvents, bool bWaitAll, unsigned timeout ) {
+	AssertUnreachable(); return {};
+}
+int CThreadPool::YieldWait( CJob**, int nJobs, bool bWaitAll, unsigned timeout ) {
+	AssertUnreachable(); return {};
+}
+void CThreadPool::Yield( unsigned timeout ) {
+	AssertUnreachable();
+}
 
 void CThreadPool::AddJob( CJob* pJob ) {
 	if (! pJob ) {
 		return;
 	}
 
-	/*BoostPriority();
+	// add the job to the queue and update its status
+	m_Mutex.Lock();
+		pJob->AddRef();
+		m_Queue.Insert( pJob );
+		pJob->m_pThreadPool = this;
+		pJob->m_status = JOB_STATUS_PENDING;
+	m_Mutex.Unlock();
 
-	// If queue is full, wait for worker to get something from our queue
-	WaitPut();
-
-	m_mutex.Lock();
-
-	pJob->AddRef();
-
-	unsigned i = m_queue.Tail();
-	int priority = pJob->GetPriority();
-
-	while ( i != m_queue.InvalidIndex() && priority > m_queue[ i ]->GetPriority() ) {
-		i = m_queue.Previous( i );
-	}
-
-	if ( i != m_queue.InvalidIndex() ) {
-		pJob->m_queueID = m_queue.InsertAfter( i, pJob );
-	} else {
-		pJob->m_queueID = m_queue.AddToHead( pJob );
-	}
-
-	pJob->m_pFulfiller = this;
-	pJob->m_status = JOB_STATUS_PENDING;
-
-	if ( m_queue.Count() == 1 ) {
-		// Release worker to remove an object from our queue
-		m_JobSignal.Set();
-	}
-
-	m_mutex.Unlock();*/
-	AssertUnreachable();
+	// tell our workers that we have a job
+	m_JobAvailable.Set();
 }
 
 void CThreadPool::ExecuteHighPriorityFunctor( CFunctor* pFunctor ) {
@@ -159,12 +141,12 @@ int CThreadPool::ExecuteToPriority( JobPriority_t toPriority, JobFilter_t pfnFil
 	return {};
 }
 int CThreadPool::AbortAll() {
-	/*int nExecuted = 0;
+	int nExecuted = 0;
 	if ( CThread::GetCurrentCThread() != this ) {
 		SuspendExecution();
 	}
 
-	if ( m_queue.Count() ) {
+	if ( m_Queue.Count() ) {
 		CJob* pJob = NULL;
 
 		while ( ( pJob = GetJob() ) != NULL ) {
@@ -177,9 +159,7 @@ int CThreadPool::AbortAll() {
 		ResumeExecution();
 	}
 
-	return nExecuted;*/
-	AssertUnreachable();
-	return {};
+	return nExecuted;
 }
 
 void CThreadPool::AddFunctorInternal( CFunctor* pFunctor, CJob** ppJob, const char* pszDescription, unsigned flags ) {
