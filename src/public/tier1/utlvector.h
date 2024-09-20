@@ -205,14 +205,13 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// The CUtlVectorFixed class:
-// A array class with a fixed allocation scheme
+// The CUtlVectorMT class:
+// A array class merged with a mutex
 //-----------------------------------------------------------------------------
 
 template<class BASE_UTLVECTOR, class MUTEX_TYPE = CThreadFastMutex>
 class CUtlVectorMT : public BASE_UTLVECTOR, public MUTEX_TYPE {
 	typedef BASE_UTLVECTOR BaseClass;
-
 public:
 	MUTEX_TYPE Mutex_t;
 
