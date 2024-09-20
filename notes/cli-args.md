@@ -13,3 +13,6 @@ A list, divided in used-by-module section, of all arguments
 ### everything
 - `-insert_search_path`: A `,`-separated list of additional `GAME` and `MOD` search paths
 - `-game`: The current game to mount
+
+### Unsure
+- `-profile`: Use basic profiler to log to `game/timestamped.log`
