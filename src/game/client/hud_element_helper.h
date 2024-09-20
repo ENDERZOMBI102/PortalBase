@@ -61,10 +61,10 @@ private:
 
 // This macro can be used to get a pointer to a specific hud element
 #define GET_HUDELEMENT( className ) \
-	dynamic_cast<className*>( gHUD.FindElement( #className ) )
+	(className*)( gHUD.FindElement( #className ) )
 
 #define GET_NAMED_HUDELEMENT( className, panelName ) \
-	dynamic_cast<className*>( gHUD.FindElement( #panelName ) )
+	(className*)( gHUD.FindElement( #panelName ) )
 
 
 // Things that inherit from vgui::Panel, too, will have ambiguous new operators

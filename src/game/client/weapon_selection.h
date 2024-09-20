@@ -23,52 +23,51 @@ extern ConVar hud_fastswitch;
 //-----------------------------------------------------------------------------
 abstract_class CBaseHudWeaponSelection : public CHudElement {
 	DECLARE_CLASS( CBaseHudWeaponSelection, CHudElement );
-
 public:
 	CBaseHudWeaponSelection( const char* pElementName );
 	virtual void Init();
 	virtual void VidInit();
 	virtual void ProcessInput();
 	virtual void Reset();
-	virtual void OnThink( void );
+	virtual void OnThink();
 
-	virtual void OpenSelection( void );
-	virtual void HideSelection( void );
+	virtual void OpenSelection();
+	virtual void HideSelection();
 
-	virtual void CancelWeaponSelection( void );
+	virtual void CancelWeaponSelection();
 
 	// Game specific overrides
-	virtual void CycleToNextWeapon( void ) = 0;
-	virtual void CycleToPrevWeapon( void ) = 0;
-	virtual void SwitchToLastWeapon( void );
+	virtual void CycleToNextWeapon() = 0;
+	virtual void CycleToPrevWeapon() = 0;
+	virtual void SwitchToLastWeapon();
 	virtual C_BaseCombatWeapon* GetWeaponInSlot( int iSlot, int iSlotPos ) = 0;
 	virtual void SelectWeaponSlot( int iSlot ) = 0;
 	virtual C_BaseCombatWeapon* GetFirstPos( int iSlot );
 	virtual C_BaseCombatWeapon* GetNextActivePos( int iSlot, int iSlotPos );
-	virtual void SetWeaponSelected( void );
-	virtual void SelectWeapon( void );
+	virtual void SetWeaponSelected();
+	virtual void SelectWeapon();
 
-	virtual C_BaseCombatWeapon* GetSelectedWeapon( void ) = 0;
+	virtual C_BaseCombatWeapon* GetSelectedWeapon() = 0;
 
 	virtual void OnWeaponPickup( C_BaseCombatWeapon * pWeapon );
 	virtual bool IsInSelectionMode();
 
-	void UserCmd_Slot1( void );
-	void UserCmd_Slot2( void );
-	void UserCmd_Slot3( void );
-	void UserCmd_Slot4( void );
-	void UserCmd_Slot5( void );
-	void UserCmd_Slot6( void );
-	void UserCmd_Slot7( void );
-	void UserCmd_Slot8( void );
-	void UserCmd_Slot9( void );
-	void UserCmd_Slot0( void );
-	void UserCmd_Slot10( void );
-	void UserCmd_Close( void );
-	void UserCmd_NextWeapon( void );
-	void UserCmd_PrevWeapon( void );
-	void UserCmd_LastWeapon( void );
-	void UserCmd_DropPrimary( void );
+	void UserCmd_Slot1();
+	void UserCmd_Slot2();
+	void UserCmd_Slot3();
+	void UserCmd_Slot4();
+	void UserCmd_Slot5();
+	void UserCmd_Slot6();
+	void UserCmd_Slot7();
+	void UserCmd_Slot8();
+	void UserCmd_Slot9();
+	void UserCmd_Slot0();
+	void UserCmd_Slot10();
+	void UserCmd_Close();
+	void UserCmd_NextWeapon();
+	void UserCmd_PrevWeapon();
+	void UserCmd_LastWeapon();
+	void UserCmd_DropPrimary();
 
 	virtual void SelectSlot( int iSlot );
 
@@ -91,7 +90,7 @@ protected:
 
 	bool CanBeSelectedInHUD( C_BaseCombatWeapon * pWeapon );
 
-	void UpdateSelectionTime( void );
+	void UpdateSelectionTime();
 
 	float m_flSelectionTime;// most recent time at which weapon selection had input
 

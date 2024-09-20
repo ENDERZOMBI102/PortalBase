@@ -327,7 +327,7 @@ static ConVar s_cl_class( "cl_class", "default", FCVAR_USERINFO | FCVAR_ARCHIVE,
 // Physics system
 bool g_bLevelInitialized;
 bool g_bTextMode = false;
-auto g_pClientPurchaseInterface = reinterpret_cast<class IClientPurchaseInterfaceV2*>( &g_bTextMode + 156 );
+IClientPurchaseInterfaceV2* g_pClientPurchaseInterface = reinterpret_cast<class IClientPurchaseInterfaceV2*>( &g_bTextMode + 156 );
 
 static ConVar* g_pcv_ThreadMode = nullptr;
 

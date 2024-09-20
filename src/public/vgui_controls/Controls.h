@@ -39,32 +39,32 @@ namespace vgui {
 	//-----------------------------------------------------------------------------
 
 	// #include <vgui/IInput.h>
-	inline vgui::IInput* input() {
+	inline IInput* input() {
 		return g_pVGuiInput;
 	}
 
 	// #include <vgui/IScheme.h>
-	inline vgui::ISchemeManager* scheme() {
+	inline ISchemeManager* scheme() {
 		return g_pVGuiSchemeManager;
 	}
 
 	// #include <vgui/ISurface.h>
-	inline vgui::ISurface* surface() {
+	inline ISurface* surface() {
 		return g_pVGuiSurface;
 	}
 
 	// #include <vgui/ISystem.h>
-	inline vgui::ISystem* system() {
+	inline ISystem* system() {
 		return g_pVGuiSystem;
 	}
 
 	// #include <vgui/IVGui.h>
-	inline vgui::IVGui* ivgui() {
+	inline IVGui* ivgui() {
 		return g_pVGui;
 	}
 
 	// #include <vgui/IPanel.h>
-	inline vgui::IPanel* ipanel() {
+	inline IPanel* ipanel() {
 		return g_pVGuiPanel;
 	}
 
@@ -131,7 +131,7 @@ namespace vgui {
 	class ImageList;
 	class TextImage;
 
-}// namespace vgui
+}
 
 // hotkeys disabled until we work out exactly how we want to do them
 #define VGUI_HOTKEYS_ENABLED
