@@ -18,33 +18,48 @@ static uint g_MainThreadId{ 0 };
 // ----- SimpleThread_t -----
 //
 ThreadHandle_t CreateSimpleThread( ThreadFunc_t pHandle, void* pParam, ThreadId_t* pID, unsigned stackSize ) {
-#if IsWindows()
-    AssertUnreachable();
-    return {};
-#elif IsPosix()
-	pthread_t handle;
-	pthread_attr_t attr;
-	pthread_attr_init( &attr );
-	pthread_create( &handle, &attr, reinterpret_cast<void*(*)(void*)>( pHandle ), pParam );
-	pthread_attr_destroy( &attr );
+	#if IsWindows()
+	    AssertUnreachable();
+	    return {};
+	#elif IsPosix()
+		pthread_t handle;
+		pthread_attr_t attrs;
+		if (! pthread_attr_init( &attrs ) ) {
+			return nullptr;
+		}
+		if (! pthread_attr_setstacksize( &attrs, std::max( static_cast<long int>( stackSize ), PTHREAD_STACK_MIN ) ) ) {
+			pthread_attr_destroy( &attrs );
+			return nullptr;
+		}
+		pthread_create( &handle, &attrs, reinterpret_cast<void*(*)(void*)>( pHandle ), pParam );
+		pthread_attr_destroy( &attrs );
 
-	return reinterpret_cast<ThreadHandle_t>( handle );
-#endif
+		return reinterpret_cast<ThreadHandle_t>( handle );
+	#endif
 }
 ThreadHandle_t CreateSimpleThread( ThreadFunc_t pHandle, void* pParam, unsigned stackSize ) {
-#if IsWindows()
-    AssertUnreachable();
-    return {};
-#elif IsPosix()
-	pthread_t handle;
-	pthread_attr_t attr;
-	pthread_attr_init( &attr );
-	pthread_create( &handle, &attr, reinterpret_cast<void*(*)(void*)>( pHandle ), pParam );
-	pthread_attr_destroy( &attr );
-	return reinterpret_cast<ThreadHandle_t>( handle );
-#endif
+	#if IsWindows()
+	    AssertUnreachable();
+	    return {};
+	#elif IsPosix()
+		pthread_t handle;
+		pthread_attr_t attrs;
+		if (! pthread_attr_init( &attrs ) ) {
+			return nullptr;
+		}
+		if (! pthread_attr_setstacksize( &attrs, std::max( static_cast<long int>( stackSize ), PTHREAD_STACK_MIN ) ) ) {
+			pthread_attr_destroy( &attrs );
+			return nullptr;
+		}
+		pthread_create( &handle, &attrs, reinterpret_cast<void*(*)(void*)>( pHandle ), pParam );
+		pthread_attr_destroy( &attrs );
+
+		return reinterpret_cast<ThreadHandle_t>( handle );
+	#endif
 }
-bool ReleaseThreadHandle( ThreadHandle_t pHandle );
+bool ReleaseThreadHandle( ThreadHandle_t pHandle ) {
+	AssertUnreachable();
+}
 
 void ThreadSleep( unsigned pDurationMs ) {
 	#if IsWindows()
@@ -75,8 +90,12 @@ ThreadHandle_t ThreadGetCurrentHandle() {
 		return reinterpret_cast<ThreadHandle_t>( pthread_self() );
 	#endif
 }
-int ThreadGetPriority( ThreadHandle_t hThread );
-bool ThreadSetPriority( ThreadHandle_t hThread, int priority );
+int ThreadGetPriority( ThreadHandle_t hThread ) {
+	AssertUnreachable();
+}
+bool ThreadSetPriority( ThreadHandle_t hThread, int priority ) {
+	AssertUnreachable();
+}
 bool ThreadInMainThread() {
     return g_MainThreadId == ThreadGetCurrentId();
 }
@@ -91,12 +110,26 @@ ThreadedLoadLibraryFunc_t GetThreadedLoadLibraryFunc() {
 	return g_pThrLoadLibFunc;
 }
 
-bool ThreadJoin( ThreadHandle_t, unsigned timeout );
-void ThreadDetach( ThreadHandle_t );
+bool ThreadJoin( ThreadHandle_t, unsigned timeout ) {
+	AssertUnreachable();
+}
+void ThreadDetach( ThreadHandle_t ) {
+	AssertUnreachable();
+}
 
-void ThreadSetDebugName( ThreadId_t id, const char* pszName );
+void ThreadSetDebugName( ThreadId_t id, const char* pszName ) {
+	#if IsWindows()
+		SetThreadDescription( id, pszName );
+	#elif IsPosix()
+		pthread_setname_np( id, pszName );
+	#else
+		#error
+	#endif
+}
 
-void ThreadSetAffinity( ThreadHandle_t hThread, int nAffinityMask );
+void ThreadSetAffinity( ThreadHandle_t hThread, int nAffinityMask ) {
+	AssertUnreachable();
+}
 
 #if IsWindows()
 	int ThreadWaitForObjects( int nEvents, const HANDLE* pHandles, bool bWaitAll, unsigned timeout );
@@ -334,13 +367,28 @@ bool CThreadEvent::Wait( uint32 dwTimeout ) {
 
 // ----- CThread -----
 //
-static thread_local CThread* g_hCurrentThread{ nullptr };
-CThread::CThread() { }
-CThread::~CThread() { }
+static thread_local CThread* g_CurrentThread{ nullptr };
+CThread::CThread() = default;
+CThread::~CThread() = default;
 unsigned int CThread::ThreadProc( void* pv ) {
-	g_hCurrentThread = static_cast<CThread*>( pv );
+	// load up data
+	const auto init{ static_cast<ThreadInit_t*>( pv ) };
+	// set current thread object
+	g_CurrentThread = init->pThread;
+	// try to initialize
+	const bool success{ g_CurrentThread->Init() };
+	*init->pfInitSuccess = success;
+	init->pInitCompleteEvent->Set();
+	// start thread
+	int res{};
+	if ( success ) {
+		res = g_CurrentThread->Run();
+		g_CurrentThread->m_result = res;
+		g_CurrentThread->OnExit();
+		g_CurrentThread->Cleanup();
+	}
 
-	return {};
+	return res;
 }
 
 const char* CThread::GetName() {
@@ -361,8 +409,17 @@ void CThread::SetName( const char* pName ) {
 }
 
 bool CThread::Start( unsigned nBytesStack ) {
+	CThreadEvent initCompleted{ true };
+	bool success{ false };
+	// init facility data
+	ThreadInit_t init{
+		.pThread = this,
+		.pInitCompleteEvent = &initCompleted,
+		.pfInitSuccess = &success,
+	};
+
 	#if IsWindows()
-		m_hThread = CreateThread( nullptr, nBytesStack, CThread::ThreadProc, this, 0, &m_threadId );
+		m_hThread = CreateThread( nullptr, nBytesStack, CThread::ThreadProc, &init, 0, &m_threadId );
 		if (! m_hThread ) {
 			return false;
 		}
@@ -372,14 +429,19 @@ bool CThread::Start( unsigned nBytesStack ) {
 			return false;
 		}
 		if (! pthread_attr_setstacksize( &attrs, nBytesStack ) ) {
+			pthread_attr_destroy( &attrs );
 			return false;
 		}
-		// FIXME: This will need to change when porting to x64
-		if (! pthread_create( &m_threadId, &attrs, reinterpret_cast<void*(*)( void* )>( ThreadProc ), reinterpret_cast<void*>( this ) ) ) {
+		// TODO: Will this need to be changed when porting to x64?
+		if (! pthread_create( &m_threadId, &attrs, reinterpret_cast<void*(*)( void* )>( ThreadProc ), &init ) ) {
 			return false;
 		}
+		pthread_attr_destroy( &attrs );
 	#endif
-	return true;
+
+	// wait for `Init()` call to complete
+	initCompleted.Wait();
+	return success;
 }
 
 bool CThread::IsAlive() {
@@ -399,8 +461,8 @@ bool CThread::Join( uint32 timeout ) {
 		timespec spec{};
 		clock_gettime( CLOCK_MONOTONIC, &spec );
 		spec.tv_sec += static_cast<int32>( timeout ) / 1000;
-		spec.tv_nsec += (static_cast<int32>( timeout ) % 1000) * 1000 * 1000;
-		// FIXME: This will need to change when porting to x64
+		spec.tv_nsec += static_cast<int32>( timeout ) % 1000 * 1000 * 1000;
+		// TODO: Will this need to be changed when porting to x64?
 		return pthread_timedjoin_np( m_threadId, reinterpret_cast<void**>( &m_result ), &spec ) == 0;
 	#endif
 }
@@ -416,7 +478,9 @@ uint CThread::GetThreadId() const {
 int CThread::GetResult() const {
 	return this->m_result;
 }
-void CThread::Stop( int exitCode ) { AssertUnreachable(); }
+void CThread::Stop( int exitCode ) {
+	AssertUnreachable();
+}
 int CThread::GetPriority() const {
 	#if IsWindows()
 		return GetThreadPriority( this->m_hThread );
@@ -434,9 +498,15 @@ bool CThread::SetPriority( int pValue ) {
 		return pthread_setschedprio( this->m_threadId, pValue ) == 0;
 	#endif
 }
-void CThread::SuspendCooperative() { }
-void CThread::ResumeCooperative() { }
-void CThread::BWaitForThreadSuspendCooperative() { }
+void CThread::SuspendCooperative() {
+	AssertUnreachable();
+}
+void CThread::ResumeCooperative() {
+	AssertUnreachable();
+}
+void CThread::BWaitForThreadSuspendCooperative() {
+	AssertUnreachable();
+}
 #if !IsLinux()
 	unsigned int CThread::Suspend() {
 		return SuspendThread( this->m_hThread );
@@ -454,7 +524,9 @@ bool CThread::Terminate( int exitCode ) {
 		return pthread_kill( this->m_threadId, SIGKILL ) == 0;
 	#endif
 }
-CThread* CThread::GetCurrentCThread() { AssertUnreachable(); return {}; }
+CThread* CThread::GetCurrentCThread() {
+	return g_CurrentThread;
+}
 void CThread::Yield() {
 	#if IsWindows()
 		Sleep( 0 );
@@ -462,17 +534,21 @@ void CThread::Yield() {
 		sched_yield();
 	#endif
 }
-void CThread::Sleep( unsigned duration ) { }
-bool CThread::Init() { AssertUnreachable(); return {}; }
-void CThread::OnExit() { }
-void CThread::Cleanup() {
-	this->m_result = 0;
+void CThread::Sleep( unsigned duration ) {
+	ThreadSleep( duration );
 }
-bool CThread::WaitForCreateComplete( CThreadEvent* pEvent ) { AssertUnreachable(); return {}; }
+bool CThread::Init() { return true; }  // empty default
+void CThread::OnExit() { }   // empty default
+void CThread::Cleanup() { }  // empty default
+bool CThread::WaitForCreateComplete( CThreadEvent* pEvent ) {
+	AssertUnreachable();
+	return {};
+}
 CThread::ThreadProc_t CThread::GetThreadProc() {
     return ThreadProc;
 }
 bool CThread::IsThreadRunning() {
+	// TODO: Figure out how to check that the thread is not suspended
 	return this->IsAlive();
 }
 

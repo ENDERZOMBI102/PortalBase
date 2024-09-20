@@ -8,19 +8,21 @@
 #pragma once
 #include <algorithm>
 #include <climits>
-
 #include "tier0/dbg.h"
 #include "tier0/platform.h"
 
+
 #if IsWindows() && IsPC()
-	#include <intrin.h>
+	#include <intrin.h>  // for _mm_pause()
     #undef min
     #undef max
 #endif
 
+#if IsLinux() && defined( COMPILER_GCC )
+	#include <xmmintrin.h>  // for _mm_pause()
+#endif
 #if IsPosix()
 	#include <pthread.h>
-	#include <cerrno>
 	#define WAIT_OBJECT_0 0
 	#define WAIT_TIMEOUT 0x00000102
 	#define WAIT_FAILED ( -1 )
@@ -51,17 +53,7 @@
 
 const unsigned TT_INFINITE = 0xffffffff;
 
-#if defined( NO_THREAD_LOCAL )
-	#if defined( THREAD_LOCAL )
-		#if IsWindows()
-			#define THREAD_LOCAL __declspec( thread )
-		#elif IsPIsPosix()
-			#define THREAD_LOCAL __thread
-		#endif
-	#endif
-#endif
-
-typedef unsigned long ThreadId_t;
+using ThreadId_t = unsigned long;
 
 //-----------------------------------------------------------------------------
 //
@@ -70,7 +62,7 @@ typedef unsigned long ThreadId_t;
 //
 //-----------------------------------------------------------------------------
 FORWARD_DECLARE_HANDLE( ThreadHandle_t );
-typedef unsigned ( *ThreadFunc_t )( void* pParam );
+using ThreadFunc_t = unsigned (*)( void* pParam );
 
 PLATFORM_OVERLOAD ThreadHandle_t CreateSimpleThread( ThreadFunc_t pHandle, void* pParam, ThreadId_t* pID, unsigned stackSize = 0 );
 PLATFORM_INTERFACE ThreadHandle_t CreateSimpleThread( ThreadFunc_t pHandle, void* pParam, unsigned stackSize = 0 );
@@ -83,18 +75,20 @@ PLATFORM_INTERFACE uint ThreadGetCurrentId();
 PLATFORM_INTERFACE ThreadHandle_t ThreadGetCurrentHandle();
 PLATFORM_INTERFACE int ThreadGetPriority( ThreadHandle_t hThread = nullptr );
 PLATFORM_INTERFACE bool ThreadSetPriority( ThreadHandle_t hThread, int priority );
-inline bool ThreadSetPriority( int priority ) { return ThreadSetPriority( nullptr, priority ); }
+inline bool ThreadSetPriority( int priority ) {
+	return ThreadSetPriority( nullptr, priority );
+}
 PLATFORM_INTERFACE bool ThreadInMainThread();
 PLATFORM_INTERFACE void DeclareCurrentThreadIsMainThread();
 
 // NOTE: ThreadedLoadLibraryFunc_t needs to return the sleep time in milliseconds or TT_INFINITE
-typedef int ( *ThreadedLoadLibraryFunc_t )();
+using ThreadedLoadLibraryFunc_t = int (*)();
 PLATFORM_INTERFACE void SetThreadedLoadLibraryFunc( ThreadedLoadLibraryFunc_t func );
 PLATFORM_INTERFACE ThreadedLoadLibraryFunc_t GetThreadedLoadLibraryFunc();
 
 inline void ThreadPause() {
-	#if IsWindows() && IsPC()
-		// Intrinsic for __asm pause; from <intrin.h>
+	// Windows and Linux's GCC have this intrinsic, while on posix we just embed the raw ASM
+	#if IsWindows() && IsPC() || IsLinux() && defined( COMPILER_GCC )
 		_mm_pause();
 	#elif IsPosix()
 		__asm __volatile( "pause" );
@@ -110,7 +104,9 @@ PLATFORM_INTERFACE bool ThreadJoin( ThreadHandle_t, unsigned timeout = TT_INFINI
 PLATFORM_INTERFACE void ThreadDetach( ThreadHandle_t );
 
 PLATFORM_INTERFACE void ThreadSetDebugName( ThreadId_t id, const char* pszName );
-inline void ThreadSetDebugName( const char* pszName ) { ThreadSetDebugName( static_cast<ThreadId_t>( -1 ), pszName ); }
+inline void ThreadSetDebugName( const char* pszName ) {
+	ThreadSetDebugName( static_cast<ThreadId_t>( -1 ), pszName );
+}
 
 PLATFORM_INTERFACE void ThreadSetAffinity( ThreadHandle_t hThread, int nAffinityMask );
 
@@ -623,12 +619,14 @@ public:
 	// Mutex acquisition/release. Const intentionally defeated.
 	//------------------------------------------------------
 	void Lock();
-	void Lock() const { ( const_cast<CThreadMutex*>( this ) )->Lock(); }
+	void Lock() const { const_cast<CThreadMutex*>( this )->Lock(); }
 	void Unlock();
-	void Unlock() const { ( const_cast<CThreadMutex*>( this ) )->Unlock(); }
+	void Unlock() const { const_cast<CThreadMutex*>( this )->Unlock(); }
 
+	[[nodiscard]]
 	bool TryLock();
-	bool TryLock() const { return ( const_cast<CThreadMutex*>( this ) )->TryLock(); }
+	[[nodiscard]]
+	bool TryLock() const { return const_cast<CThreadMutex*>( this )->TryLock(); }
 
 	//------------------------------------------------------
 	// Use this to make deadlocks easier to track by asserting
@@ -640,7 +638,6 @@ public:
 	// Enable tracing to track deadlock problems
 	//------------------------------------------------------
 	void SetTrace( bool );
-
 private:
 	// Disallow copying
 	CThreadMutex( const CThreadMutex& );
@@ -648,24 +645,24 @@ private:
 
 	#if IsWindows()
 		// Efficient solution to breaking the windows.h dependency, invariant is tested.
-		#ifdef _WIN64
+		#if IsPlatform64Bits()
 			#define TT_SIZEOF_CRITICALSECTION 40
 		#else
 			#define TT_SIZEOF_CRITICALSECTION 24
-		#endif// _WIN64
+		#endif
 		byte m_CriticalSection[ TT_SIZEOF_CRITICALSECTION ];
 	#elif IsPosix()
-		pthread_mutex_t m_Mutex;
-		pthread_mutexattr_t m_Attr;
+		pthread_mutex_t m_Mutex{};
+		pthread_mutexattr_t m_Attr{};
 	#else
 		#error
 	#endif
 
-	#ifdef THREAD_MUTEX_TRACING_SUPPORTED
+	#if defined( THREAD_MUTEX_TRACING_SUPPORTED )
 		// Debugging (always here to allow mixed debug/release builds w/o changing size)
-		uint m_currentOwnerID;
-		uint16 m_lockCount;
-		bool m_bTrace;
+		uint m_currentOwnerID{};
+		uint16 m_lockCount{};
+		bool m_bTrace{};
 	#endif
 };
 
@@ -682,15 +679,12 @@ private:
 #if !defined( THREAD_PROFILER )
 	class CThreadFastMutex {
 	public:
-		CThreadFastMutex()
-			: m_ownerID( 0 ),
-			  m_depth( 0 ) {
-		}
-
+		CThreadFastMutex() = default;
 	private:
 		ALWAYS_INLINE bool TryLockInline( const uint32 threadId ) volatile {
-			if ( threadId != m_ownerID && !ThreadInterlockedAssignIf( (volatile long*) &m_ownerID, (long) threadId, 0 ) )
+			if ( threadId != m_ownerID && !ThreadInterlockedAssignIf( reinterpret_cast<volatile long*>( &m_ownerID ), static_cast<long>( threadId ), 0 ) ) {
 				return false;
+			}
 
 			ThreadMemoryBarrier();
 			m_depth += 1;
@@ -702,16 +696,17 @@ private:
 		}
 
 		PLATFORM_CLASS void Lock( uint32 threadId, unsigned nSpinSleepTime ) volatile;
-
 	public:
 		bool TryLock() volatile {
-			#if IsDebug()
-				if ( m_depth == INT_MAX )
+			if constexpr ( IsDebug() ) {
+				if ( m_depth == INT_MAX ) {
 					DebuggerBreak();
+				}
 
-				if ( m_depth < 0 )
+				if ( m_depth < 0 ) {
 					DebuggerBreak();
-			#endif
+				}
+			}
 			return TryLockInline( ThreadGetCurrentId() );
 		}
 
@@ -725,29 +720,34 @@ private:
 				ThreadPause();
 				Lock( threadId, nSpinSleepTime );
 			}
-			#if IsDebug()
-				if ( m_ownerID != ThreadGetCurrentId() )
+			if constexpr ( IsDebug() ) {
+				if ( m_ownerID != ThreadGetCurrentId() ) {
 					DebuggerBreak();
+				}
 
-				if ( m_depth == INT_MAX )
+				if ( m_depth == INT_MAX ) {
 					DebuggerBreak();
+				}
 
-				if ( m_depth < 0 )
+				if ( m_depth < 0 ) {
 					DebuggerBreak();
-			#endif
+				}
+			}
 		}
 
 		#if !IsDebug()
 			ALWAYS_INLINE
 		#endif
 		void Unlock() volatile {
-			#if IsDebug()
-				if ( m_ownerID != ThreadGetCurrentId() )
+			if constexpr ( IsDebug() ) {
+				if ( m_ownerID != ThreadGetCurrentId() ) {
 					DebuggerBreak();
+				}
 
-				if ( m_depth <= 0 )
+				if ( m_depth <= 0 ) {
 					DebuggerBreak();
-			#endif
+				}
+			}
 
 			m_depth -= 1;
 			if ( !m_depth ) {
@@ -763,14 +763,19 @@ private:
 		#endif
 		// To match regular CThreadMutex:
 		bool AssertOwnedByCurrentThread() { return true; }
-		void SetTrace( bool ) {}
+		void SetTrace( bool ) { }
 
+		/**
+		 * The id of the owner of the thread which currently owns this mutex.
+		 */
+		[[nodiscard]]
 		uint32 GetOwnerId() const { return m_ownerID; }
+		[[nodiscard]]
 		int GetDepth() const { return m_depth; }
-
 	private:
-		volatile uint32 m_ownerID;
-		int m_depth;
+		// The id of the owning thread
+		volatile uint32 m_ownerID{0};
+		int m_depth{0};
 	};
 
 	class ALIGN128 CAlignedThreadFastMutex : public CThreadFastMutex {
@@ -958,8 +963,8 @@ struct CAutoLockTypeDeducer<sizeof( CThreadNullMutex )> {
 
 #define LOCAL_THREAD_LOCK_( tag )            \
 	;                                        \
-	static CThreadFastMutex autoMutex_##tag; \
-	AUTO_LOCK( autoMutex_##tag )
+	static CThreadFastMutex autoMutex_## tag; \
+	AUTO_LOCK( autoMutex_## tag )
 
 #define LOCAL_THREAD_LOCK() \
 	LOCAL_THREAD_LOCK_( _ )
@@ -1114,14 +1119,16 @@ public:
 inline int ThreadWaitForEvents( int nEvents, CThreadEvent* const* pEvents, bool bWaitAll = true, unsigned timeout = TT_INFINITE ) {
 	#if IsPosix()
 		Assert( nEvents == 1 );
-		if ( pEvents[ 0 ]->Wait( timeout ) )
+		if ( pEvents[0]->Wait( timeout ) ) {
 			return WAIT_OBJECT_0;
-		else
-			return WAIT_TIMEOUT;
+		}
+		return WAIT_TIMEOUT;
 	#else
 		HANDLE handles[ 64 ];
-		for ( unsigned int i = 0; i < std::min( nEvents, static_cast<int>( ARRAYSIZE( handles ) ) ); i++ )
+		int count{ std::min( nEvents, static_cast<int>( ARRAYSIZE( handles ) ) ) };
+		for ( uint32 i = 0; i < count; i++ ) {
 			handles[ i ] = pEvents[ i ]->GetHandle();
+		}
 		return ThreadWaitForObjects( nEvents, handles, bWaitAll, timeout );
 	#endif
 }
@@ -1184,8 +1191,14 @@ public:
 	void LockForWrite();
 	void UnlockWrite();
 
-	[[nodiscard]] bool TryLockForWrite() const { return const_cast<CThreadSpinRWLock*>( this )->TryLockForWrite(); }
-	[[nodiscard]] bool TryLockForRead() const { return const_cast<CThreadSpinRWLock*>( this )->TryLockForRead(); }
+	[[nodiscard]]
+	bool TryLockForWrite() const {
+		return const_cast<CThreadSpinRWLock*>( this )->TryLockForWrite();
+	}
+	[[nodiscard]]
+	bool TryLockForRead() const {
+		return const_cast<CThreadSpinRWLock*>( this )->TryLockForRead();
+	}
 	void LockForRead() const { const_cast<CThreadSpinRWLock*>( this )->LockForRead(); }
 	void UnlockRead() const { const_cast<CThreadSpinRWLock*>( this )->UnlockRead(); }
 	void LockForWrite() const { const_cast<CThreadSpinRWLock*>( this )->LockForWrite(); }
@@ -1221,7 +1234,9 @@ public:
 	const char* GetName();
 	void SetName( const char* );
 
-	size_t CalcStackDepth( void* pStackVariable ) { return ( (byte*) m_pStackBase - (byte*) pStackVariable ); }
+	size_t CalcStackDepth( void* pStackVariable ) {
+		return static_cast<byte*>( m_pStackBase ) - static_cast<byte*>( pStackVariable );
+	}
 
 	//-----------------------------------------------------
 	// Functions for the other threads
@@ -1241,10 +1256,11 @@ public:
 		// Access the thread handle directly
 		HANDLE GetThreadHandle();
 	#endif
+	[[nodiscard]]
 	uint GetThreadId() const;
 
 	//-----------------------------------------------------
-
+	[[nodiscard]]
 	int GetResult() const;
 
 	//-----------------------------------------------------
@@ -1255,6 +1271,7 @@ public:
 	void Stop( int exitCode = 0 );
 
 	// Get the priority
+	[[nodiscard]]
 	int GetPriority() const;
 
 	// Set the priority
@@ -1314,23 +1331,26 @@ protected:
 	// Called when the thread is about to exit, by the about-to-exit thread.
 	virtual void OnExit();
 
-	// Called after OnExit when a thread finishes or is killed. Not virtual because no inherited classes
-	// override it and we don't want to change the vtable from the published SDK version.
+	// Called after OnExit when a thread finishes or is killed.
+	// Not virtual because no inherited classes override it,
+	// and we don't want to change the vtable from the published SDK version.
 	void Cleanup();
 
 	bool WaitForCreateComplete( CThreadEvent* pEvent );
 
 	// "Virtual static" facility
-	typedef unsigned( __stdcall* ThreadProc_t )( void* );
+	using ThreadProc_t = unsigned (__stdcall*)( void* );
 	virtual ThreadProc_t GetThreadProc();
 	virtual bool IsThreadRunning();
 
 	CThreadMutex m_Lock;
 
 	#if IsWindows()
+		[[nodiscard]]
 		ThreadHandle_t GetThreadID() const { return (ThreadHandle_t) m_hThread; }
 	#else
-		ThreadId_t GetThreadID() const { return (ThreadId_t) m_threadId; }
+		[[nodiscard]]
+		ThreadId_t GetThreadID() const { return m_threadId; }
 	#endif
 
 private:
@@ -1362,7 +1382,7 @@ private:
 	CThreadEvent m_SuspendEvent{};
 	CThreadEvent m_SuspendEventSignal{};
 	int m_result{ -1 };
-	char m_szName[ 32 ];
+	char m_szName[32] { };
 	void* m_pStackBase{ nullptr };
 	unsigned m_flags{ 0 };
 };
@@ -1413,7 +1433,7 @@ public:
 	// Inter-thread communication
 	//
 	// Calls in either direction take place on the same "channel."
-	// Seperate functions are specified to make identities obvious
+	// Separate functions are specified to make identities obvious
 	//
 	//-----------------------------------------------------
 
@@ -1437,7 +1457,7 @@ public:
 	int WaitForReply( unsigned timeout = TT_INFINITE );
 
 	// If you want to do WaitForMultipleObjects you'll need to include
-	// this handle in your wait list or you won't be responsive
+	// this handle in your wait list, or you won't be responsive
 	CThreadEvent& GetCallHandle();
 	// Find out what the request was
 	unsigned GetCallParam( CFunctor** ppParamFunctor = nullptr ) const;
@@ -1446,10 +1466,7 @@ public:
 	int BoostPriority();
 
 protected:
-	#if !IsWindows()
-		#define __stdcall
-	#endif
-	typedef uint32( __stdcall* WaitFunc_t )( int nEvents, CThreadEvent* const* pEvents, int bWaitAll, uint32 timeout );
+	using WaitFunc_t = uint32 (__stdcall*)( int nEvents, CThreadEvent* const* pEvents, int bWaitAll, uint32 timeout );
 
 	int Call( unsigned, unsigned timeout, bool fBoost, WaitFunc_t = nullptr, CFunctor* pParamFunctor = nullptr );
 	int WaitForReply( unsigned timeout, WaitFunc_t );
@@ -1491,24 +1508,26 @@ public:
 
 	// check for a message. not 100% reliable - someone could grab the message first
 	bool MessageWaiting() {
-		return ( Head != nullptr );
+		return Head != nullptr;
 	}
 
 	void WaitMessage( T* pMsg ) {
 		for ( ;; ) {
-			while ( !MessageWaiting() )
+			while ( !MessageWaiting() ) {
 				SignalEvent.Wait();
+			}
 			QueueAccessMutex.Lock();
 			if ( !Head ) {
 				// multiple readers could make this null
 				QueueAccessMutex.Unlock();
 				continue;
 			}
-			*( pMsg ) = Head->Data;
-			MsgNode* remove_this = Head;
+			*pMsg = Head->Data;
+			const MsgNode* remove_this = Head;
 			Head = Head->Next;
-			if ( !Head )// if empty, fix tail ptr
+			if ( !Head ) {  // if empty, fix tail ptr
 				Tail = nullptr;
+			}
 			QueueAccessMutex.Unlock();
 			delete remove_this;
 			break;
@@ -1516,7 +1535,7 @@ public:
 	}
 
 	void QueueMessage( T const& Msg ) {
-		MsgNode* new1 = new MsgNode;
+		auto* new1 = new MsgNode;
 		new1->Data = Msg;
 		new1->Next = nullptr;
 		QueueAccessMutex.Lock();
@@ -1545,10 +1564,10 @@ public:
 	typedef RTL_CRITICAL_SECTION CRITICAL_SECTION;
 
 	extern "C" {
-	void __declspec( dllimport ) __stdcall InitializeCriticalSection( CRITICAL_SECTION* );
-	void __declspec( dllimport ) __stdcall EnterCriticalSection( CRITICAL_SECTION* );
-	void __declspec( dllimport ) __stdcall LeaveCriticalSection( CRITICAL_SECTION* );
-	void __declspec( dllimport ) __stdcall DeleteCriticalSection( CRITICAL_SECTION* );
+		void __declspec( dllimport ) __stdcall InitializeCriticalSection( CRITICAL_SECTION* );
+		void __declspec( dllimport ) __stdcall EnterCriticalSection( CRITICAL_SECTION* );
+		void __declspec( dllimport ) __stdcall LeaveCriticalSection( CRITICAL_SECTION* );
+		void __declspec( dllimport ) __stdcall DeleteCriticalSection( CRITICAL_SECTION* );
 	};
 
 	//---------------------------------------------------------
@@ -1655,8 +1674,7 @@ public:
 
 	//---------------------------------------------------------
 
-	inline void CThreadMutex::SetTrace( bool fTrace ) {
-	}
+	inline void CThreadMutex::SetTrace( bool fTrace ) { }
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1755,7 +1773,7 @@ inline void CThreadSpinRWLock::LockForWrite() {
 template<class T>
 ALWAYS_INLINE
 T ReadVolatileMemory( T const* pPtr ) {
-	volatile const T* pVolatilePtr = (volatile const T*) pPtr;
+	volatile const T* pVolatilePtr = static_cast<volatile const T*>( pPtr );
 	return *pVolatilePtr;
 }
 
