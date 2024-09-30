@@ -13,36 +13,36 @@
 	#include <dlfcn.h>
 	#include <unistd.h>
 	#include <type_traits>
+	#include <cerrno>
 	#define _getcwd getcwd
 #endif
 
 #if !defined( DONT_PROTECT_FILEIO_FUNCTIONS )
-	#define DONT_PROTECT_FILEIO_FUNCTIONS// for protected_things.h
+	#define DONT_PROTECT_FILEIO_FUNCTIONS  // for protected_things.h
 #endif
 
 #if defined( PROTECTED_THINGS_ENABLE )
-	#undef PROTECTED_THINGS_ENABLE// from protected_things.h
+	#undef PROTECTED_THINGS_ENABLE  // from protected_things.h
 #endif
 
 #include "interface.h"
 #include "basetypes.h"
 #include "tier0/dbg.h"
-#include "tier0/icommandline.h"
 #include "tier0/threadtools.h"
 #include "tier1/strtools.h"
 #include <cstdio>
 #include <cstring>
-
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 // ------------------------------------------------------------------------------------ //
 // InterfaceReg.
 // ------------------------------------------------------------------------------------ //
 InterfaceReg* InterfaceReg::s_pInterfaceRegs = nullptr;
 
-InterfaceReg::InterfaceReg( InstantiateInterfaceFn fn, const char* pName ) : m_pName( pName ) {
+InterfaceReg::InterfaceReg( const InstantiateInterfaceFn fn, const char* pName )
+	: m_pName( pName ) {
 	m_CreateFn = fn;
 	m_pNext = s_pInterfaceRegs;
 	s_pInterfaceRegs = this;
@@ -61,9 +61,7 @@ InterfaceReg::InterfaceReg( InstantiateInterfaceFn fn, const char* pName ) : m_p
 // function for CreateInterface again getting the dll specific symbol we need.
 // ------------------------------------------------------------------------------------ //
 void* CreateInterfaceInternal( const char* pName, int* pReturnCode ) {
-	InterfaceReg* pCur;
-
-	for ( pCur = InterfaceReg::s_pInterfaceRegs; pCur; pCur = pCur->m_pNext ) {
+	for ( const auto* pCur = InterfaceReg::s_pInterfaceRegs; pCur; pCur = pCur->m_pNext ) {
 		if ( strcmp( pCur->m_pName, pName ) == 0 ) {
 			if ( pReturnCode ) {
 				*pReturnCode = IFACE_OK;
@@ -89,8 +87,7 @@ void* GetModuleHandle( const char* name ) {
 	void* handle;
 
 	if ( name == nullptr ) {
-		// hmm, how can this be handled under linux....
-		// is it even needed?
+		// hmm, how can this be handled under linux... is it even necessary?
 		return nullptr;
 	}
 
@@ -118,7 +115,7 @@ static void* Sys_GetProcAddress( const char* pModuleName, const char* pName ) {
 	return reinterpret_cast<void*>( GetProcAddress( hModule, pName ) );
 }
 
-#if !IsLinux()
+#if IsWindows()
 	static void* Sys_GetProcAddress( HMODULE hModule, const char* pName ) {
 		return reinterpret_cast<void*>( GetProcAddress( hModule, pName ) );
 	}
@@ -162,45 +159,45 @@ HMODULE Sys_LoadLibrary( const char* pLibraryName, Sys_Flags flags ) {
 
 	Q_FixSlashes( str );
 
-#if IsWindows()
-	ThreadedLoadLibraryFunc_t threadFunc = GetThreadedLoadLibraryFunc();
-	if ( !threadFunc )
-		return InternalLoadLibrary( str, flags );
+	#if IsWindows()
+		ThreadedLoadLibraryFunc_t threadFunc = GetThreadedLoadLibraryFunc();
+		if ( !threadFunc )
+			return InternalLoadLibrary( str, flags );
 
-	// We shouldn't be passing noload while threaded.
-	Assert( !( flags & SYS_NOLOAD ) );
+		// We shouldn't be passing noload while threaded.
+		Assert( !( flags & SYS_NOLOAD ) );
 
-	ThreadedLoadLibaryContext_t context;
-	context.m_pLibraryName = str;
-	context.m_hLibrary = 0;
+		ThreadedLoadLibaryContext_t context;
+		context.m_pLibraryName = str;
+		context.m_hLibrary = 0;
 
-	ThreadHandle_t h = CreateSimpleThread( ThreadedLoadLibraryFunc, &context );
+		ThreadHandle_t h = CreateSimpleThread( ThreadedLoadLibraryFunc, &context );
 
-	unsigned int nTimeout = 0;
-	while ( ThreadWaitForObject( h, true, nTimeout ) == TW_TIMEOUT ) {
-		nTimeout = threadFunc();
-	}
-
-	ReleaseThreadHandle( h );
-	return context.m_hLibrary;
-
-#elif IsPosix()
-	int dlopen_mode = RTLD_NOW;
-
-	if ( flags & SYS_NOLOAD ) {
-		dlopen_mode |= RTLD_NOLOAD;
-	}
-
-	auto ret = reinterpret_cast<HMODULE>( dlopen( str, dlopen_mode ) );
-	if ( !ret && !( flags & SYS_NOLOAD ) ) {
-		const char* pError = dlerror();
-		if ( pError && ( strstr( pError, "No such file" ) == nullptr || strstr( pError, "image not found" ) == nullptr ) ) {
-			Warning( " failed to dlopen `%s`, error=%s\n", str, pError );
+		unsigned int nTimeout = 0;
+		while ( ThreadWaitForObject( h, true, nTimeout ) == TW_TIMEOUT ) {
+			nTimeout = threadFunc();
 		}
-	}
 
-	return ret;
-#endif
+		ReleaseThreadHandle( h );
+		return context.m_hLibrary;
+
+	#elif IsPosix()
+		int dlopen_mode = RTLD_NOW;
+
+		if ( flags & SYS_NOLOAD ) {
+			dlopen_mode |= RTLD_NOLOAD;
+		}
+
+		const auto ret = reinterpret_cast<HMODULE>( dlopen( str, dlopen_mode ) );
+		if ( !ret && !( flags & SYS_NOLOAD ) ) {
+			const char* error = dlerror();
+			if ( error && ( strstr( error, "No such file" ) == nullptr || strstr( error, "image not found" ) == nullptr ) ) {
+				Warning( " failed to dlopen `%s`, error=%s\n", str, error );
+			}
+		}
+
+		return ret;
+	#endif
 }
 static bool s_bRunningWithDebugModules = false;
 
@@ -237,50 +234,50 @@ CSysModule* Sys_LoadModule( const char* pModuleName, Sys_Flags flags /* = SYS_NO
 	if ( !hDLL ) {
 		// full path failed, let LoadLibrary() try to search the PATH now
 		hDLL = Sys_LoadLibrary( pModuleName, flags );
-#if IsDebug()
-		if ( !hDLL ) {
-	// So you can see what the error is in the debugger...
-	#if IsWindows()
-			char* lpMsgBuf;
+		#if IsDebug()
+			if ( !hDLL ) {
+				// So you can see what the error is in the debugger...
+				#if IsWindows()
+					char* lpMsgBuf;
 
-			FormatMessage(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
-				GetLastError(),
-				MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),// Default language
-				(LPTSTR) &lpMsgBuf,
-				0,
-				NULL );
+					FormatMessage(
+						FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+						NULL,
+						GetLastError(),
+						MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),// Default language
+						(LPTSTR) &lpMsgBuf,
+						0,
+						NULL );
 
-			LocalFree( (HLOCAL) lpMsgBuf );
-	#endif // IsWindows()
-		}
-#endif // IsDebug()
+					LocalFree( (HLOCAL) lpMsgBuf );
+				#endif // IsWindows()
+			}
+		#endif
 	}
 
-#if !IsLinux()
-	// If running in the debugger, assume debug binaries are okay, otherwise they must run with -allowdebug
-	if ( Sys_GetProcAddress( hDLL, "BuiltDebug" ) ) {
-		if ( hDLL && !CommandLine()->FindParm( "-allowdebug" ) && !Sys_IsDebuggerPresent() ) {
-			Error( "Module %s is a debug build\n", pModuleName );
-		}
+	#if !IsLinux()
+		// If running in the debugger, assume debug binaries are okay, otherwise they must run with -allowdebug
+		if ( Sys_GetProcAddress( hDLL, "BuiltDebug" ) ) {
+			if ( hDLL && !CommandLine()->FindParm( "-allowdebug" ) && !Sys_IsDebuggerPresent() ) {
+				Error( "Module %s is a debug build\n", pModuleName );
+			}
 
-		DevWarning( "Module %s is a debug build\n", pModuleName );
+			DevWarning( "Module %s is a debug build\n", pModuleName );
 
-		if ( !s_bRunningWithDebugModules ) {
-			s_bRunningWithDebugModules = true;
+			if ( !s_bRunningWithDebugModules ) {
+				s_bRunningWithDebugModules = true;
 
-	#if 0// IsWindows() && IsPC()
+				#if 0// IsWindows() && IsPC()
 					char chMemoryName[ MAX_PATH ];
 					DebugKernelMemoryObjectName( chMemoryName );
 
 					(void) CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, chMemoryName );
 					// Created a shared memory kernel object specific to process id
 					// Existence of this object indicates that we have debug modules loaded
-	#endif
+				#endif
+			}
 		}
-	}
-#endif
+	#endif
 
 	return reinterpret_cast<CSysModule*>( hDLL );
 }
@@ -292,22 +289,22 @@ CSysModule* Sys_LoadModule( const char* pModuleName, Sys_Flags flags /* = SYS_NO
 //-----------------------------------------------------------------------------
 const char* Sys_LastErrorString() {
 	static char err[ 2048 ];
-#if IsWindows()
-	LPVOID lpMsgBuf;
-	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		GetLastError(),
-		MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),// Default language
-		reinterpret_cast<LPTSTR>( &lpMsgBuf ),
-		0,
-		NULL );
+	#if IsWindows()
+		LPVOID lpMsgBuf;
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			GetLastError(),
+			MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),// Default language
+			reinterpret_cast<LPTSTR>( &lpMsgBuf ),
+			0,
+			NULL );
 
-	strncpy( err, reinterpret_cast<char*>( lpMsgBuf ), sizeof( err ) );
-	LocalFree( lpMsgBuf );
-#elif IsLinux()
-	strncpy( err, strerror( errno ), sizeof( err ) );
-#endif
+		strncpy( err, reinterpret_cast<char*>( lpMsgBuf ), sizeof( err ) );
+		LocalFree( lpMsgBuf );
+	#elif IsLinux()
+		strncpy( err, strerror( errno ), sizeof( err ) );
+	#endif
 
 	err[ sizeof( err ) - 1 ] = 0;
 
@@ -319,18 +316,18 @@ const char* Sys_LastErrorString() {
 // Purpose: Determine if any debug modules were loaded
 //-----------------------------------------------------------------------------
 bool Sys_RunningWithDebugModules() {
-	if ( !s_bRunningWithDebugModules ) {
-#if 0// IsWindows() && IsPC()
-		char chMemoryName[ MAX_PATH ];
-		DebugKernelMemoryObjectName( chMemoryName );
+	if ( not s_bRunningWithDebugModules ) {
+		#if 0// IsWindows() && IsPC()
+				char chMemoryName[ MAX_PATH ];
+				DebugKernelMemoryObjectName( chMemoryName );
 
-		HANDLE hObject = OpenFileMapping( FILE_MAP_READ, false, chMemoryName );
-		if ( hObject && hObject != INVALID_HANDLE_VALUE )
-		{
-			CloseHandle( hObject );
-			s_bRunningWithDebugModules = true;
-		}
-#endif
+				HANDLE hObject = OpenFileMapping( FILE_MAP_READ, false, chMemoryName );
+				if ( hObject && hObject != INVALID_HANDLE_VALUE )
+				{
+					CloseHandle( hObject );
+					s_bRunningWithDebugModules = true;
+				}
+		#endif
 	}
 	return s_bRunningWithDebugModules;
 }
