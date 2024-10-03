@@ -37,11 +37,6 @@
 #include "vstdlib/vstdlib.h"
 
 
-#if defined( AddJob )  // windows.h print function collisions
-	#undef AddJob
-	#undef GetJob
-#endif
-
 #if defined( VSTDLIB_DLL_EXPORT )
 	#define JOB_INTERFACE DLL_EXPORT
 	#define JOB_OVERLOAD DLL_GLOBAL_EXPORT
@@ -64,17 +59,17 @@ class CJob;
 enum JobStatusEnum_t {
 	// Use negative for errors
 	JOB_OK,                 // operation is successful
-	JOB_STATUS_PENDING,     // file is properly queued, waiting for service
-	JOB_STATUS_INPROGRESS,  // file is being accessed
-	JOB_STATUS_ABORTED,     // file was aborted by caller
-	JOB_STATUS_UNSERVICED,  // file is not yet queued
+	JOB_STATUS_PENDING,     // job is properly queued, waiting for service
+	JOB_STATUS_INPROGRESS,  // job is being accessed
+	JOB_STATUS_ABORTED,     // job was aborted by the caller
+	JOB_STATUS_UNSERVICED,  // job is not yet queued
 };
 
 typedef int JobStatus_t;
 
 enum JobFlags_t {
 	JF_IO = 1 << 0,            // The job primarily blocks on IO or hardware
-	JF_BOOST_THREAD = 1 << 1,  // Up the thread priority to max allowed while processing task
+	JF_BOOST_THREAD = 1 << 1,  // Up the thread priority to max allowed while processing the task
 	JF_SERIAL = 1 << 2,        // Job cannot be executed out of order relative to other "strict" jobs
 	JF_QUEUE = 1 << 3,         // Queue it, even if not an IO job
 };
