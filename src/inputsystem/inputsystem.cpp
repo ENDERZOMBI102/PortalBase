@@ -1,10 +1,10 @@
 //
 // Created by ENDERZOMBI102 on 06/09/2023.
 //
-#include "SDL3/SDL.h"
-#include "ButtonEntry.hpp"
-#include "icommandline.h"
 #include "inputsystem.hpp"
+#include "SDL3/SDL.h"
+#include "buttonentry.hpp"
+#include "icommandline.h"
 
 InitReturnVal_t CInputSystem::Init() {
 	int res{ SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) };
@@ -55,14 +55,14 @@ void CInputSystem::DetachFromWindow() {
 	m_SdlWindow = nullptr;
 }
 
-void CInputSystem::EnableInput( bool bEnable ) {
+void CInputSystem::EnableInput( const bool bEnable ) {
 	m_Enabled = bEnable;
 }
 
-void CInputSystem::EnableMessagePump( bool bEnable ) {
+void CInputSystem::EnableMessagePump( const bool bEnable ) {
 	// asked to disable
 	if ( bEnable ) {
-		// if are we already disabled skip
+		// if we are already disabled, skip
 		if (! m_Running ) {
 			return;
 		}
@@ -84,6 +84,7 @@ void CInputSystem::PollInputState() {
 	if (! m_Enabled ) {
 		return;
 	}
+	m_PoolCount += 1;
 	AssertMsg( false, "TODO: `CInputSystem::PollInputState()` not implemented" );
 }
 
@@ -93,23 +94,21 @@ int CInputSystem::GetPollTick() const {
 	return 0;
 }
 
-bool CInputSystem::IsButtonDown( ButtonCode_t code ) const {
-	if ( code >= ButtonCode_t::BUTTON_CODE_LAST ) {
-		AssertMsg( false, "Given ButtonCode_t is too high! (%d > %d)", code, ButtonCode_t::BUTTON_CODE_LAST );
+bool CInputSystem::IsButtonDown( const ButtonCode_t pCode ) const {
+	if ( pCode >= ButtonCode_t::BUTTON_CODE_LAST ) {
+		AssertMsg( false, "Given ButtonCode_t is too high! (%d > %d)", pCode, ButtonCode_t::BUTTON_CODE_LAST );
 		return false;
 	}
 
-	return m_State.m_Buttons[ code ];
+	return m_Buttons[ pCode ].pressed;
 }
 
-int CInputSystem::GetButtonPressedTick( ButtonCode_t code ) const {
-	AssertMsg( false, "TODO: `CInputSystem::GetButtonPressedTick( %d )` not implemented", code );
-	return 0;
+int CInputSystem::GetButtonPressedTick( const ButtonCode_t pCode ) const {
+	return m_Buttons[ pCode ].pressTick;
 }
 
-int CInputSystem::GetButtonReleasedTick( ButtonCode_t code ) const {
-	AssertMsg( false, "TODO: `CInputSystem::GetButtonReleasedTick( %d )` not implemented", code );
-	return 0;
+int CInputSystem::GetButtonReleasedTick( const ButtonCode_t pCode ) const {
+	return m_Buttons[ pCode ].releaseTick;
 }
 
 int CInputSystem::GetAnalogValue( AnalogCode_t code ) const {
@@ -123,17 +122,15 @@ int CInputSystem::GetAnalogDelta( AnalogCode_t code ) const {
 }
 
 int CInputSystem::GetEventCount() const {
-	AssertMsg( false, "TODO: `CInputSystem::GetEventCount()` not implemented" );
-	return 0;
+	return m_EventQueue.Count();
 }
 
 const InputEvent_t* CInputSystem::GetEventData() const {
-	AssertMsg( false, "TODO: `CInputSystem::GetEventData()` not implemented" );
-	return nullptr;
+	return &m_EventQueue.Head();
 }
 
 void CInputSystem::PostUserEvent( const InputEvent_t& event ) {
-	AssertMsg( false, "TODO: `CInputSystem::PostUserEvent( { m_nType: %d, m_nTick: %d, m_nData: %d, m_nData2: %d, m_nData3: %d } )` not implemented", event.m_nType, event.m_nTick, event.m_nData, event.m_nData2, event.m_nData3 );
+	m_EventQueue.Insert( event );
 }
 
 int CInputSystem::GetJoystickCount() const {
@@ -169,36 +166,36 @@ void CInputSystem::StopRumble() {
 }
 
 void CInputSystem::ResetInputState() {
-	AssertMsg( false, "TODO: `CInputSystem::ResetInputState()` not implemented" );
 	// reset button states
-	V_memset( &m_State.m_Buttons, 0, ButtonCode_t::BUTTON_CODE_COUNT );
+	V_memset( &m_Buttons, 0, sizeof(ButtonState) * ButtonCode_t::BUTTON_CODE_COUNT );
 	// reset mouse motion accumulators
-	m_State.m_MouseAccX = 0;
-	m_State.m_MouseAccY = 0;
+	m_MouseAccX = 0;
+	m_MouseAccY = 0;
+	m_PoolCount = 0;
 }
 
 void CInputSystem::SetPrimaryUserId( int userId ) {
 	AssertMsg( false, "TODO: `CInputSystem::SetPrimaryUserId( %d )` not implemented", userId );
 }
 
-const char* CInputSystem::ButtonCodeToString( ButtonCode_t code ) const {
-	for ( auto entry : BUTTON_MAP ) {
-		if ( entry.code == code ) {
-			return entry.name;
+const char* CInputSystem::ButtonCodeToString( const ButtonCode_t pCode ) const {
+	for ( const auto [name, code] : BUTTON_MAP ) {
+		if ( code == pCode ) {
+			return name;
 		}
 	}
 	return "";
 }
 
-const char* CInputSystem::AnalogCodeToString( AnalogCode_t code ) const {
-	AssertMsg( false, "TODO: `CInputSystem::AnalogCodeToString( %d )` not implemented", code );
+const char* CInputSystem::AnalogCodeToString( AnalogCode_t pCode ) const {
+	AssertMsg( false, "TODO: `CInputSystem::AnalogCodeToString( %d )` not implemented", pCode );
 	return nullptr;
 }
 
 ButtonCode_t CInputSystem::StringToButtonCode( const char* pString ) const {
-	for ( auto& entry : BUTTON_MAP ) {
-		if ( entry.name && Q_strcmp( entry.name, pString ) == 0 ) {
-			return entry.code;
+	for ( const auto& [name, code] : BUTTON_MAP ) {
+		if ( Q_strcmp( name, pString ) == 0 ) {
+			return code;
 		}
 	}
 	return BUTTON_CODE_INVALID;
@@ -218,8 +215,8 @@ ButtonCode_t CInputSystem::VirtualKeyToButtonCode( int nVirtualKey ) const {
 	return KEY_CAPSLOCK;
 }
 
-int CInputSystem::ButtonCodeToVirtualKey( ButtonCode_t code ) const {
-	AssertMsg( false, "TODO: `CInputSystem::ButtonCodeToVirtualKey( %d )` not implemented", code );
+int CInputSystem::ButtonCodeToVirtualKey( ButtonCode_t pCode ) const {
+	AssertMsg( false, "TODO: `CInputSystem::ButtonCodeToVirtualKey( %d )` not implemented", pCode );
 	return 0;
 }
 
@@ -229,8 +226,7 @@ ButtonCode_t CInputSystem::ScanCodeToButtonCode( int lParam ) const {
 }
 
 int CInputSystem::GetPollCount() const {
-	AssertMsg( false, "TODO: `CInputSystem::GetPollCount()` not implemented" );
-	return 0;
+	return m_PoolCount;
 }
 
 void CInputSystem::SetCursorPosition( int x, int y ) {
@@ -245,22 +241,22 @@ void* CInputSystem::GetHapticsInterfaceAddress() const {
 	return nullptr;
 }
 
-void CInputSystem::SetNovintPure( bool bPure ) {
-	AssertMsg( false, "TODO: `CInputSystem::SetNovintPure( %d )` not implemented", bPure );
+void CInputSystem::SetNovintPure( bool pPure ) {
+	AssertMsg( false, "TODO: `CInputSystem::SetNovintPure( %d )` not implemented", pPure );
 }
 
 bool CInputSystem::GetRawMouseAccumulators( int& accumX, int& accumY ) {
-	accumX = m_State.m_MouseAccX;
-	m_State.m_MouseAccX = 0;
+	accumX = m_MouseAccX;
+	m_MouseAccX = 0;
 
-	accumY = m_State.m_MouseAccY;
-	m_State.m_MouseAccY = 0;
+	accumY = m_MouseAccY;
+	m_MouseAccY = 0;
 
 	return true;
 }
 
-void CInputSystem::SetConsoleTextMode( bool bConsoleTextMode ) {
-	m_ConsoleTextMode = bConsoleTextMode;
+void CInputSystem::SetConsoleTextMode( const bool pConsoleTextMode ) {
+	m_ConsoleTextMode = pConsoleTextMode;
 }
 
 namespace {
@@ -271,16 +267,27 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CInputSystem, IInputSystem, INPUTSYSTEM_INTER
 int CInputSystem::CMessagePumpThread::Run() {
 	SDL_Event sdlEvent;
 	while ( s_InputSystem.m_Running ) {
-
 		while ( SDL_PollEvent( &sdlEvent ) ) {
 			InputEvent_t inputEvent{};
 			switch ( sdlEvent.type ) {
 				case SDL_EventType::SDL_EVENT_QUIT:
 					inputEvent.m_nType = InputEventType_t::IE_Quit;
 					break;
+				case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_DOWN:
+					inputEvent.m_nType = InputEventType_t::IE_ButtonPressed;
+					inputEvent.m_nData = sdlEvent.button.button;
+					inputEvent.m_nTick = SDL_GetTicks();
+					break;
+				case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_UP:
+					inputEvent.m_nType = InputEventType_t::IE_ButtonReleased;
+					inputEvent.m_nData = sdlEvent.button.button;
+					inputEvent.m_nTick = SDL_GetTicks();
+					break;
+				default:
+					Warning( "Missing event: %d", sdlEvent.type );
 			}
 
-			s_InputSystem.m_EventQueue.QueueMessage( inputEvent );
+			s_InputSystem.m_EventQueue.Insert( inputEvent );
 		}
 	}
 	return 0;

@@ -27,7 +27,7 @@ public:
 	// button/analog states when it is called if the system is disabled.
 	virtual void EnableInput( bool bEnable ) = 0;
 
-	// Enables/disables the windows message pump. PollInputState will not
+	// Enables/disables the Windows message pump. PollInputState will not
 	// Peek/Dispatch messages if this is disabled
 	virtual void EnableMessagePump( bool bEnable ) = 0;
 
@@ -38,19 +38,19 @@ public:
 	virtual int GetPollTick() const = 0;
 
 	// Is a button down? "Buttons" are binary-state input devices (mouse buttons, keyboard keys)
-	virtual bool IsButtonDown( ButtonCode_t code ) const = 0;
+	virtual bool IsButtonDown( ButtonCode_t pCode ) const = 0;
 
 	// Returns the tick at which the button was pressed and released
-	virtual int GetButtonPressedTick( ButtonCode_t code ) const = 0;
-	virtual int GetButtonReleasedTick( ButtonCode_t code ) const = 0;
+	virtual int GetButtonPressedTick( ButtonCode_t pCode ) const = 0;
+	virtual int GetButtonReleasedTick( ButtonCode_t pCode ) const = 0;
 
 	// Gets the value of an analog input device this frame
 	// Includes joysticks, mousewheel, mouse
-	virtual int GetAnalogValue( AnalogCode_t code ) const = 0;
+	virtual int GetAnalogValue( AnalogCode_t pCode ) const = 0;
 
 	// Gets the change in a particular analog input device this frame
 	// Includes joysticks, mousewheel, mouse
-	virtual int GetAnalogDelta( AnalogCode_t code ) const = 0;
+	virtual int GetAnalogDelta( AnalogCode_t pCode ) const = 0;
 
 	// Returns the input events since the last poll
 	virtual int GetEventCount() const = 0;
@@ -106,7 +106,7 @@ public:
 	// NVNT get address to haptics interface
 	virtual void* GetHapticsInterfaceAddress() const = 0;
 
-	virtual void SetNovintPure( bool bPure ) = 0;
+	virtual void SetNovintPure( bool pPure ) = 0;
 
 	// read and clear accumulated raw input values
 	virtual bool GetRawMouseAccumulators( int& accumX, int& accumY ) = 0;
@@ -116,5 +116,5 @@ public:
 	// this needs to be called before CInputSystem::Init (e.g. in PreInit of
 	// some system) if you want ot prevent the joystick system from ever
 	// being initialized.
-	virtual void SetConsoleTextMode( bool bConsoleTextMode ) = 0;
+	virtual void SetConsoleTextMode( bool pConsoleTextMode ) = 0;
 };

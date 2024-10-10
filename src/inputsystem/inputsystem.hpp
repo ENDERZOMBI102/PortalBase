@@ -1,12 +1,10 @@
 //
 // Created by ENDERZOMBI102 on 11/09/2023.
 //
-
 #pragma once
-
 #include "inputsystem/iinputsystem.h"
 #include "tier1/tier1.h"
-#include <memory>
+#include "utlqueue.h"
 
 
 class CInputSystem : public CTier1AppSystem<IInputSystem> {
@@ -26,10 +24,10 @@ public:  // IInputSystem
 
 	int GetPollTick() const override;
 
-	bool IsButtonDown( ButtonCode_t code ) const override;
+	bool IsButtonDown( ButtonCode_t pCode ) const override;
 
-	int GetButtonPressedTick( ButtonCode_t code ) const override;
-	int GetButtonReleasedTick( ButtonCode_t code ) const override;
+	int GetButtonPressedTick( ButtonCode_t pCode ) const override;
+	int GetButtonReleasedTick( ButtonCode_t pCode ) const override;
 
 	int GetAnalogValue( AnalogCode_t code ) const override;
 
@@ -55,15 +53,15 @@ public:  // IInputSystem
 
 	void SetPrimaryUserId( int userId ) override;
 
-	const char* ButtonCodeToString( ButtonCode_t code ) const override;
-	const char* AnalogCodeToString( AnalogCode_t code ) const override;
+	const char* ButtonCodeToString( ButtonCode_t pCode ) const override;
+	const char* AnalogCodeToString( AnalogCode_t pCode ) const override;
 	ButtonCode_t StringToButtonCode( const char *pString ) const override;
 	AnalogCode_t StringToAnalogCode( const char *pString ) const override;
 
 	void SleepUntilInput( int nMaxSleepTimeMS = -1 ) override;
 
 	ButtonCode_t VirtualKeyToButtonCode( int nVirtualKey ) const override;
-	int ButtonCodeToVirtualKey( ButtonCode_t code ) const override;
+	int ButtonCodeToVirtualKey( ButtonCode_t pCode ) const override;
 	ButtonCode_t ScanCodeToButtonCode( int lParam ) const override;
 
 	int GetPollCount() const override;
@@ -72,33 +70,36 @@ public:  // IInputSystem
 
 	void* GetHapticsInterfaceAddress() const override;
 
-	void SetNovintPure( bool bPure ) override;
+	void SetNovintPure( bool pPure ) override;
 
 	bool GetRawMouseAccumulators( int& accumX, int& accumY ) override;
 
-	void SetConsoleTextMode( bool bConsoleTextMode ) override;
+	void SetConsoleTextMode( bool pConsoleTextMode ) override;
 private:
 	class CMessagePumpThread : public CThread {
 		int Run() override;
 	};
-	struct JoystickState_t {
+	struct JoystickState {
 
 	};
-	struct State_t {
-		bool m_Buttons[ButtonCode_t::BUTTON_CODE_COUNT] { false };
-		int m_MouseAccX{};
-		int m_MouseAccY{};
-		JoystickState_t m_Joysticks[4] {};
+	struct ButtonState {
+		bool pressed{ false };
+		int32 pressTick{};
+		int32 releaseTick{};
 	};
+private:
 	SDL_Window* m_SdlWindow{nullptr};
-
 
 	bool m_Enabled{false};
 	bool m_Running{false};
 	bool m_ConsoleTextMode{false};
+	int32 m_PoolCount{0};
 
-	State_t m_State{};
+	int32 m_MouseAccX{};
+	int32 m_MouseAccY{};
+	JoystickState m_Joysticks[4] { };
+	ButtonState m_Buttons[ButtonCode_t::BUTTON_CODE_COUNT] { };
 
-	CMessageQueue<InputEvent_t> m_EventQueue{};
+	CUtlQueue<InputEvent_t> m_EventQueue{};
 	CMessagePumpThread m_EventPump{};
 };

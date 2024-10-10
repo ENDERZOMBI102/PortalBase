@@ -1,12 +1,11 @@
 # inputsystem.cmake
 
 set( INPUTSYSTEM_DIR ${CMAKE_CURRENT_LIST_DIR} )
-set(
-	INPUTSYSTEM_SOURCE_FILES
-		"${INPUTSYSTEM_DIR}/inputsystem.cpp"
-		"${INPUTSYSTEM_DIR}/inputsystem.hpp"
-		"${INPUTSYSTEM_DIR}/ButtonEntry.cpp"
-		"${INPUTSYSTEM_DIR}/ButtonEntry.hpp"
+set( INPUTSYSTEM_SOURCE_FILES
+	"${INPUTSYSTEM_DIR}/inputsystem.cpp"
+	"${INPUTSYSTEM_DIR}/inputsystem.hpp"
+	"${INPUTSYSTEM_DIR}/buttonentry.cpp"
+	"${INPUTSYSTEM_DIR}/buttonentry.hpp"
 )
 
 add_library( inputsystem MODULE ${INPUTSYSTEM_SOURCE_FILES} )
@@ -24,7 +23,7 @@ target_include_directories( inputsystem
 )
 target_link_libraries( inputsystem
 	PRIVATE
-#		appframework
+		appframework
 		tier0
 		tier1
 		vstdlib
