@@ -86,7 +86,6 @@ set( ADDITIONAL_COMPILE_DEFINITIONS_LIB )
 
 # SETUP THIRD PARTY, before we "customize" our compilation process
 include( "thirdparty/init.cmake" )
-include( "_cmake_scripts/dlang.cmake" )
 
 # Init project structure
 include( "_cmake_scripts/pch_skip.cmake" )

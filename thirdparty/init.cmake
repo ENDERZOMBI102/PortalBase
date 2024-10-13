@@ -11,9 +11,9 @@ function( submodule name folder )
 endfunction()
 
 
-# For gmodules, declare them here, for vcpkg deps, declare them directly in the dependant project
+# For git submodules, declare them here
 # ----- SDL -----
-set( SDL_STATIC OFF )
+set( SDL_STATIC ON )
 set( SDL_SHARED ON )
 set( SDL_ATOMIC OFF )
 set( SDL_AUDIO  OFF )
