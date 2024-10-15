@@ -59,6 +59,7 @@ ThreadHandle_t CreateSimpleThread( ThreadFunc_t pHandle, void* pParam, unsigned 
 }
 bool ReleaseThreadHandle( ThreadHandle_t pHandle ) {
 	AssertUnreachable();
+	return {};
 }
 
 void ThreadSleep( unsigned pDurationMs ) {
@@ -92,9 +93,11 @@ ThreadHandle_t ThreadGetCurrentHandle() {
 }
 int ThreadGetPriority( ThreadHandle_t hThread ) {
 	AssertUnreachable();
+	return {};
 }
 bool ThreadSetPriority( ThreadHandle_t hThread, int priority ) {
 	AssertUnreachable();
+	return {};
 }
 bool ThreadInMainThread() {
     return g_MainThreadId == ThreadGetCurrentId();
@@ -112,6 +115,7 @@ ThreadedLoadLibraryFunc_t GetThreadedLoadLibraryFunc() {
 
 bool ThreadJoin( ThreadHandle_t, unsigned timeout ) {
 	AssertUnreachable();
+	return {};
 }
 void ThreadDetach( ThreadHandle_t ) {
 	AssertUnreachable();
