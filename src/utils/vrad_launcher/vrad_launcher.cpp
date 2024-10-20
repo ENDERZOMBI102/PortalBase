@@ -1,22 +1,18 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:
+// Purpose:  Defines the entry point for the console application.
 //
 // $NoKeywords: $
 //
 //=============================================================================//
-// vrad_launcher.cpp : Defines the entry point for the console application.
-//
-
 #include "interface.h"
 #include "ilaunchabledll.h"
 #include "tier0/icommandline.h"
 #include "tier1/strtools.h"
 
 
-
 void MakeFullPath( const char* pIn, char* pOut, int outLen ) {
-	if ( pIn[ 0 ] == '/' || pIn[ 0 ] == '\\' || pIn[ 1 ] == ':' ) {
+	if ( pIn[ 0 ] == '/' or pIn[ 0 ] == '\\' or pIn[ 1 ] == ':' ) {
 		// It's already a full path.
 		Q_strncpy( pOut, pIn, outLen );
 	} else {
@@ -26,7 +22,7 @@ void MakeFullPath( const char* pIn, char* pOut, int outLen ) {
 	}
 }
 
-int main( int argc, char* argv[] ) {
+int main( const int argc, char* argv[] ) {
 	char dllName[ 512 ];
 
 	CommandLine()->CreateCmdLine( argc, argv );
@@ -34,12 +30,14 @@ int main( int argc, char* argv[] ) {
 	// check whether they used the -both switch. If this is specified, vrad will be run
 	// twice, once with -hdr and once without
 	int both_arg = 0;
-	for ( int arg = 1; arg < argc; arg++ )
+	for ( int arg = 1; arg < argc; arg += 1 ) {
 		if ( Q_stricmp( argv[ arg ], "-both" ) == 0 ) {
 			both_arg = arg;
 		}
+	}
 
-	char fullPath[ 512 ], redirectFilename[ 512 ];
+	char fullPath[ 512 ];
+	char redirectFilename[ 512 ];
 	MakeFullPath( argv[ 0 ], fullPath, sizeof( fullPath ) );
 	Q_StripFilename( fullPath );
 	Q_snprintf( redirectFilename, sizeof( redirectFilename ), "%s\\%s", fullPath, "vrad.redirect" );
@@ -50,14 +48,16 @@ int main( int argc, char* argv[] ) {
 	if ( fp ) {
 		if ( fgets( dllName, sizeof( dllName ), fp ) ) {
 			char* pEnd = strstr( dllName, "\n" );
-			if ( pEnd )
+			if ( pEnd ) {
 				*pEnd = 0;
+			}
 
 			pModule = Sys_LoadModule( dllName );
-			if ( pModule )
+			if ( pModule ) {
 				printf( "Loaded alternate VRAD DLL (%s) specified in vrad.redirect.\n", dllName );
-			else
+			} else {
 				printf( "Can't find '%s' specified in vrad.redirect.\n", dllName );
+			}
 		}
 
 		fclose( fp );
@@ -65,23 +65,24 @@ int main( int argc, char* argv[] ) {
 
 	int returnValue = 0;
 
-	for ( int mode = 0; mode < 2; mode++ ) {
-		if ( mode && ( !both_arg ) )
+	for ( int mode = 0; mode < 2; mode += 1 ) {
+		if ( mode and not both_arg ) {
 			continue;
+		}
 
-		// If it didn't load the module above, then use the
-		if ( !pModule ) {
+		// If it didn't load the module above, then use the default one
+		if ( not pModule ) {
 			strcpy( dllName, "vrad_dll" DLL_EXT_STRING );
 			pModule = Sys_LoadModule( dllName );
 		}
 
-		if ( !pModule ) {
+		if ( not pModule ) {
 			printf( "vrad_launcher error: can't load %s\n%s", dllName, Sys_LastErrorString() );
 			return 1;
 		}
 
 		CreateInterfaceFn fn = Sys_GetFactory( pModule );
-		if ( !fn ) {
+		if ( not fn ) {
 			printf( "vrad_launcher error: can't get factory from %s\n", dllName );
 			Sys_UnloadModule( pModule );
 			return 2;
@@ -89,14 +90,15 @@ int main( int argc, char* argv[] ) {
 
 		int retCode = 0;
 		auto* pDLL = static_cast<ILaunchableDLL*>( fn( LAUNCHABLE_DLL_INTERFACE_VERSION, &retCode ) );
-		if ( !pDLL ) {
+		if ( not pDLL ) {
 			printf( "vrad_launcher error: can't get ILaunchableDLL interface from %s\n", dllName );
 			Sys_UnloadModule( pModule );
 			return 3;
 		}
 
-		if ( both_arg )
-			strcpy( argv[ both_arg ], ( mode ) ? "-hdr" : "-ldr" );
+		if ( both_arg ) {
+			strcpy( argv[ both_arg ], mode ? "-hdr" : "-ldr" );
+		}
 		returnValue = pDLL->main( argc, argv );
 		Sys_UnloadModule( pModule );
 		pModule = nullptr;

@@ -36,7 +36,7 @@ public:
 	RunThreadsFn m_Fn;
 };
 
-CRunThreadsData g_RunThreadsData[ MAX_THREADS ];
+CRunThreadsData g_RunThreadsData[MAX_THREADS];
 
 
 int dispatch;
@@ -47,9 +47,9 @@ bool threaded;
 bool g_bLowPriorityThreads = false;
 
 #if IsWindows()
-	HANDLE g_ThreadHandles[ MAX_THREADS ];
+	HANDLE g_ThreadHandles[MAX_THREADS];
 #elif IsPosix()
-	pthread_t g_ThreadHandles[ MAX_THREADS ];
+	pthread_t g_ThreadHandles[MAX_THREADS];
 #endif
 
 /*
@@ -58,8 +58,6 @@ GetThreadWork
 =============
 */
 int GetThreadWork() {
-	int r;
-
 	ThreadLock();
 
 	if ( dispatch == workcount ) {
@@ -69,8 +67,8 @@ int GetThreadWork() {
 
 	UpdatePacifier( static_cast<float>( dispatch ) / static_cast<float>( workcount ) );
 
-	r = dispatch;
-	dispatch++;
+	const int r = dispatch;
+	dispatch += 1;
 	ThreadUnlock();
 
 	return r;
@@ -80,10 +78,8 @@ int GetThreadWork() {
 ThreadWorkerFn workfunction;
 
 void ThreadWorkerFunction( int iThread, void* ) {
-	int work;
-
 	while ( true ) {
-		work = GetThreadWork();
+		const int work = GetThreadWork();
 		if ( work == -1 ) {
 			break;
 		}
@@ -103,7 +99,7 @@ void RunThreadsOnIndividual( int workcnt, bool showpacifier, ThreadWorkerFn func
 
 int numthreads = -1;
 CThreadMutex mutex;
-static int enter;
+static bool enter;
 
 void SetLowPriority() {
 	#if IsWindows()
@@ -125,7 +121,7 @@ void ThreadSetDefault() {
 			numthreads = sysconf( _SC_NPROCESSORS_ONLN );
 		#endif
 		if ( numthreads < 1 || numthreads > 32 ) {
-				numthreads = 1;
+			numthreads = 1;
 		}
 	}
 
@@ -141,7 +137,7 @@ void ThreadLock() {
 	if ( enter ) {
 		Error( "Recursive ThreadLock\n" );
 	}
-	enter = 1;
+	enter = true;
 }
 
 void ThreadUnlock() {
@@ -151,22 +147,22 @@ void ThreadUnlock() {
 	if (! enter ) {
 		Error( "ThreadUnlock without lock\n" );
 	}
-	enter = 0;
+	enter = false;
 	mutex.Unlock();
 }
 
 // This runs in the thread and dispatches a RunThreadsFn call.
 #if IsWindows()
     DWORD WINAPI InternalRunThreadsFn( LPVOID pParameter ) {
-        auto pData = static_cast<CRunThreadsData*>( pParameter );
+        const auto pData = static_cast<CRunThreadsData*>( pParameter );
         pData->m_Fn( pData->m_iThread, pData->m_pUserData );
         return {};
     }
 #elif IsPosix()
     void* InternalRunThreadsFn( void* pParameter ) {
-        auto pData = static_cast<CRunThreadsData*>( pParameter );
+        const auto pData = static_cast<CRunThreadsData*>( pParameter );
         pData->m_Fn( pData->m_iThread, pData->m_pUserData );
-        return nullptr;
+        return {};
     }
 #endif
 
@@ -180,17 +176,17 @@ void RunThreads_Start( RunThreadsFn fn, void* pUserData, ERunThreadsPriority ePr
 	}
 
 	for ( int i = 0; i < numthreads; i++ ) {
-		g_RunThreadsData[ i ].m_iThread = i;
-		g_RunThreadsData[ i ].m_pUserData = pUserData;
-		g_RunThreadsData[ i ].m_Fn = fn;
+		g_RunThreadsData[i].m_iThread = i;
+		g_RunThreadsData[i].m_pUserData = pUserData;
+		g_RunThreadsData[i].m_Fn = fn;
 		#if IsWindows()
-			g_ThreadHandles[ i ] = CreateThread(
-				nullptr,                 // [inp]  LPSECURITY_ATTRIBUTES lpThreadAttributes,
-				0,                       // [inp]                  DWORD dwStackSize,
-				InternalRunThreadsFn,    // [inp] LPTHREAD_START_ROUTINE lpStartAddress,
-				&g_RunThreadsData[ i ],  // [inp]                 LPVOID lpParameter,
-				0,                       // [inp]                  DWORD dwCreationFlags,
-				nullptr                  // [out]                LPDWORD lpThreadId
+			g_ThreadHandles[i] = CreateThread(
+				nullptr,               // [inp]  LPSECURITY_ATTRIBUTES lpThreadAttributes,
+				0,                     // [inp]                  DWORD dwStackSize,
+				InternalRunThreadsFn,  // [inp] LPTHREAD_START_ROUTINE lpStartAddress,
+				&g_RunThreadsData[i],  // [inp]                 LPVOID lpParameter,
+				0,                     // [inp]                  DWORD dwCreationFlags,
+				nullptr                // [out]                LPDWORD lpThreadId
 			);
 
 			#define THREAD_PRIORITY_LOWEST THREAD_BASE_PRIORITY_MIN
@@ -206,7 +202,7 @@ void RunThreads_Start( RunThreadsFn fn, void* pUserData, ERunThreadsPriority ePr
 			#define THREAD_MODE_BACKGROUND_BEGIN 0x00010000
 			#define THREAD_MODE_BACKGROUND_END 0x00020000
 		#elif IsPosix()
-			pthread_create( &g_ThreadHandles[ i ], nullptr, InternalRunThreadsFn, &g_RunThreadsData[i] );
+			pthread_create( &g_ThreadHandles[i], nullptr, InternalRunThreadsFn, &g_RunThreadsData[i] );
 			#define SetThreadPriority      pthread_setschedprio
 			#define THREAD_PRIORITY_LOWEST 19
 			#define THREAD_PRIORITY_IDLE   0
@@ -249,7 +245,7 @@ RunThreadsOn
 =============
 */
 void RunThreadsOn( int workcnt, bool showpacifier, RunThreadsFn fn, void* pUserData ) {
-	auto start = static_cast<int>( Plat_FloatTime() );
+	const auto start = static_cast<int>( Plat_FloatTime() );
 	dispatch = 0;
 	workcount = workcnt;
 	StartPacifier( "" );
@@ -264,7 +260,7 @@ void RunThreadsOn( int workcnt, bool showpacifier, RunThreadsFn fn, void* pUserD
 	RunThreads_Start( fn, pUserData );
 	RunThreads_End();
 
-	auto end = static_cast<int>( Plat_FloatTime() );
+	const auto end = static_cast<int>( Plat_FloatTime() );
 	if ( pacifier ) {
 		EndPacifier( false );
 		printf( " (%i)\n", end - start );

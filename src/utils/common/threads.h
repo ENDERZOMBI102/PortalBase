@@ -13,10 +13,10 @@
 #pragma once
 
 
-// Arrays that are indexed by thread should always be MAX_TOOL_THREADS+1
-// large so THREADINDEX_MAIN can be used from the main thread.
+// Arrays that are indexed by thread idx should always be MAX_TOOL_THREADS+1
+// large, so THREADINDEX_MAIN can be used from the main thread.
 #define MAX_TOOL_THREADS 16
-#define THREADINDEX_MAIN ( MAX_TOOL_THREADS )
+#define THREADINDEX_MAIN (MAX_TOOL_THREADS)
 
 
 extern int numthreads;
@@ -24,8 +24,8 @@ extern int numthreads;
 // If set to true, then all the threads that are created are low priority.
 extern bool g_bLowPriorityThreads;
 
-typedef void ( *ThreadWorkerFn )( int iThread, int iWorkItem );
-typedef void ( *RunThreadsFn )( int iThread, void* pUserData );
+using ThreadWorkerFn = void (*)( int iThread, int iWorkItem );
+using RunThreadsFn = void (*)( int iThread, void* pUserData );
 
 
 enum ERunThreadsPriority {

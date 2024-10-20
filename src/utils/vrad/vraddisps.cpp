@@ -540,6 +540,7 @@ void CVRadDispMgr::StartRayTest( DispTested_t &dispTested )
 {
 	if( m_DispTrees.Size() > 0 )
 	{
+
 		if( dispTested.m_pTested == 0 )
 		{
 			dispTested.m_pTested = new int[m_DispTrees.Size()];

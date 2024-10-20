@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -29,93 +29,85 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CVRadDLL, ILaunchableDLL, LAUNCHABLE_DLL_INTE
 //		- 51 megs
 // ---------------------------------------------------------------------------- //
 
-class dat
-{
+class dat {
 public:
-	const char *name;
+	const char* name;
 	int size;
 };
-#define DATENTRY(name) {#name, sizeof(name)}
+#define DATENTRY( name ) \
+	{ #name, sizeof( name ) }
 
-dat g_Dats[] =
-{
-	DATENTRY(dmodels),
-	DATENTRY(dvisdata),
-	DATENTRY(dlightdataLDR),
-	DATENTRY(dlightdataHDR),
-	DATENTRY(dentdata),
-	DATENTRY(dleafs),
-	DATENTRY(dplanes),
-	DATENTRY(dvertexes),
-	DATENTRY(g_vertnormalindices),
-	DATENTRY(g_vertnormals),
-	DATENTRY(texinfo),
-	DATENTRY(dtexdata),
-	DATENTRY(g_dispinfo),
-	DATENTRY(dorigfaces),
-	DATENTRY(g_primitives),
-	DATENTRY(g_primverts),
-	DATENTRY(g_primindices),
-	DATENTRY(dfaces),
-	DATENTRY(dedges),
-	DATENTRY(dleaffaces),
-	DATENTRY(dleafbrushes),
-	DATENTRY(dsurfedges),
-	DATENTRY(dbrushes),
-	DATENTRY(dbrushsides),
-	DATENTRY(dareas),
-	DATENTRY(dareaportals),
-	DATENTRY(dworldlights),
-	DATENTRY(dleafwaterdata),
-	DATENTRY(g_ClipPortalVerts),
-	DATENTRY(g_CubemapSamples),
-	DATENTRY(g_TexDataStringData),
-	DATENTRY(g_TexDataStringTable),
-	DATENTRY(g_Overlays)
+dat g_Dats[] {
+	DATENTRY( dmodels ),
+	DATENTRY( dvisdata ),
+	DATENTRY( dlightdataLDR ),
+	DATENTRY( dlightdataHDR ),
+	DATENTRY( dentdata ),
+	DATENTRY( dleafs ),
+	DATENTRY( dplanes ),
+	DATENTRY( dvertexes ),
+	DATENTRY( g_vertnormalindices ),
+	DATENTRY( g_vertnormals ),
+	DATENTRY( texinfo ),
+	DATENTRY( dtexdata ),
+	DATENTRY( g_dispinfo ),
+	DATENTRY( dorigfaces ),
+	DATENTRY( g_primitives ),
+	DATENTRY( g_primverts ),
+	DATENTRY( g_primindices ),
+	DATENTRY( dfaces ),
+	DATENTRY( dedges ),
+	DATENTRY( dleaffaces ),
+	DATENTRY( dleafbrushes ),
+	DATENTRY( dsurfedges ),
+	DATENTRY( dbrushes ),
+	DATENTRY( dbrushsides ),
+	DATENTRY( dareas ),
+	DATENTRY( dareaportals ),
+	DATENTRY( dworldlights ),
+	DATENTRY( dleafwaterdata ),
+	DATENTRY( g_ClipPortalVerts ),
+	DATENTRY( g_CubemapSamples ),
+	DATENTRY( g_TexDataStringData ),
+	DATENTRY( g_TexDataStringTable ),
+	DATENTRY( g_Overlays )
 };
 
-int CalcDatSize()
-{
+int CalcDatSize() {
 	int ret = 0;
-	int count = sizeof( g_Dats ) / sizeof( g_Dats[0] );
-	
+	int count = std::size( g_Dats );
+
 	int i;
-	for( i=1; i < count; i++ )
-	{
-		if( g_Dats[i-1].size > g_Dats[i].size )
-		{
-			dat temp = g_Dats[i-1];
-			g_Dats[i-1] = g_Dats[i];
+	for ( i = 1; i < count; i++ ) {
+		if ( g_Dats[i - 1].size > g_Dats[i].size ) {
+			dat temp = g_Dats[i - 1];
+			g_Dats[i - 1] = g_Dats[i];
 			g_Dats[i] = temp;
-			
-			if( i > 1 )
+
+			if ( i > 1 )
 				i -= 2;
 			else
 				i -= 1;
 		}
 	}
 
-	for( i=0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 		ret += g_Dats[i].size;
-	
+
 	return ret;
 }
 
 int g_TotalDatSize = CalcDatSize();
 
 
-
-
-int CVRadDLL::main( int argc, char **argv )
-{
+int CVRadDLL::main( int argc, char** argv ) {
 	return VRAD_Main( argc, argv );
 }
 
 
-bool CVRadDLL::Init( char const *pFilename )
-{
+bool CVRadDLL::Init( char const* pFilename ) {
 	VRAD_Init();
-	
+
 	// Set options and run vrad startup code.
 	do_fast = true;
 	g_bLowPriorityThreads = true;
@@ -126,20 +118,18 @@ bool CVRadDLL::Init( char const *pFilename )
 }
 
 
-void CVRadDLL::Release()
-{
+void CVRadDLL::Release() {
 }
 
 
-void CVRadDLL::GetBSPInfo( CBSPInfo *pInfo )
-{
+void CVRadDLL::GetBSPInfo( CBSPInfo* pInfo ) {
 	pInfo->dlightdata = pdlightdata->Base();
 	pInfo->lightdatasize = pdlightdata->Count();
 
 	pInfo->dfaces = dfaces;
 	pInfo->m_pFacesTouched = g_FacesTouched.Base();
 	pInfo->numfaces = numfaces;
-	
+
 	pInfo->dvertexes = dvertexes;
 	pInfo->numvertexes = numvertexes;
 
@@ -166,12 +156,11 @@ void CVRadDLL::GetBSPInfo( CBSPInfo *pInfo )
 }
 
 
-bool CVRadDLL::DoIncrementalLight( char const *pVMFFile )
-{
+bool CVRadDLL::DoIncrementalLight( char const* pVMFFile ) {
 	char tempFilename[MAX_PATH];
 
 	std::error_code error;
-	auto tempDir = std::filesystem::temp_directory_path(error);
+	auto tempDir = std::filesystem::temp_directory_path( error );
 	if ( error.value() != 0 ) {
 		Error( "DoIncrementalLight: Failed to get temp directory path.\n" );
 	}
@@ -180,14 +169,14 @@ bool CVRadDLL::DoIncrementalLight( char const *pVMFFile )
 	std::sprintf( tempFilename, "%svmf_entities_%ld", tempDir.c_str(), id );
 
 	FileHandle_t fp = g_pFileSystem->Open( tempFilename, "wb" );
-	if( !fp )
+	if ( !fp )
 		return false;
 
-	g_pFileSystem->Write( pVMFFile, strlen(pVMFFile)+1, fp );
+	g_pFileSystem->Write( pVMFFile, strlen( pVMFFile ) + 1, fp );
 	g_pFileSystem->Close( fp );
 
 	// Parse the new entities.
-	if( !LoadEntsFromMapFile( tempFilename ) )
+	if ( !LoadEntsFromMapFile( tempFilename ) )
 		return false;
 
 	// Create lights.
@@ -195,36 +184,30 @@ bool CVRadDLL::DoIncrementalLight( char const *pVMFFile )
 
 	// set up sky cameras
 	ProcessSkyCameras();
-		
+
 	g_bInterrupt = false;
-	if( RadWorld_Go() )
-	{
+	if ( RadWorld_Go() ) {
 		// Save off the last finished lighting results for the BSP.
 		g_LastGoodLightData.CopyArray( pdlightdata->Base(), pdlightdata->Count() );
-		if( g_pIncremental )
+		if ( g_pIncremental )
 			g_pIncremental->GetFacesTouched( g_FacesTouched );
 
 		return true;
-	}
-	else
-	{
+	} else {
 		g_iCurFace = 0;
 		return false;
 	}
 }
 
 
-bool CVRadDLL::Serialize()
-{
-	if( !g_pIncremental )
+bool CVRadDLL::Serialize() {
+	if ( !g_pIncremental )
 		return false;
 
-	if( g_LastGoodLightData.Count() > 0 )
-	{
+	if ( g_LastGoodLightData.Count() > 0 ) {
 		pdlightdata->CopyArray( g_LastGoodLightData.Base(), g_LastGoodLightData.Count() );
 
-		if( g_pIncremental->Serialize() )
-		{
+		if ( g_pIncremental->Serialize() ) {
 			// Delete this so it doesn't keep re-saving it.
 			g_LastGoodLightData.Purge();
 			return true;
@@ -235,15 +218,11 @@ bool CVRadDLL::Serialize()
 }
 
 
-float CVRadDLL::GetPercentComplete()
-{
-	return (float)g_iCurFace / numfaces;
+float CVRadDLL::GetPercentComplete() {
+	return (float) g_iCurFace / numfaces;
 }
 
 
-void CVRadDLL::Interrupt()
-{
+void CVRadDLL::Interrupt() {
 	g_bInterrupt = true;
 }
-
-

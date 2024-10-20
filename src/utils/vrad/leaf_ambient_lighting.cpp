@@ -491,10 +491,11 @@ void ComputeAmbientForLeaf( int iThread, int leafID, CUtlVector<ambientsample_t>
 
 static void ThreadComputeLeafAmbient( int iThread, void* pUserData ) {
 	CUtlVector<ambientsample_t> list;
-	while ( 1 ) {
+	while ( true ) {
 		int leafID = GetThreadWork();
-		if ( leafID == -1 )
+		if ( leafID == -1 ) {
 			break;
+		}
 		list.RemoveAll();
 		ComputeAmbientForLeaf( iThread, leafID, list );
 		// copy to the output array
