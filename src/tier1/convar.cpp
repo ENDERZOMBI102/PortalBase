@@ -931,7 +931,8 @@ public:
 	bool IsFlagSet( int nFlags ) const override { return false; }
 };
 
-static CEmptyConVar s_EmptyConVar;
+CONSTRUCT_EARLY
+static CEmptyConVar s_EmptyConVar{};
 
 ConVarRef::ConVarRef( const char* pName ) {
 	Init( pName, false );
@@ -942,8 +943,10 @@ ConVarRef::ConVarRef( const char* pName, bool bIgnoreMissing ) {
 }
 
 void ConVarRef::Init( const char* pName, bool bIgnoreMissing ) {
-	m_pConVar = g_pCVar ? g_pCVar->FindVar( pName ) : &s_EmptyConVar;
-	if ( !m_pConVar ) {
+	if ( g_pCVar ) {
+		m_pConVar = g_pCVar->FindVar( pName );
+	}
+	if ( m_pConVar == nullptr ) {
 		m_pConVar = &s_EmptyConVar;
 	}
 	m_pConVarState = dynamic_cast<ConVar*>( m_pConVar );

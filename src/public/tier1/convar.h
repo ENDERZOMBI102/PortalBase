@@ -468,8 +468,8 @@ public:
 	const char* GetDefault() const;
 private:
 	// High-speed method to read convar data
-	IConVar* m_pConVar;
-	ConVar* m_pConVarState;
+	IConVar* m_pConVar{ nullptr };
+	ConVar* m_pConVarState{ nullptr };
 };
 
 
