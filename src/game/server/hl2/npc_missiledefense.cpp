@@ -177,7 +177,7 @@ void CNPC_MissileDefense::FireCannons( void )
 	}
 
 	bool fSound = false;
-	if( random->RandomInt( 0, 3 ) == 0 )
+	if( RandomInt( 0, 3 ) == 0 )
 	{
 		fSound = true;
 	}
@@ -195,23 +195,23 @@ void CNPC_MissileDefense::FireCannons( void )
 
 	vecDir = vecTarget - vecCenter;
 	VectorNormalize(vecDir);
-	vecDir.x += random->RandomFloat( -NOISE, NOISE );
-	vecDir.y += random->RandomFloat( -NOISE, NOISE );
+	vecDir.x += RandomFloat( -NOISE, NOISE );
+	vecDir.y += RandomFloat( -NOISE, NOISE );
 
 	Vector vecStart = vecGun + vecDir * 110;
 	Vector vecEnd	= vecGun + vecDir * 4096;
-	UTIL_Tracer( vecStart, vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 3000 + random->RandomFloat( 0, 2000 ), fSound );
+	UTIL_Tracer( vecStart, vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 3000 + RandomFloat( 0, 2000 ), fSound );
 
 	vecDir = vecTarget - vecCenter;
 	VectorNormalize(vecDir);
-	vecDir.x += random->RandomFloat( -NOISE, NOISE );
-	vecDir.y += random->RandomFloat( -NOISE, NOISE );
-	vecDir.z += random->RandomFloat( -NOISE, NOISE );
+	vecDir.x += RandomFloat( -NOISE, NOISE );
+	vecDir.y += RandomFloat( -NOISE, NOISE );
+	vecDir.z += RandomFloat( -NOISE, NOISE );
 
 	GetAttachment( MD_AP_RGUN, vecGun, vecAng );
 	vecStart = vecGun + vecDir * 110;
 	vecEnd = vecGun + vecDir * 4096;
-	UTIL_Tracer( vecStart, vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 3000 + random->RandomFloat( 0, 2000 ) );
+	UTIL_Tracer( vecStart, vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 3000 + RandomFloat( 0, 2000 ) );
 
 	m_iAmmoLoaded -= 2;
 
@@ -328,13 +328,13 @@ void CNPC_MissileDefense::Gib(void)
 	for (int i = 0; i < 4; i++)
 	{
 		Vector sparkPos = GetAbsOrigin();
-		sparkPos.x += random->RandomFloat(-12,12);
-		sparkPos.y += random->RandomFloat(-12,12);
-		sparkPos.z += random->RandomFloat(-12,12);
+		sparkPos.x += RandomFloat(-12,12);
+		sparkPos.y += RandomFloat(-12,12);
+		sparkPos.z += RandomFloat(-12,12);
 		g_pEffects->Sparks(sparkPos);
 	}
 	// Smoke
-	UTIL_Smoke(GetAbsOrigin(), random->RandomInt(10, 15), 10);
+	UTIL_Smoke(GetAbsOrigin(), RandomInt(10, 15), 10);
 
 	// Light
 	CBroadcastRecipientFilter filter;

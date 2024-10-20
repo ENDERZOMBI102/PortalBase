@@ -324,7 +324,7 @@ void CNPC_CeilingTurret::Spawn( void )
 	}
 
 	//Stagger our starting times
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ) );
+	SetNextThink( gpGlobals->curtime + RandomFloat( 0.1f, 0.3f ) );
 
 	// Don't allow us to skip animation setup because our attachments are critical to us!
 	SetBoneCacheFlags( BCF_NO_ANIMATION_SKIP );
@@ -780,7 +780,7 @@ void CNPC_CeilingTurret::AutoSearchThink( void )
 		return;
 
 	//Spread out our thinking
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.2f, 0.4f ) );
+	SetNextThink( gpGlobals->curtime + RandomFloat( 0.2f, 0.4f ) );
 
 	//If the enemy is dead, find a new one
 	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
@@ -815,7 +815,7 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 
   		if ( RandomFloat( 0, 1 ) > 0.7 )
 		{
-			m_flShotTime = gpGlobals->curtime + random->RandomFloat( 0.5, 1.5 );
+			m_flShotTime = gpGlobals->curtime + RandomFloat( 0.5, 1.5 );
 		}
 		else
 		{

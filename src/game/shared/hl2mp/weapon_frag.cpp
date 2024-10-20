@@ -435,7 +435,7 @@ void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 1200;
-	CBaseGrenade *pGrenade = Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(600,random->RandomInt(-1200,1200),0), pPlayer, GRENADE_TIMER, false );
+	CBaseGrenade *pGrenade = Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(600,RandomInt(-1200,1200),0), pPlayer, GRENADE_TIMER, false );
 
 	if ( pGrenade )
 	{
@@ -480,7 +480,7 @@ void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 350 + Vector( 0, 0, 50 );
-	CBaseGrenade *pGrenade = Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(200,random->RandomInt(-600,600),0), pPlayer, GRENADE_TIMER, false );
+	CBaseGrenade *pGrenade = Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(200,RandomInt(-600,600),0), pPlayer, GRENADE_TIMER, false );
 
 	if ( pGrenade )
 	{

@@ -256,7 +256,7 @@ void CNPC_GroundTurret::Event_Killed( const CTakeDamageInfo &info )
 		m_pSmoke->FollowEntity( this );
 	}
 
-	m_iDeathSparks = random->RandomInt( 6, 12 );
+	m_iDeathSparks = RandomInt( 6, 12 );
 
 	SetThink( &CNPC_GroundTurret::DeathEffects );
 	SetNextThink( gpGlobals->curtime + 1.5f );
@@ -286,7 +286,7 @@ void CNPC_GroundTurret::DeathEffects()
 			return;
 		}
 
-		SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.5, 2.5 ) );
+		SetNextThink( gpGlobals->curtime + RandomFloat( 0.5, 2.5 ) );
 	}
 }
 
@@ -318,9 +318,9 @@ void CNPC_GroundTurret::MakeTracer( const Vector &vecTracerSrc, const trace_t &t
 	pBeam->SetEndWidth( width / 4.0f );
 
 	pBeam->SetBrightness( 100 );
-	pBeam->SetColor( 0, 145+random->RandomInt( -16, 16 ), 255 );
+	pBeam->SetColor( 0, 145+RandomInt( -16, 16 ), 255 );
 	pBeam->RelinkBeam();
-	pBeam->LiveForTime( random->RandomFloat( 0.2f, 0.5f ) );
+	pBeam->LiveForTime( RandomFloat( 0.2f, 0.5f ) );
 #endif
 }
 
@@ -577,7 +577,7 @@ void CNPC_GroundTurret::ProjectBeam( const Vector &vecStart, const Vector &vecDi
 	pBeam->SetFadeLength( 16 );
 
 	pBeam->SetBrightness( brightness );
-	pBeam->SetColor( 0, 145+random->RandomInt( -16, 16 ), 255 );
+	pBeam->SetColor( 0, 145+RandomInt( -16, 16 ), 255 );
 	pBeam->RelinkBeam();
 	pBeam->LiveForTime( duration );
 }

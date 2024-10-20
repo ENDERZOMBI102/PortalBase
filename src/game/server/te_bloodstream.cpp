@@ -74,7 +74,7 @@ void CTEBloodStream::Test( const Vector& current_origin, const QAngle& current_a
 	g = 0;
 	b = 0;
 	a = 255;
-	m_nAmount	= random->RandomInt(50, 150);
+	m_nAmount	= RandomInt(50, 150);
 	m_vecOrigin = current_origin;
 	
 	Vector forward;

@@ -58,7 +58,7 @@ int C_RollerMine::DrawModel( int flags )
 {
 	if ( m_bIsOpen && m_flActiveTime <= gpGlobals->curtime )
 	{
-		float scale = random->RandomFloat( 4.0f, 6.0f );
+		float scale = RandomFloat( 4.0f, 6.0f );
 
 		if ( gpGlobals->frametime != 0 )
 		{
@@ -73,13 +73,13 @@ int C_RollerMine::DrawModel( int flags )
 
 			beamInfo.m_pStartEnt= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
 			beamInfo.m_pEndEnt	= beamInfo.m_pStartEnt;
-			beamInfo.m_nStartAttachment = random->RandomInt( 0, NUM_ATTACHMENTS );
-			beamInfo.m_nEndAttachment = random->RandomInt( 0, NUM_ATTACHMENTS );
+			beamInfo.m_nStartAttachment = RandomInt( 0, NUM_ATTACHMENTS );
+			beamInfo.m_nEndAttachment = RandomInt( 0, NUM_ATTACHMENTS );
 
 			// Ensure we're not the same point
 			if ( beamInfo.m_nStartAttachment == beamInfo.m_nEndAttachment )
 			{
-				int nextStep = ( random->RandomInt( 0, 1 ) ) ? 1 : -1;
+				int nextStep = ( RandomInt( 0, 1 ) ) ? 1 : -1;
 
 				beamInfo.m_nEndAttachment = ( beamInfo.m_nStartAttachment + nextStep ) % NUM_ATTACHMENTS;
 			}
@@ -88,10 +88,10 @@ int C_RollerMine::DrawModel( int flags )
 			beamInfo.m_pszModelName = "sprites/lgtning.vmt";
 			beamInfo.m_flHaloScale = 0.0f;
 			beamInfo.m_flLife = 0.1f;
-			beamInfo.m_flWidth = random->RandomFloat( 2.0f, 4.0f );
-			beamInfo.m_flEndWidth = random->RandomFloat( 0.0f, 1.0f );
+			beamInfo.m_flWidth = RandomFloat( 2.0f, 4.0f );
+			beamInfo.m_flEndWidth = RandomFloat( 0.0f, 1.0f );
 			beamInfo.m_flFadeLength = 0.0f;
-			beamInfo.m_flAmplitude = random->RandomFloat( 16, 32 );
+			beamInfo.m_flAmplitude = RandomFloat( 16, 32 );
 			beamInfo.m_flBrightness = 255.0;
 			beamInfo.m_flSpeed = 0.0;
 			beamInfo.m_nStartFrame = 0.0;
@@ -140,33 +140,33 @@ int C_RollerMine::DrawModel( int flags )
 
 			CMatRenderContextPtr pRenderContext( materials );
 			pRenderContext->Bind( pMaterial );
-			DrawHalo( pMaterial, GetAbsOrigin(), random->RandomFloat( 6.0f*scale, 6.5f*scale ), color );
+			DrawHalo( pMaterial, GetAbsOrigin(), RandomFloat( 6.0f*scale, 6.5f*scale ), color );
 
 			if ( m_bPowerDown )
 			{
-				color[0] = random->RandomFloat( 0.80f, 1.00f );
-				color[1] = random->RandomFloat( 0.10f, 0.25f );
+				color[0] = RandomFloat( 0.80f, 1.00f );
+				color[1] = RandomFloat( 0.10f, 0.25f );
 				color[2] = 0.0f;
 			}
 			else if ( m_bHackedByAlyx )
 			{
-				color[0] = random->RandomFloat( 0.25f, 0.75f );
-				color[1] = random->RandomFloat( 0.10f, 0.25f );
+				color[0] = RandomFloat( 0.25f, 0.75f );
+				color[1] = RandomFloat( 0.10f, 0.25f );
 				color[2] = 0.0f;
 			}
 			else
 			{
-				color[0] = color[1] = color[2] = random->RandomFloat( 0.25f, 0.5f );
+				color[0] = color[1] = color[2] = RandomFloat( 0.25f, 0.5f );
 			}
 
 			Vector attachOrigin;
 			QAngle attachAngles;
 			
 			GetAttachment( beamInfo.m_nEndAttachment, attachOrigin, attachAngles );
-			DrawHalo( pMaterial, attachOrigin, random->RandomFloat( 1.0f*scale, 1.5f*scale ), color );
+			DrawHalo( pMaterial, attachOrigin, RandomFloat( 1.0f*scale, 1.5f*scale ), color );
 			
 			GetAttachment( beamInfo.m_nStartAttachment, attachOrigin, attachAngles );
-			DrawHalo( pMaterial, attachOrigin, random->RandomFloat( 1.0f*scale, 1.5f*scale ), color );
+			DrawHalo( pMaterial, attachOrigin, RandomFloat( 1.0f*scale, 1.5f*scale ), color );
 		}
 	}
 

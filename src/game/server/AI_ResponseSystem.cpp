@@ -1436,7 +1436,7 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 
 			// Always assume very first slot will match
 			totalweight += r->weight.GetFloat();
-			if ( !totalweight || random->RandomFloat(0,totalweight) < r->weight.GetFloat() )
+			if ( !totalweight || RandomFloat(0,totalweight) < r->weight.GetFloat() )
 			{
 				slot = i;
 			}
@@ -1589,7 +1589,7 @@ bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule 
 	if ( !c )
 		return false;
 
-	int index = random->RandomInt( 0, c - 1 );
+	int index = RandomInt( 0, c - 1 );
 	int groupIndex = rule->m_Responses[ index ];
 
 	ResponseGroup *g = &m_Responses[ groupIndex ];
@@ -1715,7 +1715,7 @@ int CResponseSystem::FindBestMatchingRule( const AI_CriteriaSet& set, bool verbo
 		return bestrules[ 0 ];
 
 	// Randomly pick one of the tied matching rules
-	int idx = random->RandomInt( 0, bestCount - 1 );
+	int idx = RandomInt( 0, bestCount - 1 );
 	if ( verbose )
 	{
 		DevMsg( "Found %i matching rules, selecting slot %i\n", bestCount, idx );

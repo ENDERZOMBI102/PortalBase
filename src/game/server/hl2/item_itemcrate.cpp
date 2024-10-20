@@ -211,9 +211,9 @@ void CItem_ItemCrate::OnBreak( const Vector &vecVelocity, const AngularImpulse &
 		pSpawn->SetAbsOrigin( vecOrigin );
 
 		QAngle vecAngles;
-		vecAngles.x = random->RandomFloat( -20.0f, 20.0f );
-		vecAngles.y = random->RandomFloat( 0.0f, 360.0f );
-		vecAngles.z = random->RandomFloat( -20.0f, 20.0f );
+		vecAngles.x = RandomFloat( -20.0f, 20.0f );
+		vecAngles.y = RandomFloat( 0.0f, 360.0f );
+		vecAngles.z = RandomFloat( -20.0f, 20.0f );
 		pSpawn->SetAbsAngles( vecAngles );
 
 		Vector vecActualVelocity;

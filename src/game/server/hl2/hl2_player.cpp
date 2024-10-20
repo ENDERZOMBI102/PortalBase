@@ -2398,7 +2398,7 @@ bool CHL2_Player::ShouldShootMissTarget( CBaseCombatCharacter *pAttacker )
 	if( gpGlobals->curtime > m_flTargetFindTime )
 	{
 		// Put this off into the future again.
-		m_flTargetFindTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+		m_flTargetFindTime = gpGlobals->curtime + RandomFloat( 3, 5 );
 		return true;
 	}
 
@@ -3659,12 +3659,12 @@ void CHL2_Player::Splash( void )
 	float flSpeed = GetAbsVelocity().Length();
 	if ( flSpeed < 300 )
 	{
-		data.m_flScale = random->RandomFloat( 10, 12 );
+		data.m_flScale = RandomFloat( 10, 12 );
 		DispatchEffect( "waterripple", data );
 	}
 	else
 	{
-		data.m_flScale = random->RandomFloat( 6, 8 );
+		data.m_flScale = RandomFloat( 6, 8 );
 		DispatchEffect( "watersplash", data );
 	}
 }

@@ -383,6 +383,6 @@ void CEntityDissolve::ElectrocuteThink( void )
 		pRagdollPhys->list[j].pObject->ApplyForceCenter( vecForce ); 
 	}
 
-	SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->curtime + random->RandomFloat( 0.1, 0.2f ), 
+	SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->curtime + RandomFloat( 0.1, 0.2f ),
 		s_pElectroThinkContext );
 }

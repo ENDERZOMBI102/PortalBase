@@ -469,7 +469,7 @@ void CAntlionTemplateMaker::SetFightTarget( string_t strTarget, CBaseEntity *pAc
 	{
 		CBaseEntity *pSearch = m_hFightTarget;
 
-		for ( int i = random->RandomInt(1,5); i > 0; i-- )
+		for ( int i = RandomInt(1,5); i > 0; i-- )
 			pSearch = gEntList.FindEntityByName( pSearch, strTarget, this, pActivator, pCaller );
 
 		if ( pSearch != NULL )
@@ -634,7 +634,7 @@ void CAntlionTemplateMaker::ChildPreSpawn( CAI_BaseNPC *pChild )
 {
 	BaseClass::ChildPreSpawn( pChild );
 
-	if ( ( m_flWorkerSpawnRate > 0 ) && ( random->RandomFloat( 0, 1 ) < m_flWorkerSpawnRate ) )
+	if ( ( m_flWorkerSpawnRate > 0 ) && ( RandomFloat( 0, 1 ) < m_flWorkerSpawnRate ) )
 	{
 		pChild->AddSpawnFlags( SF_ANTLION_WORKER );
 	}
@@ -804,8 +804,8 @@ bool CAntlionTemplateMaker::FindPositionOnFoot( Vector &origin, float radius, CB
 
 	while ( iMaxTries > 0 )
 	{
-		vSpawnOrigin.x += random->RandomFloat( -radius, radius );
-		vSpawnOrigin.y += random->RandomFloat( -radius, radius );
+		vSpawnOrigin.x += RandomFloat( -radius, radius );
+		vSpawnOrigin.y += RandomFloat( -radius, radius );
 		vSpawnOrigin.z += 96;
 
 		if ( ValidateSpawnPosition( vSpawnOrigin, pTarget ) == false )
@@ -836,9 +836,9 @@ bool CAntlionTemplateMaker::FindPositionOnVehicle( Vector &origin, float radius,
 		
 		pTarget->GetVectors( &vForward, &vRight, NULL );
 
-		float flSpeed = (pTarget->GetSmoothedVelocity().Length() * m_flVehicleSpawnDistance) * random->RandomFloat( 1.0f, 1.5f );
+		float flSpeed = (pTarget->GetSmoothedVelocity().Length() * m_flVehicleSpawnDistance) * RandomFloat( 1.0f, 1.5f );
 	
-		vSpawnOrigin = vSpawnOrigin + (vForward * flSpeed) + vRight * random->RandomFloat( -radius, radius );
+		vSpawnOrigin = vSpawnOrigin + (vForward * flSpeed) + vRight * RandomFloat( -radius, radius );
 
 		if ( ValidateSpawnPosition( vSpawnOrigin, pTarget ) == false )
 		{
@@ -1075,7 +1075,7 @@ void CAntlionTemplateMaker::DoBlockedEffects( CBaseEntity *pBlocker, Vector vOri
 			pBlocker->EmitSound( "NPC_Antlion.TrappedMetal" );
 
 
-			m_flBlockedBumpTime = gpGlobals->curtime + random->RandomFloat( 1.75, 2.75 );
+			m_flBlockedBumpTime = gpGlobals->curtime + RandomFloat( 1.75, 2.75 );
 		}
 	}
 }
@@ -1170,7 +1170,7 @@ CBaseEntity *CAntlionTemplateMaker::AllHintsFromClusterBlocked( CAI_Hint *pNode,
 
 void CAntlionTemplateMaker::FindNodesCloseToPlayer( void )
 {
-	SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->curtime + random->RandomFloat( 0.75, 1.75 ), s_pBlockedEffectsThinkContext );
+	SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->curtime + RandomFloat( 0.75, 1.75 ), s_pBlockedEffectsThinkContext );
 
 	CBasePlayer *pPlayer = AI_GetSinglePlayer();
 

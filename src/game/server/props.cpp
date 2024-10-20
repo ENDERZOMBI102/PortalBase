@@ -1107,12 +1107,12 @@ int CBreakableProp::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 			flFactor = flDist / MAX_BLAST_DIST;
 			const float MAX_BURN_TIME = 5.0f;
 			flBurnTime = MAX( 0.5, MAX_BURN_TIME * flFactor );
-			flBurnTime += random->RandomFloat( 0, 0.5 );
+			flBurnTime += RandomFloat( 0, 0.5 );
 		}
 		else
 		{
 			// Very near the explosion. explode almost immediately.
-			flBurnTime = random->RandomFloat( 0.1, 0.2 );
+			flBurnTime = RandomFloat( 0.1, 0.2 );
 		}
 
 		// Change my health so that I burn for flBurnTime seconds.
@@ -1128,12 +1128,12 @@ int CBreakableProp::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 	if( !bDeadly && (info.GetDamageType() & DMG_BLAST) )
 	{
-		Ignite( random->RandomFloat( 10, 15 ), false );
+		Ignite( RandomFloat( 10, 15 ), false );
 	}
 	else if( !bDeadly && (info.GetDamageType() & DMG_BURN) )
 	{
 		// Ignite if burned, and flammable (the Ignite() function takes care of all of this).
-		Ignite( random->RandomFloat( 10, 15 ), false );
+		Ignite( RandomFloat( 10, 15 ), false );
 	}
 	else if( !bDeadly && (info.GetDamageType() & DMG_BULLET) )
 	{
@@ -1144,7 +1144,7 @@ int CBreakableProp::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 				// Bump back up to full health so it burns longer. Magically getting health back isn't
 				// a big problem because if this item takes damage again whilst burning, it will break.
 				m_iHealth = m_iMaxHealth;
-				Ignite( random->RandomFloat( 10, 15 ), false );
+				Ignite( RandomFloat( 10, 15 ), false );
 			}
 			else if( IsOnFire() )
 			{
@@ -1896,7 +1896,7 @@ void CDynamicProp::Spawn( )
 		if ( m_bRandomAnimator )
 		{
 			SetThink( &CDynamicProp::AnimThink );
-			m_flNextRandAnim = gpGlobals->curtime + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
+			m_flNextRandAnim = gpGlobals->curtime + RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
 			SetNextThink( gpGlobals->curtime + m_flNextRandAnim + 0.1 );
 		}
 		else
@@ -2160,7 +2160,7 @@ void CDynamicProp::AnimThink( void )
 		// Fire output
 		m_pOutputAnimBegun.FireOutput( NULL,this );
 
-		m_flNextRandAnim = gpGlobals->curtime + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
+		m_flNextRandAnim = gpGlobals->curtime + RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
 	}
 
 	if ( ((m_iTransitionDirection > 0 && GetCycle() >= 0.999f) || (m_iTransitionDirection < 0 && GetCycle() <= 0.0f)) && !SequenceLoops() )
@@ -3286,7 +3286,7 @@ static CBreakableProp *BreakModelCreate_Prop( CBaseEntity *pOwner, breakmodel_t 
 			else
 			{
 				// This should never happen
-				pEntity->Ignite( random->RandomFloat( 5, 10 ), false );
+				pEntity->Ignite( RandomFloat( 5, 10 ), false );
 			}
 		}
 	}

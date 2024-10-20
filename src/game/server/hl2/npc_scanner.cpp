@@ -358,7 +358,7 @@ void CNPC_CScanner::Gib( void )
 	}
 
 	// Add a random chance of spawning a battery...
-	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && random->RandomFloat( 0.0f, 1.0f) < 0.3f )
+	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && RandomFloat( 0.0f, 1.0f) < 0.3f )
 	{
 		CItem *pBattery = (CItem*)CreateEntityByName("item_battery");
 		if ( pBattery )
@@ -1167,7 +1167,7 @@ void CNPC_CScanner::GatherConditions( void )
 				SetInspectTargetToPos( vSoundPos, SCANNER_SOUND_INSPECT_LENGTH );
 			}
 
-			m_nFlyMode = (random->RandomInt(0,2)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
+			m_nFlyMode = (RandomInt(0,2)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
 		}
 	}
 
@@ -1185,7 +1185,7 @@ void CNPC_CScanner::GatherConditions( void )
 		if ( pBestEntity != NULL )
 		{
 			SetInspectTargetToEnt( pBestEntity, SCANNER_CIT_INSPECT_LENGTH );
-			m_nFlyMode = (random->RandomInt(0,3)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
+			m_nFlyMode = (RandomInt(0,3)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
 			SetCondition ( COND_CSCANNER_HAVE_INSPECT_TARGET );
 		}
 	}
@@ -1199,7 +1199,7 @@ void CNPC_CScanner::GatherConditions( void )
 		{
 			m_fCheckHintTime = gpGlobals->curtime + SCANNER_HINT_INSPECT_DELAY;
 
-			m_nFlyMode = (random->RandomInt(0,2)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
+			m_nFlyMode = (RandomInt(0,2)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
 
 			SetInspectTargetToHint( GetHintNode(), SCANNER_HINT_INSPECT_LENGTH );
 
@@ -1420,7 +1420,7 @@ int CNPC_CScanner::SelectSchedule(void)
 		}
 		else
 		{
-			if ( random->RandomInt( 0, 10 ) < 4 )
+			if ( RandomInt( 0, 10 ) < 4 )
 				return SCHED_SMALL_FLINCH;
 		}
 	}
@@ -1452,7 +1452,7 @@ int CNPC_CScanner::SelectSchedule(void)
 		// Melee attack if possible
 		if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 		{ 
-			if ( random->RandomInt(0,1) )
+			if ( RandomInt(0,1) )
 				return SCHED_CSCANNER_ATTACK_FLASH;
 
 			// TODO: a schedule where he makes an alarm sound?
@@ -1481,7 +1481,7 @@ int CNPC_CScanner::SelectSchedule(void)
 		// If I was chasing, pick with photographing or spotlighting 
 		if ( m_nFlyMode == SCANNER_FLY_CHASE )
 		{
-			m_nFlyMode = (random->RandomInt(0,1)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
+			m_nFlyMode = (RandomInt(0,1)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
 		}
 
 		// Handle spotlight
@@ -2013,7 +2013,7 @@ void CNPC_CScanner::AttackFlashBlind(void)
 
 	m_pEyeFlash->SetBrightness( 0 );
 
-	float fAttackDelay = random->RandomFloat(SCANNER_ATTACK_MIN_DELAY,SCANNER_ATTACK_MAX_DELAY);
+	float fAttackDelay = RandomFloat(SCANNER_ATTACK_MIN_DELAY,SCANNER_ATTACK_MAX_DELAY);
 
 	if( IsStriderScout() )
 	{
@@ -2678,7 +2678,7 @@ bool CNPC_CScanner::HandleInteraction(int interactionType, void *data, CBaseComb
 				float fInspectTime = (((CNPC_CScanner*)pSourceEnt)->m_fInspectEndTime - gpGlobals->curtime);
 				SetInspectTargetToEnt(pTarget,fInspectTime);
 
-				if (random->RandomInt(0,2)==0)
+				if (RandomInt(0,2)==0)
 				{
 					SetSchedule(SCHED_CSCANNER_PHOTOGRAPH_HOVER);
 				}
@@ -2708,7 +2708,7 @@ bool CNPC_CScanner::HandleInteraction(int interactionType, void *data, CBaseComb
 				float fInspectTime = (((CNPC_CScanner*)pSourceEnt)->m_fInspectEndTime - gpGlobals->curtime);
 				SetInspectTargetToPos(vInspectPos,fInspectTime);
 
-				if (random->RandomInt(0,2)==0)
+				if (RandomInt(0,2)==0)
 				{
 					SetSchedule(SCHED_CSCANNER_PHOTOGRAPH_HOVER);
 				}

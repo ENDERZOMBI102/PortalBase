@@ -106,7 +106,7 @@ void AirboatGunHeavyTracerCallback( const CEffectData &data )
 	if ( flTotalDist <= 64 )
 		return;
 
-	float flLength = random->RandomFloat( 300.0f, 400.0f );
+	float flLength = RandomFloat( 300.0f, 400.0f );
 	float flLife = ( flTotalDist + flLength ) / flVelocity;	//NOTENOTE: We want the tail to finish its run as well
 	
 	// Add it
@@ -139,7 +139,7 @@ void AirboatGunTracerCallback( const CEffectData &data )
 	if ( flTotalDist <= 64 )
 		return;
 
-	float flLength = random->RandomFloat( 256.0f, 384.0f );
+	float flLength = RandomFloat( 256.0f, 384.0f );
 	float flLife = ( flTotalDist + flLength ) / flVelocity;	//NOTENOTE: We want the tail to finish its run as well
 	
 	// Add it
@@ -173,7 +173,7 @@ void HelicopterTracerCallback( const CEffectData &data )
 	if ( flTotalDist <= 256 )
 		return;
 
-	float flLength = random->RandomFloat( 256.0f, 384.0f );
+	float flLength = RandomFloat( 256.0f, 384.0f );
 	float flLife = ( flTotalDist + flLength ) / flVelocity;	//NOTENOTE: We want the tail to finish its run as well
 	
 	// Add it
@@ -208,11 +208,11 @@ void FX_PlayerAR2Tracer( const Vector &start, const Vector &end )
 		return;
 
 	//Randomly place the tracer along this line, with a random length
-	VectorMA( start, random->RandomFloat( 0.0f, 8.0f ), shotDir, dStart );
-	VectorMA( dStart, MIN( length, random->RandomFloat( 256.0f, 1024.0f ) ), shotDir, dEnd );
+	VectorMA( start, RandomFloat( 0.0f, 8.0f ), shotDir, dStart );
+	VectorMA( dStart, MIN( length, RandomFloat( 256.0f, 1024.0f ) ), shotDir, dEnd );
 
 	//Create the line
-	CFXStaticLine *tracerLine = new CFXStaticLine( "Tracer", dStart, dEnd, random->RandomFloat( 6.0f, 12.0f ), 0.01f, "effects/gunshiptracer", 0 );
+	CFXStaticLine *tracerLine = new CFXStaticLine( "Tracer", dStart, dEnd, RandomFloat( 6.0f, 12.0f ), 0.01f, "effects/gunshiptracer", 0 );
 	assert( tracerLine );
 
 	//Throw it into the list
@@ -242,11 +242,11 @@ void FX_AR2Tracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 	if ( dist < 128 )
 		return;
 
-	float length = random->RandomFloat( 128.0f, 256.0f );
+	float length = RandomFloat( 128.0f, 256.0f );
 	float life = ( dist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
 	
 	//Add it
-	FX_AddDiscreetLine( start, dir, velocity, length, dist, random->RandomFloat( 0.5f, 1.5f ), life, "effects/gunshiptracer" );
+	FX_AddDiscreetLine( start, dir, velocity, length, dist, RandomFloat( 0.5f, 1.5f ), life, "effects/gunshiptracer" );
 
 	if( makeWhiz )
 	{
@@ -304,7 +304,7 @@ DECLARE_CLIENT_EFFECT( "AR2Tracer", AR2TracerCallback );
 //-----------------------------------------------------------------------------
 void AR2ExplosionCallback( const CEffectData &data )
 {
-	float lifetime = random->RandomFloat( 0.4f, 0.75f );
+	float lifetime = RandomFloat( 0.4f, 0.75f );
 
 	// Ground splash
 	FX_AddQuad( data.m_vOrigin, 
@@ -315,8 +315,8 @@ void AR2ExplosionCallback( const CEffectData &data )
 				1.0f,
 				0.0f,
 				0.25f,
-				random->RandomInt( 0, 360 ), 
-				random->RandomFloat( -4, 4 ), 
+				RandomInt( 0, 360 ),
+				RandomFloat( -4, 4 ),
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				lifetime,
 				"effects/combinemuzzle1",
@@ -333,7 +333,7 @@ void AR2ExplosionCallback( const CEffectData &data )
 	FXLineData_t lineData;
 
 	start = data.m_vOrigin;
-	end = start + ( data.m_vNormal * random->RandomFloat( radius*2.0f, radius*4.0f ) );
+	end = start + ( data.m_vNormal * RandomFloat( radius*2.0f, radius*4.0f ) );
 
 	lineData.m_flDieTime = lifetime;
 	
@@ -349,13 +349,13 @@ void AR2ExplosionCallback( const CEffectData &data )
 	lineData.m_vecStartVelocity = vec3_origin;
 
 	lineData.m_vecEnd = end;
-	lineData.m_vecEndVelocity = data.m_vNormal * random->RandomFloat( 200, 350 );
+	lineData.m_vecEndVelocity = data.m_vNormal * RandomFloat( 200, 350 );
 
 	FX_AddLine( lineData );
 
 	// Inner filler shaft
 	start = data.m_vOrigin;
-	end = start + ( data.m_vNormal * random->RandomFloat( 16, radius*0.25f ) );
+	end = start + ( data.m_vNormal * RandomFloat( 16, radius*0.25f ) );
 
 	lineData.m_flDieTime = lifetime - 0.1f;
 	
@@ -371,7 +371,7 @@ void AR2ExplosionCallback( const CEffectData &data )
 	lineData.m_vecStartVelocity = vec3_origin;
 
 	lineData.m_vecEnd = end;
-	lineData.m_vecEndVelocity = data.m_vNormal * random->RandomFloat( 64, 128 );
+	lineData.m_vecEndVelocity = data.m_vNormal * RandomFloat( 64, 128 );
 
 	FX_AddLine( lineData );
 }
@@ -386,13 +386,13 @@ void AR2ImpactCallback( const CEffectData &data )
 {
 	FX_AddQuad( data.m_vOrigin, 
 				data.m_vNormal, 
-				random->RandomFloat( 24, 32 ),
+				RandomFloat( 24, 32 ),
 				0,
 				0.75f, 
 				1.0f,
 				0.0f,
 				0.4f,
-				random->RandomInt( 0, 360 ), 
+				RandomInt( 0, 360 ),
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				0.25f, 
@@ -421,7 +421,7 @@ void CreateMuzzleflashELight( const Vector &origin, int exponent, int nMinRadius
 			el->color.b = 64;
 			el->color.exponent = exponent;
 
-			el->radius	= random->RandomInt( nMinRadius, nMaxRadius );
+			el->radius	= RandomInt( nMinRadius, nMaxRadius );
 			el->decay	= el->radius / 0.05f;
 			el->die		= gpGlobals->curtime + 0.1f;
 		}
@@ -441,7 +441,7 @@ void MuzzleFlash_Airboat( ClientEntityHandle_t hEntity, int attachmentIndex )
 	SimpleParticle *pParticle;
 	Vector			forward(1,0,0), offset; //NOTENOTE: All coords are in local space
 
-	float flScale = random->RandomFloat( 0.75f, 2.5f );
+	float flScale = RandomFloat( 0.75f, 2.5f );
 
 	PMaterialHandle pMuzzle[2];
 	pMuzzle[0] = pSimple->GetPMaterial( "effects/combinemuzzle1" );
@@ -452,7 +452,7 @@ void MuzzleFlash_Airboat( ClientEntityHandle_t hEntity, int attachmentIndex )
 	{
 		offset = (forward * (i*6.0f*flScale));
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pMuzzle[random->RandomInt(0,1)], offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pMuzzle[RandomInt(0,1)], offset );
 			
 		if ( pParticle == NULL )
 			return;
@@ -469,9 +469,9 @@ void MuzzleFlash_Airboat( ClientEntityHandle_t hEntity, int attachmentIndex )
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 128;
 
-		pParticle->m_uchStartSize	= ( (random->RandomFloat( 6.0f, 8.0f ) * (9-(i))/7) * flScale );
+		pParticle->m_uchStartSize	= ( (RandomFloat( 6.0f, 8.0f ) * (9-(i))/7) * flScale );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
@@ -493,10 +493,10 @@ void MuzzleFlash_Airboat( ClientEntityHandle_t hEntity, int attachmentIndex )
 	pParticle->m_uchStartAlpha	= 255;
 	pParticle->m_uchEndAlpha	= 128;
 
-	pParticle->m_uchStartSize	= random->RandomFloat( 16.0f, 24.0f );
+	pParticle->m_uchStartSize	= RandomFloat( 16.0f, 24.0f );
 	pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
 	
-	float spokePos = random->RandomInt( 0, 5 );
+	float spokePos = RandomInt( 0, 5 );
 
 	pParticle->m_flRoll			= (360.0/6.0f)*spokePos;
 	pParticle->m_flRollDelta	= 0.0f;
@@ -543,20 +543,20 @@ void MuzzleFlash_Chopper( ClientEntityHandle_t hEntity, int attachmentIndex )
 	SimpleParticle *pParticle;
 	Vector			forward(1,0,0), offset; //NOTENOTE: All coords are in local space
 
-	float flScale = random->RandomFloat( 2.5f, 4.5f );
+	float flScale = RandomFloat( 2.5f, 4.5f );
 
 	// Flash
 	for ( int i = 1; i < 7; i++ )
 	{
 		offset = (forward * (i*2.0f*flScale));
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", random->RandomInt(1,2) ) ), offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", RandomInt(1,2) ) ), offset );
 			
 		if ( pParticle == NULL )
 			return;
 
 		pParticle->m_flLifetime		= 0.0f;
-		pParticle->m_flDieTime		= random->RandomFloat( 0.05f, 0.1f );
+		pParticle->m_flDieTime		= RandomFloat( 0.05f, 0.1f );
 
 		pParticle->m_vecVelocity.Init();
 
@@ -567,9 +567,9 @@ void MuzzleFlash_Chopper( ClientEntityHandle_t hEntity, int attachmentIndex )
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 128;
 
-		pParticle->m_uchStartSize	= ( (random->RandomFloat( 6.0f, 8.0f ) * (10-(i))/7) * flScale );
+		pParticle->m_uchStartSize	= ( (RandomFloat( 6.0f, 8.0f ) * (10-(i))/7) * flScale );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 	
@@ -608,7 +608,7 @@ void MuzzleFlash_Gunship( ClientEntityHandle_t hEntity, int attachmentIndex )
 	SimpleParticle *pParticle;
 	Vector			forward(1,0,0), offset; //NOTENOTE: All coords are in local space
 
-	float flScale = random->RandomFloat( 2.5f, 4.5f );
+	float flScale = RandomFloat( 2.5f, 4.5f );
 
 	// Flash
 	offset = (forward * (2.0f*flScale));
@@ -618,7 +618,7 @@ void MuzzleFlash_Gunship( ClientEntityHandle_t hEntity, int attachmentIndex )
 		return;
 
 	pParticle->m_flLifetime		= 0.0f;
-	pParticle->m_flDieTime		= random->RandomFloat( 0.05f, 0.1f );
+	pParticle->m_flDieTime		= RandomFloat( 0.05f, 0.1f );
 
 	pParticle->m_vecVelocity.Init();
 
@@ -629,9 +629,9 @@ void MuzzleFlash_Gunship( ClientEntityHandle_t hEntity, int attachmentIndex )
 	pParticle->m_uchStartAlpha	= 255;
 	pParticle->m_uchEndAlpha	= 128;
 
-	pParticle->m_uchStartSize	= ( (random->RandomFloat( 6.0f, 8.0f ) * 10.0/7.0) * flScale );
+	pParticle->m_uchStartSize	= ( (RandomFloat( 6.0f, 8.0f ) * 10.0/7.0) * flScale );
 	pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-	pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+	pParticle->m_flRoll			= RandomInt( 0, 360 );
 	pParticle->m_flRollDelta	= 0.0f;
 	
 	// Grab the origin out of the transform for the attachment
@@ -676,7 +676,7 @@ void MuzzleFlash_Hunter( ClientEntityHandle_t hEntity, int attachmentIndex )
 	el->color.b = 213;
 	el->color.exponent = 5;
 
-	el->radius = random->RandomInt( 120, 200 );
+	el->radius = RandomInt( 120, 200 );
 	el->decay = el->radius / 0.05f;
 	el->die = gpGlobals->curtime + 0.05f;
 }

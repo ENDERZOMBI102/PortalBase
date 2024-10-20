@@ -329,7 +329,7 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	// Big sparks.
 	//
 	Vector	dir;
-	int		numSparks = nMagnitude * nMagnitude * random->RandomFloat( 2, 4 );
+	int		numSparks = nMagnitude * nMagnitude * RandomFloat( 2, 4 );
 
 	int i;
 	TrailParticle	*pParticle;
@@ -341,10 +341,10 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 			return;
 
 		pParticle->m_flLifetime	= 0.0f;
-		pParticle->m_flDieTime	= nMagnitude * random->RandomFloat( 1.0f, 2.0f );
+		pParticle->m_flDieTime	= nMagnitude * RandomFloat( 1.0f, 2.0f );
 
 		dir.Random( -1.0f, 1.0f );
-		dir[2] = random->RandomFloat( 0.5f, 1.0f );
+		dir[2] = RandomFloat( 0.5f, 1.0f );
 	
 		if ( vecDir )
 		{
@@ -352,10 +352,10 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 			VectorNormalize( dir );
 		}
 			
-		pParticle->m_flWidth		= random->RandomFloat( 2.0f, 5.0f );
-		pParticle->m_flLength		= nTrailLength * random->RandomFloat( 0.02, 0.05f );
+		pParticle->m_flWidth		= RandomFloat( 2.0f, 5.0f );
+		pParticle->m_flLength		= nTrailLength * RandomFloat( 0.02, 0.05f );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( SPARK_ELECTRIC_MINSPEED, SPARK_ELECTRIC_MAXSPEED );
+		pParticle->m_vecVelocity	= dir * RandomFloat( SPARK_ELECTRIC_MINSPEED, SPARK_ELECTRIC_MAXSPEED );
 
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
@@ -377,7 +377,7 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	pSparkEmitter2->m_ParticleCollision.SetGravity( 400.0f );
 	pSparkEmitter2->SetFlag( bitsPARTICLE_TRAIL_VELOCITY_DAMPEN );
 
-	numSparks = nMagnitude * random->RandomInt( 16, 32 );
+	numSparks = nMagnitude * RandomInt( 16, 32 );
 
 	// Dump out sparks
 	for ( i = 0; i < numSparks; i++ )
@@ -396,11 +396,11 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 			VectorNormalize( dir );
 		}
 		
-		pParticle->m_flWidth		= random->RandomFloat( 2.0f, 4.0f );
-		pParticle->m_flLength		= nTrailLength * random->RandomFloat( 0.02f, 0.03f );
-		pParticle->m_flDieTime		= nMagnitude * random->RandomFloat( 0.1f, 0.2f );
+		pParticle->m_flWidth		= RandomFloat( 2.0f, 4.0f );
+		pParticle->m_flLength		= nTrailLength * RandomFloat( 0.02f, 0.03f );
+		pParticle->m_flDieTime		= nMagnitude * RandomFloat( 0.1f, 0.2f );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( 128, 256 );
+		pParticle->m_vecVelocity	= dir * RandomFloat( 128, 256 );
 
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
@@ -431,9 +431,9 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	sParticle->m_uchColor[2]	= 255;
 	sParticle->m_uchStartAlpha	= 255;
 	sParticle->m_uchEndAlpha	= 255;
-	sParticle->m_uchStartSize	= nMagnitude * random->RandomInt( 4, 8 );
+	sParticle->m_uchStartSize	= nMagnitude * RandomInt( 4, 8 );
 	sParticle->m_uchEndSize		= 0;
-	sParticle->m_flRoll			= random->RandomInt( 0, 360 );
+	sParticle->m_flRoll			= RandomInt( 0, 360 );
 	sParticle->m_flRollDelta	= 0.0f;
 	
 	sParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( "effects/yellowflare_noz" ), pos );
@@ -446,24 +446,24 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	
 	sParticle->m_vecVelocity.Init();
 
-	float	fColor = random->RandomInt( 32, 64 );
+	float	fColor = RandomInt( 32, 64 );
 	sParticle->m_uchColor[0]	= fColor;
 	sParticle->m_uchColor[1]	= fColor;
 	sParticle->m_uchColor[2]	= fColor;
 	sParticle->m_uchStartAlpha	= fColor;
 	sParticle->m_uchEndAlpha	= 0;
-	sParticle->m_uchStartSize	= nMagnitude * random->RandomInt( 32, 64 );
+	sParticle->m_uchStartSize	= nMagnitude * RandomInt( 32, 64 );
 	sParticle->m_uchEndSize		= 0;
-	sParticle->m_flRoll			= random->RandomInt( 0, 360 );
-	sParticle->m_flRollDelta	= random->RandomFloat( -1.0f, 1.0f );
+	sParticle->m_flRoll			= RandomInt( 0, 360 );
+	sParticle->m_flRollDelta	= RandomFloat( -1.0f, 1.0f );
 
 	//
 	// Smoke
 	//
 	Vector	sOffs;
 
-	sOffs[0] = pos[0] + random->RandomFloat( -4.0f, 4.0f );
-	sOffs[1] = pos[1] + random->RandomFloat( -4.0f, 4.0f );
+	sOffs[0] = pos[0] + RandomFloat( -4.0f, 4.0f );
+	sOffs[1] = pos[1] + RandomFloat( -4.0f, 4.0f );
 	sOffs[2] = pos[2];
 
 	sParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_DustPuff[1], sOffs );
@@ -478,18 +478,18 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	
 	sParticle->m_vecVelocity[2] = 16.0f;
 	
-	sParticle->m_vecVelocity[0] = random->RandomFloat( -16.0f, 16.0f );
-	sParticle->m_vecVelocity[1] = random->RandomFloat( -16.0f, 16.0f );
+	sParticle->m_vecVelocity[0] = RandomFloat( -16.0f, 16.0f );
+	sParticle->m_vecVelocity[1] = RandomFloat( -16.0f, 16.0f );
 
 	sParticle->m_uchColor[0]	= 255;
 	sParticle->m_uchColor[1]	= 255;
 	sParticle->m_uchColor[2]	= 200;
-	sParticle->m_uchStartAlpha	= random->RandomInt( 16, 32 );
+	sParticle->m_uchStartAlpha	= RandomInt( 16, 32 );
 	sParticle->m_uchEndAlpha	= 0;
-	sParticle->m_uchStartSize	= random->RandomInt( 4, 8 );
+	sParticle->m_uchStartSize	= RandomInt( 4, 8 );
 	sParticle->m_uchEndSize		= sParticle->m_uchStartSize*4.0f;
-	sParticle->m_flRoll			= random->RandomInt( 0, 360 );
-	sParticle->m_flRollDelta	= random->RandomFloat( -2.0f, 2.0f );
+	sParticle->m_flRoll			= RandomInt( 0, 360 );
+	sParticle->m_flRollDelta	= RandomFloat( -2.0f, 2.0f );
 
 	//
 	// Dlight
@@ -500,7 +500,7 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 
 	dl->origin	= pos;
 	dl->color.r = dl->color.g = dl->color.b = 250;
-	dl->radius	= random->RandomFloat(16,32);
+	dl->radius	= RandomFloat(16,32);
 	dl->die		= gpGlobals->curtime + 0.001;
 	*/
 }
@@ -539,7 +539,7 @@ void FX_MetalScrape( Vector &position, Vector &normal )
 						METAL_SCRAPE_DAMPEN, 
 						bitsPARTICLE_TRAIL_VELOCITY_DAMPEN );
 
-	int	numSparks = random->RandomInt( 4, 8 );
+	int	numSparks = RandomInt( 4, 8 );
 	
 	if ( g_Material_Spark == NULL )
 	{
@@ -560,17 +560,17 @@ void FX_MetalScrape( Vector &position, Vector &normal )
 
 		pParticle->m_flLifetime	= 0.0f;
 
-		float	spreadOfs = random->RandomFloat( 0.0f, 2.0f );
+		float	spreadOfs = RandomFloat( 0.0f, 2.0f );
 
-		dir[0] = normal[0] + random->RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
-		dir[1] = normal[1] + random->RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
-		dir[2] = normal[2] + random->RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
+		dir[0] = normal[0] + RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
+		dir[1] = normal[1] + RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
+		dir[2] = normal[2] + RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
 	
-		pParticle->m_flWidth		= random->RandomFloat( 2.0f, 5.0f );
-		pParticle->m_flLength		= random->RandomFloat( length*0.25f, length );
-		pParticle->m_flDieTime		= random->RandomFloat( 2.0f, 2.0f );
+		pParticle->m_flWidth		= RandomFloat( 2.0f, 5.0f );
+		pParticle->m_flLength		= RandomFloat( length*0.25f, length );
+		pParticle->m_flDieTime		= RandomFloat( 2.0f, 2.0f );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( (METAL_SCRAPE_MINSPEED*(2.0f-spreadOfs)), (METAL_SCRAPE_MAXSPEED*(2.0f-spreadOfs)) );
+		pParticle->m_vecVelocity	= dir * RandomFloat( (METAL_SCRAPE_MINSPEED*(2.0f-spreadOfs)), (METAL_SCRAPE_MAXSPEED*(2.0f-spreadOfs)) );
 		
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
@@ -613,7 +613,7 @@ void FX_MetalSpark( const Vector &position, const Vector &direction, const Vecto
 	sparkEmitter->SetCollisionDamped( METAL_SPARK_DAMPEN );
 	sparkEmitter->GetBinding().SetBBox( offset - Vector( 32, 32, 32 ), offset + Vector( 32, 32, 32 ) );
 
-	int	numSparks = random->RandomInt( 4, 8 ) * ( iScale * 2 );
+	int	numSparks = RandomInt( 4, 8 ) * ( iScale * 2 );
 	numSparks = (int)( 0.5f + (float)numSparks * g_pParticleSystemMgr->ParticleThrottleScaling() );
 	
 	if ( g_Material_Spark == NULL )
@@ -638,25 +638,25 @@ void FX_MetalSpark( const Vector &position, const Vector &direction, const Vecto
 		if( iScale > 1 && i%3 == 0 )
 		{
 			// Every third spark goes flying far if we're having a big batch of sparks.
-			pParticle->m_flDieTime	= random->RandomFloat( 0.15f, 0.25f );
+			pParticle->m_flDieTime	= RandomFloat( 0.15f, 0.25f );
 		}
 		else
 		{
-			pParticle->m_flDieTime	= random->RandomFloat( 0.05f, 0.1f );
+			pParticle->m_flDieTime	= RandomFloat( 0.05f, 0.1f );
 		}
 
-		float	spreadOfs = random->RandomFloat( 0.0f, 2.0f );
+		float	spreadOfs = RandomFloat( 0.0f, 2.0f );
 
-		dir[0] = direction[0] + random->RandomFloat( -(METAL_SPARK_SPREAD*spreadOfs), (METAL_SPARK_SPREAD*spreadOfs) );
-		dir[1] = direction[1] + random->RandomFloat( -(METAL_SPARK_SPREAD*spreadOfs), (METAL_SPARK_SPREAD*spreadOfs) );
-		dir[2] = direction[2] + random->RandomFloat( -(METAL_SPARK_SPREAD*spreadOfs), (METAL_SPARK_SPREAD*spreadOfs) );
+		dir[0] = direction[0] + RandomFloat( -(METAL_SPARK_SPREAD*spreadOfs), (METAL_SPARK_SPREAD*spreadOfs) );
+		dir[1] = direction[1] + RandomFloat( -(METAL_SPARK_SPREAD*spreadOfs), (METAL_SPARK_SPREAD*spreadOfs) );
+		dir[2] = direction[2] + RandomFloat( -(METAL_SPARK_SPREAD*spreadOfs), (METAL_SPARK_SPREAD*spreadOfs) );
 	
 		VectorNormalize( dir );
 
-		pParticle->m_flWidth		= random->RandomFloat( 1.0f, 4.0f );
-		pParticle->m_flLength		= random->RandomFloat( length*0.25f, length );
+		pParticle->m_flWidth		= RandomFloat( 1.0f, 4.0f );
+		pParticle->m_flLength		= RandomFloat( length*0.25f, length );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( (METAL_SPARK_MINSPEED*(2.0f-spreadOfs)), (METAL_SPARK_MAXSPEED*(2.0f-spreadOfs)) );
+		pParticle->m_vecVelocity	= dir * RandomFloat( (METAL_SPARK_MINSPEED*(2.0f-spreadOfs)), (METAL_SPARK_MAXSPEED*(2.0f-spreadOfs)) );
 		
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
@@ -673,9 +673,9 @@ void FX_MetalSpark( const Vector &position, const Vector &direction, const Vecto
 	data.SetNormal( surfaceNormal );
 	data.SetAlpha( 1.0f, 0.0f );
 	data.SetLifeTime( 0.1f );
-	data.SetYaw( random->RandomInt( 0, 360 ) );
+	data.SetYaw( RandomInt( 0, 360 ) );
 	
-	int scale = random->RandomInt( 24, 28 );
+	int scale = RandomInt( 24, 28 );
 	data.SetScale( scale, 0 );
 
 	FX_AddQuad( data );
@@ -731,7 +731,7 @@ void FX_Sparks( const Vector &pos, int nMagnitude, int nTrailLength, const Vecto
 	// Big sparks.
 	//
 	Vector	dir;
-	int		numSparks = nMagnitude * nMagnitude * random->RandomFloat( 2, 4 );
+	int		numSparks = nMagnitude * nMagnitude * RandomFloat( 2, 4 );
 
 	int i;
 	TrailParticle	*pParticle;
@@ -743,16 +743,16 @@ void FX_Sparks( const Vector &pos, int nMagnitude, int nTrailLength, const Vecto
 			return;
 
 		pParticle->m_flLifetime	= 0.0f;
-		pParticle->m_flDieTime	= nMagnitude * random->RandomFloat( 1.0f, 2.0f );
+		pParticle->m_flDieTime	= nMagnitude * RandomFloat( 1.0f, 2.0f );
 
-		float	spreadOfs = random->RandomFloat( 0.0f, 2.0f );
-		dir[0] = vecDir[0] + random->RandomFloat( -(SPARK_SPREAD*spreadOfs), (SPARK_SPREAD*spreadOfs) );
-		dir[1] = vecDir[1] + random->RandomFloat( -(SPARK_SPREAD*spreadOfs), (SPARK_SPREAD*spreadOfs) );
-		dir[2] = vecDir[2] + random->RandomFloat( -(SPARK_SPREAD*spreadOfs), (SPARK_SPREAD*spreadOfs) );
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( (flMinSpeed*(2.0f-spreadOfs)), (flMaxSpeed*(2.0f-spreadOfs)) );
+		float	spreadOfs = RandomFloat( 0.0f, 2.0f );
+		dir[0] = vecDir[0] + RandomFloat( -(SPARK_SPREAD*spreadOfs), (SPARK_SPREAD*spreadOfs) );
+		dir[1] = vecDir[1] + RandomFloat( -(SPARK_SPREAD*spreadOfs), (SPARK_SPREAD*spreadOfs) );
+		dir[2] = vecDir[2] + RandomFloat( -(SPARK_SPREAD*spreadOfs), (SPARK_SPREAD*spreadOfs) );
+		pParticle->m_vecVelocity	= dir * RandomFloat( (flMinSpeed*(2.0f-spreadOfs)), (flMaxSpeed*(2.0f-spreadOfs)) );
 			
-		pParticle->m_flWidth		= flWidth + random->RandomFloat( 0.0f, 0.5f );
-		pParticle->m_flLength		= nTrailLength * random->RandomFloat( 0.02, 0.05f );
+		pParticle->m_flWidth		= flWidth + RandomFloat( 0.0f, 0.5f );
+		pParticle->m_flLength		= nTrailLength * RandomFloat( 0.02, 0.05f );
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
 
@@ -786,7 +786,7 @@ void FX_Sparks( const Vector &pos, int nMagnitude, int nTrailLength, const Vecto
 	pSparkEmitter2->m_ParticleCollision.SetGravity( 400.0f );
 	pSparkEmitter2->SetFlag( bitsPARTICLE_TRAIL_VELOCITY_DAMPEN );
 
-	numSparks = nMagnitude * random->RandomInt( 4, 8 );
+	numSparks = nMagnitude * RandomInt( 4, 8 );
 
 	// Dump out sparks
 	for ( i = 0; i < numSparks; i++ )
@@ -802,11 +802,11 @@ void FX_Sparks( const Vector &pos, int nMagnitude, int nTrailLength, const Vecto
 		dir += vecDir;
 		VectorNormalize( dir );
 		
-		pParticle->m_flWidth		= (flWidth * 0.25) + random->RandomFloat( 0.0f, 0.5f );
-		pParticle->m_flLength		= nTrailLength * random->RandomFloat( 0.02f, 0.03f );
-		pParticle->m_flDieTime		= nMagnitude * random->RandomFloat( 0.3f, 0.5f );
+		pParticle->m_flWidth		= (flWidth * 0.25) + RandomFloat( 0.0f, 0.5f );
+		pParticle->m_flLength		= nTrailLength * RandomFloat( 0.02f, 0.03f );
+		pParticle->m_flDieTime		= nMagnitude * RandomFloat( 0.3f, 0.5f );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( flMinSpeed, flMaxSpeed );
+		pParticle->m_vecVelocity	= dir * RandomFloat( flMinSpeed, flMaxSpeed );
 		
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
@@ -836,7 +836,7 @@ void FX_EnergySplash( const Vector &pos, const Vector &normal, int nFlags )
 				1.0f,
 				0.0f,
 				0.4f,
-				random->RandomInt( 0, 360 ), 
+				RandomInt( 0, 360 ),
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				0.25f, 
@@ -852,7 +852,7 @@ void FX_EnergySplash( const Vector &pos, const Vector &normal, int nFlags )
 				1.0f,
 				0.0f,
 				0.4f,
-				random->RandomInt( 0, 360 ), 
+				RandomInt( 0, 360 ),
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				0.5f, 
@@ -874,9 +874,9 @@ void FX_EnergySplash( const Vector &pos, const Vector &normal, int nFlags )
 	// Anime ground effects
 	for ( int j = 0; j < 8; j++ )
 	{
-		offset.x = random->RandomFloat( -8.0f, 8.0f );
-		offset.y = random->RandomFloat( -8.0f, 8.0f );
-		offset.z = random->RandomFloat( 0.0f, 4.0f );
+		offset.x = RandomFloat( -8.0f, 8.0f );
+		offset.y = RandomFloat( -8.0f, 8.0f );
+		offset.z = RandomFloat( 0.0f, 4.0f );
 
 		offset += pos;
 
@@ -887,9 +887,9 @@ void FX_EnergySplash( const Vector &pos, const Vector &normal, int nFlags )
 
 		sParticle->m_vecVelocity = Vector( Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( 16.0f, 64.0f ) );
 		
-		sParticle->m_uchStartSize	= random->RandomFloat( 2, 4 );
+		sParticle->m_uchStartSize	= RandomFloat( 2, 4 );
 
-		sParticle->m_flDieTime = random->RandomFloat( 0.4f, 0.6f );
+		sParticle->m_flDieTime = RandomFloat( 0.4f, 0.6f );
 		
 		sParticle->m_flLifetime		= 0.0f;
 
@@ -942,7 +942,7 @@ void FX_MicroExplosion( Vector &position, Vector &normal )
 						MICRO_EXPLOSION_DAMPEN, 
 						bitsPARTICLE_TRAIL_VELOCITY_DAMPEN );
 
-	int	numSparks = random->RandomInt( 8, 16 );
+	int	numSparks = RandomInt( 8, 16 );
 	
 	if ( g_Material_Spark == NULL )
 	{
@@ -964,14 +964,14 @@ void FX_MicroExplosion( Vector &position, Vector &normal )
 
 			float	ramp = ( (float) i / (float)numSparks );
 
-			dir[0] = normal[0] + random->RandomFloat( -MICRO_EXPLOSION_SPREAD*ramp, MICRO_EXPLOSION_SPREAD*ramp );
-			dir[1] = normal[1] + random->RandomFloat( -MICRO_EXPLOSION_SPREAD*ramp, MICRO_EXPLOSION_SPREAD*ramp );
-			dir[2] = normal[2] + random->RandomFloat( -MICRO_EXPLOSION_SPREAD*ramp, MICRO_EXPLOSION_SPREAD*ramp );
+			dir[0] = normal[0] + RandomFloat( -MICRO_EXPLOSION_SPREAD*ramp, MICRO_EXPLOSION_SPREAD*ramp );
+			dir[1] = normal[1] + RandomFloat( -MICRO_EXPLOSION_SPREAD*ramp, MICRO_EXPLOSION_SPREAD*ramp );
+			dir[2] = normal[2] + RandomFloat( -MICRO_EXPLOSION_SPREAD*ramp, MICRO_EXPLOSION_SPREAD*ramp );
 		
-			pParticle->m_flWidth		= random->RandomFloat( 5.0f, 10.0f );
+			pParticle->m_flWidth		= RandomFloat( 5.0f, 10.0f );
 			pParticle->m_flLength		= (length*((1.0f-ramp)*(1.0f-ramp)*0.5f));
 			pParticle->m_flDieTime		= 0.2f;
-			pParticle->m_vecVelocity	= dir * random->RandomFloat( MICRO_EXPLOSION_MINSPEED*(1.5f-ramp), MICRO_EXPLOSION_MAXSPEED*(1.5f-ramp) );
+			pParticle->m_vecVelocity	= dir * RandomFloat( MICRO_EXPLOSION_MINSPEED*(1.5f-ramp), MICRO_EXPLOSION_MAXSPEED*(1.5f-ramp) );
 
 			Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 		}
@@ -996,11 +996,11 @@ void FX_MicroExplosion( Vector &position, Vector &normal )
 		sParticle->m_uchColor[0]	= 255;
 		sParticle->m_uchColor[1]	= 255;
 		sParticle->m_uchColor[2]	= 255;
-		sParticle->m_uchStartAlpha	= random->RandomInt( 128, 255 );
+		sParticle->m_uchStartAlpha	= RandomInt( 128, 255 );
 		sParticle->m_uchEndAlpha	= 0;
-		sParticle->m_uchStartSize	= random->RandomInt( 12, 16 );
+		sParticle->m_uchStartSize	= RandomInt( 12, 16 );
 		sParticle->m_uchEndSize		= sParticle->m_uchStartSize;
-		sParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		sParticle->m_flRoll			= RandomInt( 0, 360 );
 		sParticle->m_flRollDelta	= 0.0f;
 	}
 }
@@ -1056,7 +1056,7 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 	pSparkEmitter->SetSortOrigin( offset );
 
 	Vector	dir;
-	int		numSparks = random->RandomInt( 8,16 );
+	int		numSparks = RandomInt( 8,16 );
 
 	// Dump out sparks
 	int i;
@@ -1069,14 +1069,14 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 
 		pParticle->m_flLifetime	= 0.0f;
 
-		pParticle->m_flWidth		= random->RandomFloat( 5.0f, 10.0f );
-		pParticle->m_flLength		= random->RandomFloat( 0.05, 0.1f );
-		pParticle->m_flDieTime		= random->RandomFloat( 1.0f, 2.0f );
+		pParticle->m_flWidth		= RandomFloat( 5.0f, 10.0f );
+		pParticle->m_flLength		= RandomFloat( 0.05, 0.1f );
+		pParticle->m_flDieTime		= RandomFloat( 1.0f, 2.0f );
 		
-		dir[0] = normal[0] + random->RandomFloat( -EXPLOSION_SPREAD, EXPLOSION_SPREAD );
-		dir[1] = normal[1] + random->RandomFloat( -EXPLOSION_SPREAD, EXPLOSION_SPREAD );
-		dir[2] = normal[2] + random->RandomFloat( -EXPLOSION_SPREAD, EXPLOSION_SPREAD );
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( EXPLOSION_MINSPEED, EXPLOSION_MAXSPEED );
+		dir[0] = normal[0] + RandomFloat( -EXPLOSION_SPREAD, EXPLOSION_SPREAD );
+		dir[1] = normal[1] + RandomFloat( -EXPLOSION_SPREAD, EXPLOSION_SPREAD );
+		dir[2] = normal[2] + RandomFloat( -EXPLOSION_SPREAD, EXPLOSION_SPREAD );
+		pParticle->m_vecVelocity	= dir * RandomFloat( EXPLOSION_MINSPEED, EXPLOSION_MAXSPEED );
 
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}
@@ -1104,26 +1104,26 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 			break;
 		}
 
-		int	numFlecks = random->RandomInt( 48, 64 );
+		int	numFlecks = RandomInt( 48, 64 );
 		// Dump out flecks
 		for ( i = 0; i < numFlecks; i++ )
 		{
-			FleckParticle *pParticle = (FleckParticle *) fleckEmitter->AddParticle( sizeof(FleckParticle), hMaterialArray[random->RandomInt(0,1)], offset );
+			FleckParticle *pParticle = (FleckParticle *) fleckEmitter->AddParticle( sizeof(FleckParticle), hMaterialArray[RandomInt(0,1)], offset );
 
 			if ( pParticle == NULL )
 				break;
 
 			pParticle->m_flLifetime	= 0.0f;
 			pParticle->m_flDieTime		= 3.0f;
-			dir[0] = normal[0] + random->RandomFloat( -EXPLOSION_FLECK_ANGULAR_SPRAY, EXPLOSION_FLECK_ANGULAR_SPRAY );
-			dir[1] = normal[1] + random->RandomFloat( -EXPLOSION_FLECK_ANGULAR_SPRAY, EXPLOSION_FLECK_ANGULAR_SPRAY );
-			dir[2] = normal[2] + random->RandomFloat( -EXPLOSION_FLECK_ANGULAR_SPRAY, EXPLOSION_FLECK_ANGULAR_SPRAY );
-			pParticle->m_uchSize		= random->RandomInt( 2, 6 );
-			pParticle->m_vecVelocity	= dir * ( random->RandomFloat( EXPLOSION_FLECK_MIN_SPEED, EXPLOSION_FLECK_MAX_SPEED ) * ( 7 - pParticle->m_uchSize ) );
-			pParticle->m_flRoll		= random->RandomFloat( 0, 360 );
-			pParticle->m_flRollDelta	= random->RandomFloat( 0, 360 );
+			dir[0] = normal[0] + RandomFloat( -EXPLOSION_FLECK_ANGULAR_SPRAY, EXPLOSION_FLECK_ANGULAR_SPRAY );
+			dir[1] = normal[1] + RandomFloat( -EXPLOSION_FLECK_ANGULAR_SPRAY, EXPLOSION_FLECK_ANGULAR_SPRAY );
+			dir[2] = normal[2] + RandomFloat( -EXPLOSION_FLECK_ANGULAR_SPRAY, EXPLOSION_FLECK_ANGULAR_SPRAY );
+			pParticle->m_uchSize		= RandomInt( 2, 6 );
+			pParticle->m_vecVelocity	= dir * ( RandomFloat( EXPLOSION_FLECK_MIN_SPEED, EXPLOSION_FLECK_MAX_SPEED ) * ( 7 - pParticle->m_uchSize ) );
+			pParticle->m_flRoll		= RandomFloat( 0, 360 );
+			pParticle->m_flRollDelta	= RandomFloat( 0, 360 );
 
-			float colorRamp = random->RandomFloat( 0.75f, 1.5f );
+			float colorRamp = RandomFloat( 0.75f, 1.5f );
 			pParticle->m_uchColor[0] = MIN( 1.0f, r*colorRamp )*255.0f;
 			pParticle->m_uchColor[1] = MIN( 1.0f, g*colorRamp )*255.0f;
 			pParticle->m_uchColor[2] = MIN( 1.0f, b*colorRamp )*255.0f;
@@ -1146,7 +1146,7 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 		pSphereParticle->m_uchEndSize		= 255.0;
 		pSphereParticle->m_vecVelocity		= Vector(0,0,0);
 
-		float colorRamp = random->RandomFloat( 0.75f, 1.5f );
+		float colorRamp = RandomFloat( 0.75f, 1.5f );
 		pSphereParticle->m_uchColor[0] = MIN( 1.0f, r*colorRamp )*255.0f;
 		pSphereParticle->m_uchColor[1] = MIN( 1.0f, g*colorRamp )*255.0f;
 		pSphereParticle->m_uchColor[2] = MIN( 1.0f, b*colorRamp )*255.0f;
@@ -1175,7 +1175,7 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 			float y = sin( flAngle );
 			pParticle->m_vecVelocity = (vecRight*x + vecUp*y) * 1024.0;
 
-			float colorRamp = random->RandomFloat( 0.75f, 1.5f );
+			float colorRamp = RandomFloat( 0.75f, 1.5f );
 			pParticle->m_uchColor[0] = MIN( 1.0f, r*colorRamp )*255.0f;
 			pParticle->m_uchColor[1] = MIN( 1.0f, g*colorRamp )*255.0f;
 			pParticle->m_uchColor[2] = MIN( 1.0f, b*colorRamp )*255.0f;
@@ -1192,19 +1192,19 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 			break;
 
 		pParticle->m_flLifetime	= 0.0f;
-		pParticle->m_flDieTime	= random->RandomFloat( 2.0f, 3.0f );
+		pParticle->m_flDieTime	= RandomFloat( 2.0f, 3.0f );
 		pParticle->m_uchStartSize	= 64;
 		pParticle->m_uchEndSize		= 255;
-		dir[0] = normal[0] + random->RandomFloat( -0.8f, 0.8f );
-		dir[1] = normal[1] + random->RandomFloat( -0.8f, 0.8f );
-		dir[2] = normal[2] + random->RandomFloat( -0.8f, 0.8f );
-		pParticle->m_vecVelocity = dir * random->RandomFloat( 2.0f, 24.0f )*(i+1);
+		dir[0] = normal[0] + RandomFloat( -0.8f, 0.8f );
+		dir[1] = normal[1] + RandomFloat( -0.8f, 0.8f );
+		dir[2] = normal[2] + RandomFloat( -0.8f, 0.8f );
+		pParticle->m_vecVelocity = dir * RandomFloat( 2.0f, 24.0f )*(i+1);
 		pParticle->m_uchStartAlpha	= 160;
 		pParticle->m_uchEndAlpha	= 0;
-		pParticle->m_flRoll			= random->RandomFloat( 180, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -1, 1 );
+		pParticle->m_flRoll			= RandomFloat( 180, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -1, 1 );
 
-		float colorRamp = random->RandomFloat( 0.5f, 1.25f );
+		float colorRamp = RandomFloat( 0.5f, 1.25f );
 		pParticle->m_uchColor[0] = MIN( 1.0f, r*colorRamp )*255.0f;
 		pParticle->m_uchColor[1] = MIN( 1.0f, g*colorRamp )*255.0f;
 		pParticle->m_uchColor[2] = MIN( 1.0f, b*colorRamp )*255.0f;
@@ -1239,21 +1239,21 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 			return;
 
 		pParticle->m_flLifetime		= 0.0f;
-		pParticle->m_flDieTime		= random->RandomFloat( 0.2f, 0.4f );
-		pParticle->m_uchStartSize	= random->RandomInt( 4, 8 );
-		pParticle->m_uchEndSize		= random->RandomInt( 32, 64 );
+		pParticle->m_flDieTime		= RandomFloat( 0.2f, 0.4f );
+		pParticle->m_uchStartSize	= RandomInt( 4, 8 );
+		pParticle->m_uchEndSize		= RandomInt( 32, 64 );
 		
-		dir[0] = random->RandomFloat( -1.0f, 1.0f );
-		dir[1] = random->RandomFloat( -1.0f, 1.0f );
-		dir[2] = random->RandomFloat( -1.0f, 1.0f );
+		dir[0] = RandomFloat( -1.0f, 1.0f );
+		dir[1] = RandomFloat( -1.0f, 1.0f );
+		dir[2] = RandomFloat( -1.0f, 1.0f );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( 64.0f, 128.0f );
-		pParticle->m_uchStartAlpha	= random->RandomInt( 64, 128 );
+		pParticle->m_vecVelocity	= dir * RandomFloat( 64.0f, 128.0f );
+		pParticle->m_uchStartAlpha	= RandomInt( 64, 128 );
 		pParticle->m_uchEndAlpha	= 0;
-		pParticle->m_flRoll			= random->RandomFloat( 180, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -4, 4 );
+		pParticle->m_flRoll			= RandomFloat( 180, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -4, 4 );
 
-		int colorRamp = random->RandomFloat( 235, 255 );
+		int colorRamp = RandomFloat( 235, 255 );
 		pParticle->m_uchColor[0] = colorRamp;
 		pParticle->m_uchColor[1] = colorRamp;
 		pParticle->m_uchColor[2] = colorRamp;
@@ -1267,22 +1267,22 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 			return;
 
 		pParticle->m_flLifetime	= 0.0f;
-		pParticle->m_flDieTime	= random->RandomFloat( 1.0f, 2.0f );
-		pParticle->m_uchStartSize	= random->RandomInt( 32, 64 );
-		pParticle->m_uchEndSize		= random->RandomInt( 100, 128 );
+		pParticle->m_flDieTime	= RandomFloat( 1.0f, 2.0f );
+		pParticle->m_uchStartSize	= RandomInt( 32, 64 );
+		pParticle->m_uchEndSize		= RandomInt( 100, 128 );
 
-		dir[0] = normal[0] + random->RandomFloat( -0.8f, 0.8f );
-		dir[1] = normal[1] + random->RandomFloat( -0.8f, 0.8f );
-		dir[2] = normal[2] + random->RandomFloat( -0.8f, 0.8f );
+		dir[0] = normal[0] + RandomFloat( -0.8f, 0.8f );
+		dir[1] = normal[1] + RandomFloat( -0.8f, 0.8f );
+		dir[2] = normal[2] + RandomFloat( -0.8f, 0.8f );
 
-		pParticle->m_vecVelocity = dir * random->RandomFloat( 16.0f, 32.0f );
+		pParticle->m_vecVelocity = dir * RandomFloat( 16.0f, 32.0f );
 
-		pParticle->m_uchStartAlpha	= random->RandomInt( 32, 64 );
+		pParticle->m_uchStartAlpha	= RandomInt( 32, 64 );
 		pParticle->m_uchEndAlpha	= 0;
-		pParticle->m_flRoll			= random->RandomFloat( 180, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -1, 1 );
+		pParticle->m_flRoll			= RandomFloat( 180, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -1, 1 );
 
-		int colorRamp = random->RandomFloat( 235, 255 );
+		int colorRamp = RandomFloat( 235, 255 );
 		pParticle->m_uchColor[0] = colorRamp;
 		pParticle->m_uchColor[1] = colorRamp;
 		pParticle->m_uchColor[2] = colorRamp;
@@ -1304,8 +1304,8 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 		pParticle->m_flLifetime	= 0.0f;
 		pParticle->m_flDieTime	= 0.1f;
 		pParticle->m_vecVelocity.Init();
-		pParticle->m_flRoll			= random->RandomFloat( 180, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -1, 1 );
+		pParticle->m_flRoll			= RandomFloat( 180, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -1, 1 );
 
 		pParticle->m_uchColor[0] = pParticle->m_uchColor[1] = pParticle->m_uchColor[2] = 128;
 		
@@ -1323,8 +1323,8 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 		pParticle->m_flLifetime	= 0.0f;
 		pParticle->m_flDieTime	= 0.2f;
 		pParticle->m_vecVelocity.Init();
-		pParticle->m_flRoll		= random->RandomFloat( 180, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -1, 1 );
+		pParticle->m_flRoll		= RandomFloat( 180, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -1, 1 );
 		pParticle->m_uchColor[0] = pParticle->m_uchColor[1] = pParticle->m_uchColor[2] = 32;
 		
 		pParticle->m_uchStartAlpha	= 64;
@@ -1343,7 +1343,7 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 
 	dl->origin	= offset;
 	dl->color.r = dl->color.g = dl->color.b = 64;
-	dl->radius	= random->RandomFloat(128,256);
+	dl->radius	= RandomFloat(128,256);
 	dl->die		= gpGlobals->curtime + 0.1;
 
 
@@ -1363,7 +1363,7 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 		pSparkEmitter->SetSortOrigin( offset );
 		pSparkEmitter->m_ParticleCollision.SetGravity( 0.0f );
 
-		numSparks = random->RandomInt( 16, 32 );
+		numSparks = RandomInt( 16, 32 );
 
 		//Dump out sparks
 		for ( i = 0; i < numSparks; i++ )
@@ -1377,13 +1377,13 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 
 			dir.Random( -1.0f, 1.0f );
 
-			pTrailParticle->m_flWidth		= random->RandomFloat( 1.0f, 2.0f );
-			pTrailParticle->m_flLength		= random->RandomFloat( 0.01f, 0.1f );
-			pTrailParticle->m_flDieTime		= random->RandomFloat( 0.1f, 0.2f );
+			pTrailParticle->m_flWidth		= RandomFloat( 1.0f, 2.0f );
+			pTrailParticle->m_flLength		= RandomFloat( 0.01f, 0.1f );
+			pTrailParticle->m_flDieTime		= RandomFloat( 0.1f, 0.2f );
 			
-			pTrailParticle->m_vecVelocity	= dir * random->RandomFloat( 800, 1000 );
+			pTrailParticle->m_vecVelocity	= dir * RandomFloat( 800, 1000 );
 
-			float colorRamp = random->RandomFloat( 0.75f, 1.0f );
+			float colorRamp = RandomFloat( 0.75f, 1.0f );
 			FloatToColor32( pTrailParticle->m_color, colorRamp, colorRamp, 1.0f, 1.0f );
 		}
 	}
@@ -1405,7 +1405,7 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 
 		pCollisionEmitter->SetSortOrigin( offset );
 
-		numSparks = random->RandomInt( 8, 16 );
+		numSparks = RandomInt( 8, 16 );
 		hMaterial = pCollisionEmitter->GetPMaterial( "effects/blueflare1" );
 
 		//Dump out sparks
@@ -1419,15 +1419,15 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 			pTrailParticle->m_flLifetime	= 0.0f;
 
 			dir.Random( -1.0f, 1.0f );
-			dir[2] = random->RandomFloat( 0.0f, 0.75f );
+			dir[2] = RandomFloat( 0.0f, 0.75f );
 
-			pTrailParticle->m_flWidth		= random->RandomFloat( 1.0f, 2.0f );
-			pTrailParticle->m_flLength		= random->RandomFloat( 0.01f, 0.1f );
-			pTrailParticle->m_flDieTime		= random->RandomFloat( 0.2f, 1.0f );
+			pTrailParticle->m_flWidth		= RandomFloat( 1.0f, 2.0f );
+			pTrailParticle->m_flLength		= RandomFloat( 0.01f, 0.1f );
+			pTrailParticle->m_flDieTime		= RandomFloat( 0.2f, 1.0f );
 			
-			pTrailParticle->m_vecVelocity	= dir * random->RandomFloat( 128, 512 );
+			pTrailParticle->m_vecVelocity	= dir * RandomFloat( 128, 512 );
 
-			float colorRamp = random->RandomFloat( 0.75f, 1.0f );
+			float colorRamp = RandomFloat( 0.75f, 1.0f );
 			FloatToColor32( pTrailParticle->m_color, colorRamp, colorRamp, 1.0f, 1.0f );
 		}
 	}
@@ -1474,17 +1474,17 @@ void FX_SparkFan( Vector &position, Vector &normal )
 
 		pParticle->m_flLifetime	= 0.0f;
 
-		float	spreadOfs = random->RandomFloat( 0.0f, 2.0f );
+		float	spreadOfs = RandomFloat( 0.0f, 2.0f );
 
-		dir[0] = normal[0] + random->RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
-		dir[1] = normal[1] + random->RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
-		dir[2] = normal[2] + random->RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
+		dir[0] = normal[0] + RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
+		dir[1] = normal[1] + RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
+		dir[2] = normal[2] + RandomFloat( -(METAL_SCRAPE_SPREAD*spreadOfs), (METAL_SCRAPE_SPREAD*spreadOfs) );
 	
-		pParticle->m_flWidth		= random->RandomFloat( 2.0f, 5.0f );
-		pParticle->m_flLength		= random->RandomFloat( length*0.25f, length );
-		pParticle->m_flDieTime		= random->RandomFloat( 2.0f, 2.0f );
+		pParticle->m_flWidth		= RandomFloat( 2.0f, 5.0f );
+		pParticle->m_flLength		= RandomFloat( length*0.25f, length );
+		pParticle->m_flDieTime		= RandomFloat( 2.0f, 2.0f );
 		
-		pParticle->m_vecVelocity	= dir * random->RandomFloat( (METAL_SCRAPE_MINSPEED*(2.0f-spreadOfs)), (METAL_SCRAPE_MAXSPEED*(2.0f-spreadOfs)) );
+		pParticle->m_vecVelocity	= dir * RandomFloat( (METAL_SCRAPE_MINSPEED*(2.0f-spreadOfs)), (METAL_SCRAPE_MAXSPEED*(2.0f-spreadOfs)) );
 		
 		Color32Init( pParticle->m_color, 255, 255, 255, 255 );
 	}

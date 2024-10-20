@@ -196,7 +196,7 @@ int CAI_FuncTankBehavior::OnTakeDamage_Alive( const CTakeDamageInfo& info ) {
 void CAI_FuncTankBehavior::StartTask( const Task_t* pTask ) {
 	switch ( pTask->iTask ) {
 		case TASK_FUNCTANK_ANNOUNCE_SCAN: {
-			if ( random->RandomInt( 0, 3 ) == 0 ) {
+			if ( RandomInt( 0, 3 ) == 0 ) {
 				GetOuter()->SpeakSentence( FUNCTANK_SENTENCE_SCAN_FOR_ENEMIES );
 			}
 			TaskComplete();
@@ -286,13 +286,13 @@ void CAI_FuncTankBehavior::StartTask( const Task_t* pTask ) {
 
 			float flCenterYaw = m_hFuncTank->YawCenterWorld();
 			float flYawRange = m_hFuncTank->YawRange();
-			float flScanAmount = random->RandomFloat( 0, flYawRange );
+			float flScanAmount = RandomFloat( 0, flYawRange );
 			QAngle vecTargetAngles( 0, UTIL_AngleMod( flCenterYaw + flScanAmount ), 0 );
 
 			/*
 			float flCenterPitch = m_hFuncTank->YawCenterWorld();
 			float flPitchRange = m_hFuncTank->PitchRange();
-			float flPitch = random->RandomFloat( -flPitchRange, flPitchRange );
+			float flPitch = RandomFloat( -flPitchRange, flPitchRange );
 			QAngle vecTargetAngles( flCenterPitch + flPitch, UTIL_AngleMod( flCenterYaw + flScanAmount ), 0 );
 			*/
 
@@ -315,13 +315,13 @@ void CAI_FuncTankBehavior::StartTask( const Task_t* pTask ) {
 
 			float flCenterYaw = m_hFuncTank->YawCenterWorld();
 			float flYawRange = m_hFuncTank->YawRange();
-			float flScanAmount = random->RandomFloat( 0, flYawRange );
+			float flScanAmount = RandomFloat( 0, flYawRange );
 			QAngle vecTargetAngles( 0, UTIL_AngleMod( flCenterYaw - flScanAmount ), 0 );
 
 			/*
 			float flCenterPitch = m_hFuncTank->YawCenterWorld();
 			float flPitchRange = m_hFuncTank->PitchRange();
-			float flPitch = random->RandomFloat( -flPitchRange, flPitchRange );
+			float flPitch = RandomFloat( -flPitchRange, flPitchRange );
 			QAngle vecTargetAngles( flCenterPitch + flPitch, UTIL_AngleMod( flCenterYaw - flScanAmount ), 0 );
 			*/
 

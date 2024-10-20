@@ -127,7 +127,7 @@ void FX_ThumperDust( const CEffectData &data )
 
 		offset = ( RandomVector( -4.0f, 4.0f ) + data.m_vOrigin ) + ( forward * 128.0f );
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof(SimpleParticle), g_Mat_DustPuff[random->RandomInt(0,1)], offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof(SimpleParticle), g_Mat_DustPuff[RandomInt(0,1)], offset );
 		if ( pParticle != NULL )
 		{	
 			pParticle->m_flLifetime		= 0.0f;
@@ -144,14 +144,14 @@ void FX_ThumperDust( const CEffectData &data )
 			pParticle->m_uchColor[1]	= vecColor[1];
 			pParticle->m_uchColor[2]	= vecColor[2];
 
-			pParticle->m_uchStartAlpha	= random->RandomInt( 64, 96 );
+			pParticle->m_uchStartAlpha	= RandomInt( 64, 96 );
 			pParticle->m_uchEndAlpha	= 0;
 
 			pParticle->m_uchStartSize	= flScale * 0.25f;
 			pParticle->m_uchEndSize		= flScale * 0.5f;
 
-			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-			pParticle->m_flRollDelta	= random->RandomFloat( -6.0f, 6.0f );
+			pParticle->m_flRoll			= RandomInt( 0, 360 );
+			pParticle->m_flRollDelta	= RandomFloat( -6.0f, 6.0f );
 		}
 	}
 }

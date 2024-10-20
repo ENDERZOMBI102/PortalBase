@@ -266,9 +266,9 @@ void CFlextalkActor::SetFlexTarget( LocalFlexController_t flexnum, float value )
 	}
 
 	float value2 = value;
-	if (1 || random->RandomFloat( 0.0, 1.0 ) < 0.2)
+	if (1 || RandomFloat( 0.0, 1.0 ) < 0.2)
 	{
-		value2 = random->RandomFloat( value - 0.2, value + 0.2 );
+		value2 = RandomFloat( value - 0.2, value + 0.2 );
 		value2 = clamp( value2, 0.0f, 1.0f );
 	}
 
@@ -386,8 +386,8 @@ void CFlextalkActor::ProcessSceneEvents( void )
 		} 
 		else if (m_flextime < gpGlobals->curtime)
 		{
-			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
-			m_flexnum = (LocalFlexController_t)random->RandomInt( 0, GetNumFlexControllers() - 1 );
+			m_flextime = gpGlobals->curtime + RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
+			m_flexnum = (LocalFlexController_t)RandomInt( 0, GetNumFlexControllers() - 1 );
 
 			if (m_flextarget[m_flexnum] == 1)
 			{
@@ -398,7 +398,7 @@ void CFlextalkActor::ProcessSceneEvents( void )
 				if (strstr( GetFlexControllerName( m_flexnum ), "upper_raiser" ) == NULL)
 				{
 					Msg( "%s:%s\n", GetFlexControllerType( m_flexnum ), GetFlexControllerName( m_flexnum ) );
-					SetFlexTarget( m_flexnum, random->RandomFloat( 0.5, 1.0 ) );
+					SetFlexTarget( m_flexnum, RandomFloat( 0.5, 1.0 ) );
 				}
 			}
 		}
@@ -410,7 +410,7 @@ void CFlextalkActor::ProcessSceneEvents( void )
 
 			if (weight != m_flextarget[i])
 			{
-				weight = weight + (m_flextarget[i] - weight) / random->RandomFloat( 2.0, 4.0 );
+				weight = weight + (m_flextarget[i] - weight) / RandomFloat( 2.0, 4.0 );
 			}
 			weight = clamp( weight, 0.0f, 1.0f );
 			SetFlexWeight( i, weight );

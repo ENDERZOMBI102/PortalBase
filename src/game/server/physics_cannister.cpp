@@ -174,7 +174,7 @@ int CPhysicsCannister::OnTakeDamage( const CTakeDamageInfo &info )
 			// explosions that don't destroy will activate
 			// 50% of the time blunt damage will activate as well
 			if ( (info.GetDamageType() & DMG_BLAST) ||
-				( (info.GetDamageType() & (DMG_CLUB|DMG_SLASH|DMG_CRUSH) ) && random->RandomInt(1,100) < 50 ) )
+				( (info.GetDamageType() & (DMG_CLUB|DMG_SLASH|DMG_CRUSH) ) && RandomInt(1,100) < 50 ) )
 			{
 				CannisterActivate( info.GetAttacker(), g_vecAttackDir );
 			}

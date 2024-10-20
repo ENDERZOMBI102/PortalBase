@@ -1842,7 +1842,7 @@ void CNPC_AttackHelicopter::ShootAtPlayer( const Vector &vBasePos, const Vector 
 	int i;
 	for ( i = 0; i < nActualTargets; ++i )
 	{
-		int nSwap = random->RandomInt( 0, nActualTargets - 1 ); 
+		int nSwap = RandomInt( 0, nActualTargets - 1 );
 		V_swap( ppNearbyTargets[i], ppNearbyTargets[nSwap] );
 	}
 
@@ -1906,8 +1906,8 @@ void CNPC_AttackHelicopter::PickDirectionToCircleOfDeath( const Vector &vBasePos
 	float x, y;
 	do
 	{
-		x = random->RandomFloat( -1.0f, 1.0f ); 
-		y = random->RandomFloat( -1.0f, 1.0f ); 
+		x = RandomFloat( -1.0f, 1.0f );
+		y = RandomFloat( -1.0f, 1.0f );
 	} while ( (x * x + y * y) > 1.0f );
 
 	pResult->x += x * m_flCircleOfDeathRadius; 
@@ -1926,7 +1926,7 @@ void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity *pTarget, float
 	Vector vecDirection;
 	VectorSubtract( pTarget->WorldSpaceCenter(), shootOrigin, vecDirection );
 	float flDist = VectorNormalize( vecDirection );
-	float flRadius = pTarget->BoundingRadius() + random->RandomFloat( flMinDist, flMaxDist );
+	float flRadius = pTarget->BoundingRadius() + RandomFloat( flMinDist, flMaxDist );
 
 	float flMinRadius = flRadius;
 	if ( flDist > flRadius )
@@ -2119,7 +2119,7 @@ void CNPC_AttackHelicopter::ShootAtVehicle( const Vector &vBasePos, const Vector
 	// Randomly sort it...
 	for ( i = 0; i < nActualTargets; ++i )
 	{
-		int nSwap = random->RandomInt( 0, nActualTargets - 1 ); 
+		int nSwap = RandomInt( 0, nActualTargets - 1 );
 		V_swap( ppNearbyTargets[i], ppNearbyTargets[nSwap] );
 	}
 
@@ -2302,7 +2302,7 @@ bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTar
 		EmitSound( "NPC_AttackHelicopter.ChargeGun" );
 		float flChargeTime = CHOPPER_GUN_CHARGE_TIME;
 		float flVariance = flChargeTime * 0.1f;
-		m_flChargeTime = gpGlobals->curtime + random->RandomFloat(flChargeTime - flVariance, flChargeTime + flVariance);
+		m_flChargeTime = gpGlobals->curtime + RandomFloat(flChargeTime - flVariance, flChargeTime + flVariance);
 		m_nGunState = GUN_STATE_CHARGING;
 		m_flAvoidMetric = 0.0f;
 		m_vecLastAngVelocity.Init( 0, 0, 0 );
@@ -2357,7 +2357,7 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 	case SHOOT_MODE_FAST:
 		{
 			int nBurstCount = sk_helicopter_burstcount.GetInt();
-			m_nRemainingBursts = random->RandomInt( nBurstCount, 2.0 * nBurstCount );
+			m_nRemainingBursts = RandomInt( nBurstCount, 2.0 * nBurstCount );
 			m_flIdleTimeDelay = 0.1f * ( m_nRemainingBursts - nBurstCount );
 		}
 		break;
@@ -2388,7 +2388,7 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 
 	if ( !GetEnemyVehicle() )
 	{
-		m_nMaxBurstHits = !IsDeadlyShooting() ? random->RandomInt( 6, 9 ) : 200;
+		m_nMaxBurstHits = !IsDeadlyShooting() ? RandomInt( 6, 9 ) : 200;
 		m_nMaxNearShots = 10000;
 	}
 	else
@@ -2405,11 +2405,11 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 		int nHitCount = (int)(RemapVal( flTotal, 0.0f, 1.0f, 7, -0.5 ) + 0.5f);
 
 		int nMin = nHitCount >= 1 ? nHitCount - 1 : 0;
-		m_nMaxBurstHits = random->RandomInt( nMin, nHitCount + 1 );
+		m_nMaxBurstHits = RandomInt( nMin, nHitCount + 1 );
 
 		int nNearShots = (int)(RemapVal( flTotal, 0.0f, 1.0f, 70, 5 ) + 0.5f);
 		int nMinNearShots = nNearShots >= 5 ? nNearShots - 5 : 0;
-		m_nMaxNearShots = random->RandomInt( nMinNearShots, nNearShots + 5 );
+		m_nMaxNearShots = RandomInt( nMinNearShots, nNearShots + 5 );
 
 		// Set up the circle of death parameters at this point
 		m_flCircleOfDeathRadius = SimpleSplineRemapVal( flTotal, 0.0f, 1.0f, 
@@ -2588,18 +2588,18 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 		for ( i = 0; i < nBoltCount; ++i )
 		{
 			Vector vecTargetPt = GetEnemy()->WorldSpaceCenter();
-			VectorMA( vecTargetPt, random->RandomFloat( flDist + 100, flDist + 500 ), vecDelta, vecTargetPt );
-			VectorMA( vecTargetPt, random->RandomFloat( -500, 500 ), vecPerp, vecTargetPt );
-			vecTargetPt.z += random->RandomFloat( -500, 500 );
+			VectorMA( vecTargetPt, RandomFloat( flDist + 100, flDist + 500 ), vecDelta, vecTargetPt );
+			VectorMA( vecTargetPt, RandomFloat( -500, 500 ), vecPerp, vecTargetPt );
+			vecTargetPt.z += RandomFloat( -500, 500 );
 			CreateZapBeam( vecTargetPt );
 		}
 	}
 
 	// Next, choose the number of bolts...
-	int nBoltCount = random->RandomInt( 8, 16 );
+	int nBoltCount = RandomInt( 8, 16 );
 	for ( i = 0; i < nBoltCount; ++i )
 	{
-		if ( (nCandidateCount > 0) && random->RandomFloat( 0.0f, 1.0f ) < 0.6f )
+		if ( (nCandidateCount > 0) && RandomFloat( 0.0f, 1.0f ) < 0.6f )
 		{
 			--nCandidateCount;
 
@@ -2612,9 +2612,9 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 		{
 			// Select random point *on* sphere
 			Vector vecTargetPt;
-			float flEffectRadius = random->RandomFloat( flRadius * 1.2, flRadius * 1.5f );
-			float flTheta = random->RandomFloat( 0.0f, 2.0f * M_PI );
-			float flPhi = random->RandomFloat( -0.5f * M_PI, 0.5f * M_PI );
+			float flEffectRadius = RandomFloat( flRadius * 1.2, flRadius * 1.5f );
+			float flTheta = RandomFloat( 0.0f, 2.0f * M_PI );
+			float flPhi = RandomFloat( -0.5f * M_PI, 0.5f * M_PI );
 			vecTargetPt.x = cos(flTheta) * cos(flPhi);
 			vecTargetPt.y = sin(flTheta) * cos(flPhi);
 			vecTargetPt.z = sin(flPhi);
@@ -2627,7 +2627,7 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 
 	// Finally, put a bolt right at the player, at random 
 	float flHitRatio = ClampSplineRemapVal( flDist, 128.0f, 512.0f, 0.75f, 0.0f );
-	if ( random->RandomFloat( 0.0f, 1.0f ) < flHitRatio )
+	if ( RandomFloat( 0.0f, 1.0f ) < flHitRatio )
 	{
 		if ( GetEnemyVehicle() )
 		{
@@ -2650,7 +2650,7 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 		}
 	}
 
-	m_flNextAttack = gpGlobals->curtime + random->RandomFloat( 0.3f, 1.0f );
+	m_flNextAttack = gpGlobals->curtime + RandomFloat( 0.3f, 1.0f );
 }
 
 
@@ -2708,7 +2708,7 @@ bool CNPC_AttackHelicopter::DoGunFiring( const Vector &vBasePos, const Vector &v
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.01f );
 	float flIdleTime = CHOPPER_GUN_IDLE_TIME;
 	float flVariance = flIdleTime * 0.1f;
-	m_flNextAttack = gpGlobals->curtime + m_flIdleTimeDelay + random->RandomFloat(flIdleTime - flVariance, flIdleTime + flVariance);
+	m_flNextAttack = gpGlobals->curtime + m_flIdleTimeDelay + RandomFloat(flIdleTime - flVariance, flIdleTime + flVariance);
 	m_nGunState = GUN_STATE_IDLE;
 	SetPauseState( PAUSE_NO_PAUSE );
 	return true;
@@ -2815,8 +2815,8 @@ void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector *pVecVelo
 		vecActualVelocity = GetAbsVelocity();
 		CrossProduct( vecActualVelocity, Vector( 0, 0, 1 ), vecAcross );
 		VectorNormalize( vecAcross );
-		vecAcross *= random->RandomFloat( 10.0f, 30.0f );
-		vecAcross *= random->RandomFloat( 0.0f, 1.0f ) < 0.5f ? 1.0f : -1.0f;
+		vecAcross *= RandomFloat( 10.0f, 30.0f );
+		vecAcross *= RandomFloat( 0.0f, 1.0f ) < 0.5f ? 1.0f : -1.0f;
 
 		// Blat out z component of velocity if it's moving upward....
 		if ( vecActualVelocity.z > 0 )
@@ -2865,7 +2865,7 @@ void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
 	if ( ShouldDropBombs() )
 	{
-		m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
+		m_flNextAttack = gpGlobals->curtime + 0.5f + RandomFloat( 0.3f, 0.6f );
 	}
 }
 
@@ -2890,7 +2890,7 @@ void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
 	if ( ShouldDropBombs() )
 	{
-		m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
+		m_flNextAttack = gpGlobals->curtime + 0.5f + RandomFloat( 0.3f, 0.6f );
 	}
 }
 
@@ -2946,7 +2946,7 @@ void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdat
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
 	if ( ShouldDropBombs() )
 	{
-		m_flNextAttack = gpGlobals->curtime + 1.5f + random->RandomFloat( 0.1f, 0.2f );
+		m_flNextAttack = gpGlobals->curtime + 1.5f + RandomFloat( 0.1f, 0.2f );
 	}
 }
 
@@ -3024,14 +3024,14 @@ void CNPC_AttackHelicopter::DropBombs( )
 
 	CreateBomb( );
 
-	m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
+	m_flNextAttack = gpGlobals->curtime + 0.5f + RandomFloat( 0.3f, 0.6f );
 
 	if ( (m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE) )
 	{
 		if ( --m_nGrenadeCount <= 0 )
 		{
 			m_nGrenadeCount = CHOPPER_BOMB_DROP_COUNT;
-			m_flNextAttack += random->RandomFloat( 1.5f, 3.0f );
+			m_flNextAttack += RandomFloat( 1.5f, 3.0f );
 		}
 	}
 }
@@ -3117,7 +3117,7 @@ void CNPC_AttackHelicopter::BullrushBombs( )
 		Vector vecVelocity = GetAbsVelocity();
 		CrossProduct( vecVelocity, Vector( 0, 0, 1 ), vecAcross );
 		VectorNormalize( vecAcross );
-		vecAcross *= random->RandomFloat( 300.0f, 500.0f );
+		vecAcross *= RandomFloat( 300.0f, 500.0f );
 
 		// Blat out z component of velocity if it's moving upward....
 		if ( vecVelocity.z > 0 )
@@ -3352,7 +3352,7 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 	
 	if ( bSmall )
 	{
-		pChunk->m_lifeTime = random->RandomFloat( 0.5f, 1.0f );
+		pChunk->m_lifeTime = RandomFloat( 0.5f, 1.0f );
 		pChunk->SetSolidFlags( FSOLID_NOT_SOLID );
 		pChunk->SetSolid( SOLID_BBOX );
 		pChunk->AddEffects( EF_NODRAW );
@@ -3370,12 +3370,12 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 	AngularImpulse angImpulse;
 
 	QAngle angles;
-	angles.x = random->RandomFloat( -70, 20 );
-	angles.y = random->RandomFloat( 0, 360 );
+	angles.x = RandomFloat( -70, 20 );
+	angles.y = RandomFloat( 0, 360 );
 	angles.z = 0.0f;
 	AngleVectors( angles, &vecVelocity );
 	
-	vecVelocity *= random->RandomFloat( 550, 800 );
+	vecVelocity *= RandomFloat( 550, 800 );
 	vecVelocity += pChopper->GetAbsVelocity();
 
 	angImpulse = RandomAngularImpulse( -180, 180 );
@@ -3424,7 +3424,7 @@ void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector &vecExplosionPos 
 		ExplosionCreate( vecExplosionPos, QAngle(0,0,1), this, 100, 128, false );
 	}
 
-	if ( random->RandomInt( 0, 4 ) )
+	if ( RandomInt( 0, 4 ) )
 	{
 		for ( int i = 0; i < 2; i++ )
 		{
@@ -3433,7 +3433,7 @@ void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector &vecExplosionPos 
 	}
 	else
 	{
-		Chopper_CreateChunk( this, vecExplosionPos, RandomAngle(0, 360), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_SMALL_CHUNKS - 1 )], false );
+		Chopper_CreateChunk( this, vecExplosionPos, RandomAngle(0, 360), s_pChunkModelName[RandomInt( 0, CHOPPER_MAX_SMALL_CHUNKS - 1 )], false );
 	}
 }
 
@@ -3566,7 +3566,7 @@ int CNPC_AttackHelicopter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 		flDot = DotProduct( vecForce, vecRight );
 
-		m_flGoalRollDmg = random->RandomFloat( 10, 30 );
+		m_flGoalRollDmg = RandomFloat( 10, 30 );
 
 		if( flDot <= 0.0f )
 		{
@@ -3661,13 +3661,13 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 
 	// Body
 	CHelicopterChunk *pBodyChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity(), HELICOPTER_CHUNK_BODY, CHUNK_BODY );
-	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
+	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
 
 	vecChunkPos = pChopper->GetAbsOrigin() + ( vecForward * 100.0f ) + ( vecUp * -38.0f );
 
 	// Cockpit
 	CHelicopterChunk *pCockpitChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity() + vecRight * -800.0f, HELICOPTER_CHUNK_COCKPIT, CHUNK_COCKPIT );
-	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
+	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
 
 	pCockpitChunk->m_hMaster = pBodyChunk;
 
@@ -3675,7 +3675,7 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 
 	// Tail
 	CHelicopterChunk *pTailChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity() + vecRight * 800.0f, HELICOPTER_CHUNK_TAIL, CHUNK_TAIL );
-	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
+	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
 
 	pTailChunk->m_hMaster = pBodyChunk;
 
@@ -3801,7 +3801,7 @@ void CNPC_AttackHelicopter::PrescheduleThink( void )
 				SetDesiredPosition( GetCrashPoint()->WorldSpaceCenter() );
 			}
 
-			if ( random->RandomInt( 0, 4 ) == 0 )
+			if ( RandomInt( 0, 4 ) == 0 )
 			{
 				Vector	explodePoint;		
 				CollisionProp()->RandomPointInBounds( Vector(0.25,0.25,0.25), Vector(0.75,0.75,0.75), &explodePoint );
@@ -4055,7 +4055,7 @@ void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, con
 	else
 	{
 		goalAngAccel.x	= 0;
-		goalAngAccel.y = random->RandomFloat( 50, 120 );
+		goalAngAccel.y = RandomFloat( 50, 120 );
 		goalAngAccel.z	= 0;
 	}
 
@@ -4084,9 +4084,9 @@ void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, con
 	// Fix up pitch and yaw to tend toward small values
 	if ( m_lifeState == LIFE_DYING && GetCrashPoint() == NULL )
 	{
-		float flPitchDiff = random->RandomFloat( -5, 5 ) - GetAbsAngles().x;
+		float flPitchDiff = RandomFloat( -5, 5 ) - GetAbsAngles().x;
 		angVel.x = flPitchDiff * 0.1f;
-		float flRollDiff = random->RandomFloat( -5, 5 ) - GetAbsAngles().z;
+		float flRollDiff = RandomFloat( -5, 5 ) - GetAbsAngles().z;
 		angVel.z = flRollDiff * 0.1f;
 	}
 
@@ -5025,7 +5025,7 @@ void CGrenadeHelicopter::Spawn( void )
 	SetThink( NULL );
 	
 	// Tumble in air
-	QAngle vecAngVel( random->RandomFloat ( -100, -500 ), 0, 0 );
+	QAngle vecAngVel( RandomFloat ( -100, -500 ), 0, 0 );
 	SetLocalAngularVelocity( vecAngVel );
 	
 	// Explode on contact
@@ -5959,7 +5959,7 @@ void CHelicopterChunk::FallThink( void )
 		return;
 	}
 	
-	if ( random->RandomInt( 0, 8 ) == 0 )
+	if ( RandomInt( 0, 8 ) == 0 )
 	{
 		CEffectData data;
 		data.m_vOrigin = GetAbsOrigin() + RandomVector( -64, 64 );

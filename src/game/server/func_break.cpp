@@ -504,18 +504,18 @@ void CBreakable::DamageSound( void )
 	const char *soundname = NULL;
 	int material = m_Material;
 
-	if (random->RandomInt(0,2))
+	if (RandomInt(0,2))
 	{
 		pitch = PITCH_NORM;
 	}
 	else
 	{
-		pitch = 95 + random->RandomInt(0,34);
+		pitch = 95 + RandomInt(0,34);
 	}
 
-	fvol = random->RandomFloat(0.75, 1.0);
+	fvol = RandomFloat(0.75, 1.0);
 
-	if (material == matComputer && random->RandomInt(0,1))
+	if (material == matComputer && RandomInt(0,1))
 	{
 		material = matMetal;
 	}
@@ -736,7 +736,7 @@ void CBreakable::Break( CBaseEntity *pBreaker )
 void CBreakable::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
 {
 	// random spark if this is a 'computer' object
-	if (random->RandomInt(0,1) )
+	if (RandomInt(0,1) )
 	{
 		switch( m_Material )
 		{
@@ -922,7 +922,7 @@ void CBreakable::Die( void )
 	int pitch;
 	float fvol;
 	
-	pitch = 95 + random->RandomInt(0,29);
+	pitch = 95 + RandomInt(0,29);
 
 	if (pitch > 97 && pitch < 103)
 	{
@@ -932,7 +932,7 @@ void CBreakable::Die( void )
 	// The more negative m_iHealth, the louder
 	// the sound should be.
 
-	fvol = random->RandomFloat(0.85, 1.0) + (abs(m_iHealth) / 100.0);
+	fvol = RandomFloat(0.85, 1.0) + (abs(m_iHealth) / 100.0);
 	if (fvol > 1.0)
 	{
 		fvol = 1.0;

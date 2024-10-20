@@ -926,7 +926,7 @@ void CNPC_Strider::PrescheduleThink()
 	}
 
 	// Next missile will kill me!
-	if( GetHealth() <= 50 && random->RandomInt( 0, 20 ) == 0 )
+	if( GetHealth() <= 50 && RandomInt( 0, 20 ) == 0 )
 	{
 		CBaseEntity *pTrail = CreateEntityByName( "sparktrail" );
 		pTrail->SetOwnerEntity( this );
@@ -1206,7 +1206,7 @@ void CNPC_Strider::GatherHeightConditions( const Vector &vTestPos, CBaseEntity *
 			// If going from max to min, or min to max, use animations 60% of the time
 			if ( fabsf(GetMaxHeight() - GetHeight()) < 0.1 && fabsf(GetMinHeight() - newHeight) < 0.1 )
 			{
-				if ( random->RandomInt(1, 10 ) <= 6 )
+				if ( RandomInt(1, 10 ) <= 6 )
 				{
 					SetCondition( COND_STRIDER_SHOULD_CROUCH );
 					bDoProceduralHeightChange = false;
@@ -1214,7 +1214,7 @@ void CNPC_Strider::GatherHeightConditions( const Vector &vTestPos, CBaseEntity *
 			}
 			else if ( fabsf(GetMinHeight() - GetHeight()) < 0.1 && fabsf(GetMaxHeight() - newHeight) < 0.1 )
 			{
-				if ( random->RandomInt(1, 10 ) <= 6 )
+				if ( RandomInt(1, 10 ) <= 6 )
 				{
 					SetCondition( COND_STRIDER_SHOULD_STAND );
 					bDoProceduralHeightChange = false;
@@ -2991,7 +2991,7 @@ void CNPC_Strider::HuntSound()
 	if( m_PlayerFreePass.HasPass() )
 	{
 		EmitSound( "NPC_Strider.Hunt" );
-		m_flTimeNextHuntSound = gpGlobals->curtime + random->RandomFloat( 8.0f, 12.0f );
+		m_flTimeNextHuntSound = gpGlobals->curtime + RandomFloat( 8.0f, 12.0f );
 	}
 }
 
@@ -3821,7 +3821,7 @@ void CNPC_Strider::ShootMinigun( const Vector *pTarget, float aimError, const Ve
 			FireBullets( 1, muzzlePos, vecShootDir, vecSpread, 8192, m_miniGunAmmo, 1 );
 		}
 
-		//g_pEffects->MuzzleFlash( muzzlePos, muzzleAng, random->RandomFloat( 2.0f, 4.0f ) , MUZZLEFLASH_TYPE_STRIDER );
+		//g_pEffects->MuzzleFlash( muzzlePos, muzzleAng, RandomFloat( 2.0f, 4.0f ) , MUZZLEFLASH_TYPE_STRIDER );
 		DoMuzzleFlash();
 
 		EmitSound( "NPC_Strider.FireMinigun" );
@@ -4384,7 +4384,7 @@ void CNPC_Strider::FootFX( const Vector &origin )
 {
 	trace_t tr;
 	AI_TraceLine( origin + Vector(0, 0, 48), origin - Vector(0,0,100), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
-	float yaw = random->RandomInt(0,120);
+	float yaw = RandomInt(0,120);
 	
 	if ( UTIL_PointContents( tr.endpos + Vector( 0, 0, 1 ) ) & MASK_WATER )
 	{
@@ -4395,7 +4395,7 @@ void CNPC_Strider::FootFX( const Vector &origin )
 		data.m_vOrigin = tr.endpos;
 		data.m_vOrigin.z = flWaterZ;
 		data.m_vNormal = Vector( 0, 0, 1 );
-		data.m_flScale = random->RandomFloat( 10.0, 14.0 );
+		data.m_flScale = RandomFloat( 10.0, 14.0 );
 
 		DispatchEffect( "watersplash", data );
 	}
@@ -4940,7 +4940,7 @@ void CStriderMinigun::ShootAtTarget( IStriderMinigunHost *pHost, CBaseEntity *pT
 	Enable( NULL, true );
 	if ( shootTime <= 0 )
 	{
-		shootTime = random->RandomFloat( 4, 8 );
+		shootTime = RandomFloat( 4, 8 );
 	}
 	SetTarget( pHost, pTarget, true );
 
@@ -4999,12 +4999,12 @@ void CStriderMinigun::StartShooting( IStriderMinigunHost *pHost, CBaseEntity *pT
 			{
 				// Start over their head, cause firing the direction they are looking will drill them.
 				// in the back!
-				m_vecAnchor += Vector( 0, 0, random->RandomFloat( 160, 240 ) );
+				m_vecAnchor += Vector( 0, 0, RandomFloat( 160, 240 ) );
 
 				// Move it to one side of the other randomly, just to get it off center.
 				Vector right;
 				pPlayer->GetVectors( NULL, &right, NULL );
-				m_vecAnchor += right * random->RandomFloat( -100, 100 );
+				m_vecAnchor += right * RandomFloat( -100, 100 );
 				bHasSetAnchor = true;
 			}
 		}
@@ -5018,10 +5018,10 @@ void CStriderMinigun::StartShooting( IStriderMinigunHost *pHost, CBaseEntity *pT
 		pTarget->GetVectors( NULL, &right, NULL );
 
 		// Start 5 or 10 feet off target.
-		Vector offset = right * random->RandomFloat( 60, 120 );
+		Vector offset = right * RandomFloat( 60, 120 );
 		
 		// Flip a coin to decide left or right.
-		if( random->RandomInt( 0, 1 ) == 0 )
+		if( RandomInt( 0, 1 ) == 0 )
 		{
 			offset *= -1;
 		}
@@ -5029,7 +5029,7 @@ void CStriderMinigun::StartShooting( IStriderMinigunHost *pHost, CBaseEntity *pT
 		m_vecAnchor += offset;
 
 		// Start below them, too.
-		m_vecAnchor.z -= random->RandomFloat( 80, 200 );
+		m_vecAnchor.z -= RandomFloat( 80, 200 );
 	}
 
 	pHost->OnMinigunStartShooting( pTarget );
@@ -5104,7 +5104,7 @@ void CStriderMinigun::StopShootingForSeconds( IStriderMinigunHost *pHost, CBaseE
 	m_nextBulletTime = FLT_MAX;
 
 	ClearOnTarget();
-	m_nextTwitchTime = gpGlobals->curtime + random->RandomFloat( 2.0, 4.0 );
+	m_nextTwitchTime = gpGlobals->curtime + RandomFloat( 2.0, 4.0 );
 	pHost->OnMinigunStopShooting( pTarget );
 }
 
@@ -5132,7 +5132,7 @@ void CStriderMinigun::SetTarget( IStriderMinigunHost *pHost, CBaseEntity *pTarge
 			pHost->GetEntity()->GetVectors( NULL, &right, NULL );
 
 			m_vecAnchor = pTarget->GetAbsOrigin() - Vector( 0, 0, 256 );
-			m_vecAnchor += right * random->RandomFloat( -60.0f, 60.0f );
+			m_vecAnchor += right * RandomFloat( -60.0f, 60.0f );
 		}
 	}
 
@@ -5251,7 +5251,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 				m_vecAnchor = pOldTarget->WorldSpaceCenter();
 			}
 
-			ExtendShooting( STRIDER_SUBSEQUENT_TARGET_DURATION + random->RandomFloat( 0, 0.5 ) );
+			ExtendShooting( STRIDER_SUBSEQUENT_TARGET_DURATION + RandomFloat( 0, 0.5 ) );
 		}
 		
 		pHost->NewTarget();
@@ -5273,7 +5273,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 			m_pitch.Random( MINIGUN_MIN_PITCH, MINIGUN_MAX_PITCH, 270, 360 );
 			m_yaw.target = -m_yaw.target;
 		}
-		m_nextTwitchTime = gpGlobals->curtime + random->RandomFloat( 0.3, 2 );
+		m_nextTwitchTime = gpGlobals->curtime + RandomFloat( 0.3, 2 );
 	}
 
 	CBaseEntity *pTargetEnt = m_hTarget.Get();
@@ -5309,7 +5309,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 	{
 		if( CanStartShooting( pHost, pTargetEnt ) )
 		{
-			StartShooting( pHost, pTargetEnt, pHost->GetMinigunShootDuration() + random->RandomFloat( 0, pHost->GetMinigunShootVariation() ) );
+			StartShooting( pHost, pTargetEnt, pHost->GetMinigunShootDuration() + RandomFloat( 0, pHost->GetMinigunShootVariation() ) );
 		}
 	}
 
@@ -5378,26 +5378,26 @@ void CSparkTrail::Spawn()
 
 	EmitSound( "DoSpark" );
 
-	m_iHealth = 20 + random->RandomInt( 0, 5 );
+	m_iHealth = 20 + RandomInt( 0, 5 );
 	UTIL_SetOrigin( this, GetOwnerEntity()->EyePosition() );
 
 	Vector vecVelocity;
 
-	vecVelocity.x = random->RandomFloat( 100, 400 );
-	vecVelocity.y = random->RandomFloat( 100, 400 );
-	vecVelocity.z = random->RandomFloat( 0, 100 );
+	vecVelocity.x = RandomFloat( 100, 400 );
+	vecVelocity.y = RandomFloat( 100, 400 );
+	vecVelocity.z = RandomFloat( 0, 100 );
 	
-	if( random->RandomInt( 0, 1 ) == 0 )
+	if( RandomInt( 0, 1 ) == 0 )
 		vecVelocity.x *= -1;
 
-	if( random->RandomInt( 0, 1 ) == 0 )
+	if( RandomInt( 0, 1 ) == 0 )
 		vecVelocity.y *= -1;
 
 	UTIL_SetSize( this, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ) );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	SetSolid( SOLID_NONE );
 
-	if( random->RandomInt( 0, 2 ) == 0 )
+	if( RandomInt( 0, 2 ) == 0 )
 	{
 		vecVelocity *= 2.0;
 		m_iHealth /= 2;

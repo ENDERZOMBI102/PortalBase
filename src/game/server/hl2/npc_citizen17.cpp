@@ -672,7 +672,7 @@ void CNPC_Citizen::SelectModel()
 					break;
 			}
 
-			m_iHead = candidates[random->RandomInt( 0, iLimit - 1 )].iHead;
+			m_iHead = candidates[RandomInt( 0, iLimit - 1 )].iHead;
 			pszModelName = g_ppszRandomHeads[m_iHead];
 			SetModelName(NULL_STRING);
 		}
@@ -1145,7 +1145,7 @@ int CNPC_Citizen::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 	case SCHED_MOVE_TO_WEAPON_RANGE:
 		if( !IsMortar( GetEnemy() ) )
 		{
-			if ( GetActiveWeapon() && ( GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1 ) && random->RandomInt( 0, 1 ) && HasCondition(COND_SEE_ENEMY) && !HasCondition ( COND_NO_PRIMARY_AMMO ) )
+			if ( GetActiveWeapon() && ( GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1 ) && RandomInt( 0, 1 ) && HasCondition(COND_SEE_ENEMY) && !HasCondition ( COND_NO_PRIMARY_AMMO ) )
 				return TranslateSchedule( SCHED_RANGE_ATTACK1 );
 
 			return SCHED_STANDOFF;
@@ -1396,7 +1396,7 @@ int CNPC_Citizen::SelectScheduleManhackCombat()
 				 ( ( GetEnemy()->GetAbsOrigin() + GetEnemy()->GetSmoothedVelocity() * .1 ) - EyePosition() ).LengthSqr() < distSqEnemy )
 				return SCHED_COWER;
 
-			int iRoll = random->RandomInt( 1, 4 );
+			int iRoll = RandomInt( 1, 4 );
 			if ( iRoll == 1 )
 				return SCHED_BACK_AWAY_FROM_ENEMY;
 			else if ( iRoll == 2 )
@@ -1458,7 +1458,7 @@ int CNPC_Citizen::TranslateSchedule( int scheduleType )
 	case SCHED_MOVE_TO_WEAPON_RANGE:
 		if( !IsMortar( GetEnemy() ) && HaveCommandGoal() )
 		{
-			if ( GetActiveWeapon() && ( GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1 ) && random->RandomInt( 0, 1 ) && HasCondition(COND_SEE_ENEMY) && !HasCondition ( COND_NO_PRIMARY_AMMO ) )
+			if ( GetActiveWeapon() && ( GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1 ) && RandomInt( 0, 1 ) && HasCondition(COND_SEE_ENEMY) && !HasCondition ( COND_NO_PRIMARY_AMMO ) )
 				return TranslateSchedule( SCHED_RANGE_ATTACK1 );
 
 			return SCHED_STANDOFF;
@@ -2219,7 +2219,7 @@ bool CNPC_Citizen::ShouldLookForBetterWeapon()
 					// the desire to reduce shotguns amongst squadmates so that all 
 					// shotgunners do not discard their weapons when they suddenly realize
 					// the squad has too many.
-					if( random->RandomInt( 0, 1 ) == 0 )
+					if( RandomInt( 0, 1 ) == 0 )
 					{
 						m_flNextWeaponSearchTime = gpGlobals->curtime + SHOTGUN_DEFER_SEARCH_TIME;
 					}
@@ -2660,7 +2660,7 @@ void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 		{
 			if ( SpeakIfAllowed( TLK_QUESTION, NULL, true ) )
 			{
-				if ( random->RandomInt( 1, 4 ) < 4 )
+				if ( RandomInt( 1, 4 ) < 4 )
 				{
 					CBaseEntity *pRespondant = FindSpeechTarget( AIST_NPCS );
 					if ( pRespondant )
@@ -3702,11 +3702,11 @@ void	CNPC_Citizen::TossHealthKit(CBaseCombatCharacter *pThrowAt, const Vector &o
 			Assert( pPhysicsObject );
 			if ( pPhysicsObject )
 			{
-				unsigned int cointoss = random->RandomInt(0,0xFF); // int bits used for bools
+				unsigned int cointoss = RandomInt(0,0xFF); // int bits used for bools
 
 				// some random precession
-				Vector angDummy(random->RandomFloat(-200,200), random->RandomFloat(-200,200), 
-					cointoss & 0x01 ? random->RandomFloat(200,600) : -1.0f * random->RandomFloat(200,600));
+				Vector angDummy(RandomFloat(-200,200), RandomFloat(-200,200),
+					cointoss & 0x01 ? RandomFloat(200,600) : -1.0f * RandomFloat(200,600));
 				pPhysicsObject->SetVelocity( &tossVelocity, &angDummy );
 			}
 		}

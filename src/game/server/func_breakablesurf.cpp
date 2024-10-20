@@ -140,7 +140,7 @@ CWindowPane* CWindowPane::CreateWindowPane( const Vector &vecOrigin, const QAngl
 		pGlass->Spawn();
 		pGlass->SetTouch(&CWindowPane::PaneTouch);
 		pGlass->SetLocalAngularVelocity( RandomAngle(-50,50) );
-		pGlass->m_nBody = random->RandomInt(0,2);
+		pGlass->m_nBody = RandomInt(0,2);
 	}
 	return pGlass;
 }
@@ -303,7 +303,7 @@ void CBreakableSurface::SurfaceTouch( CBaseEntity *pOther )
 	for (int height=nMinHeight;height<nMaxHeight;height++)
 	{
 		// Randomly break the one before so it doesn't look square
-		if (random->RandomInt(0,1))
+		if (RandomInt(0,1))
 		{
 			ShatterPane(nMinWidth-1, height,vHitVel,pOther->GetLocalOrigin());
 		}
@@ -312,7 +312,7 @@ void CBreakableSurface::SurfaceTouch( CBaseEntity *pOther )
 			ShatterPane(width, height,vHitVel,pOther->GetLocalOrigin());
 		}
 		// Randomly break the one after so it doesn't look square
-		if (random->RandomInt(0,1))
+		if (RandomInt(0,1))
 		{
 			ShatterPane(nMaxWidth+1, height,vHitVel,pOther->GetLocalOrigin());
 		}
@@ -444,11 +444,11 @@ void CBreakableSurface::TraceAttack( const CTakeDamageInfo &info, const Vector &
 			}
 
 			// Occasionally break the pane above me
-			if (random->RandomInt(0,1)==0)
+			if (RandomInt(0,1)==0)
 			{
 				ShatterPane(nWidth, nHeight+1,vecDir*1000,ptr->endpos);
 				// Occasionally break the pane above that
-				if (random->RandomInt(0,1)==0)
+				if (RandomInt(0,1)==0)
 				{
 					ShatterPane(nWidth, nHeight+2,vecDir*1000,ptr->endpos);
 				}		
@@ -480,7 +480,7 @@ void CBreakableSurface::TraceAttack( const CTakeDamageInfo &info, const Vector &
 			{
 				for (int height =nHeight-4;height<nHeight+4;height++)
 				{
-					if ((abs(nWidth-width)+abs(nHeight-height))<random->RandomInt(2,5))
+					if ((abs(nWidth-width)+abs(nHeight-height))<RandomInt(2,5))
 					{
 						ShatterPane(width, height,vecDir*500,ptr->endpos);
 					}
@@ -991,7 +991,7 @@ void CBreakableSurface::BreakThink(void)
 				if (m_flSupport[w][h] < flBreakValue)
 				{
 					// Occasionaly drop a pane
-					if (random->RandomInt(0,1))
+					if (RandomInt(0,1))
 					{
 						DropPane(w,h);
 					}

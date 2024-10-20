@@ -117,7 +117,7 @@ void CPropThumper::Spawn( void )
 		 ResetSequenceInfo();
 
 		 //Do this so we get the nice ramp-up effect.
-		 m_flPlaybackRate = random->RandomFloat( 0.0f, 1.0f);
+		 m_flPlaybackRate = RandomFloat( 0.0f, 1.0f);
 	}
 
 	m_iHammerAttachment = LookupAttachment( "hammer" );

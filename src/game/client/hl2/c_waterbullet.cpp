@@ -59,19 +59,19 @@ public:
 			if ( sParticle )
 			{
 				sParticle->m_flLifetime		= 0.0f;
-				sParticle->m_flDieTime		= random->RandomFloat( 0.75f, 1.25f );
+				sParticle->m_flDieTime		= RandomFloat( 0.75f, 1.25f );
 
 				sParticle->m_flRoll			= 0;
 				sParticle->m_flRollDelta	= 0;
 
-				unsigned char color = random->RandomInt( 128, 255 );
+				unsigned char color = RandomInt( 128, 255 );
 
 				sParticle->m_uchColor[0]	= color;
 				sParticle->m_uchColor[1]	= color;
 				sParticle->m_uchColor[2]	= color;
 				sParticle->m_uchStartAlpha	= 255;
 				sParticle->m_uchEndAlpha	= 0;
-				sParticle->m_uchStartSize	= random->RandomInt( 1, 2 );
+				sParticle->m_uchStartSize	= RandomInt( 1, 2 );
 				sParticle->m_uchEndSize		= sParticle->m_uchStartSize;
 				
 				sParticle->m_vecVelocity	= ( direction * 64.0f ) + Vector( 0, 0, 32 );
@@ -84,10 +84,10 @@ public:
 				sParticle->m_flLifetime		= 0.0f;
 				sParticle->m_flDieTime		= 0.2f;
 
-				sParticle->m_flRoll			= random->RandomInt( 0, 360 );
-				sParticle->m_flRollDelta	= random->RandomInt( -4, 4 );
+				sParticle->m_flRoll			= RandomInt( 0, 360 );
+				sParticle->m_flRollDelta	= RandomInt( -4, 4 );
 
-				unsigned char color = random->RandomInt( 200, 255 );
+				unsigned char color = RandomInt( 200, 255 );
 
 				sParticle->m_uchColor[0]	= color;
 				sParticle->m_uchColor[1]	= color;

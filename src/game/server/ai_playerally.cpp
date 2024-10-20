@@ -779,12 +779,12 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t _concept, AI_Respons
 
 		if ( GetSpeechTarget()->MyNPCPointer() )
 		{
-			AddLookTarget( GetSpeechTarget()->MyNPCPointer(), 1.0, duration + random->RandomFloat( 0.4, 1.2 ), 0.5 );
-			GetSpeechTarget()->MyNPCPointer()->AddLookTarget( this, 1.0, duration + random->RandomFloat( 0.4, 1 ), 0.7 );
+			AddLookTarget( GetSpeechTarget()->MyNPCPointer(), 1.0, duration + RandomFloat( 0.4, 1.2 ), 0.5 );
+			GetSpeechTarget()->MyNPCPointer()->AddLookTarget( this, 1.0, duration + RandomFloat( 0.4, 1 ), 0.7 );
 		}
 
 		// Don't let anyone else butt in.
-		DeferAllIdleSpeech( random->RandomFloat( TALKER_DEFER_IDLE_SPEAK_MIN, TALKER_DEFER_IDLE_SPEAK_MAX ), GetSpeechTarget()->MyNPCPointer() );
+		DeferAllIdleSpeech( RandomFloat( TALKER_DEFER_IDLE_SPEAK_MIN, TALKER_DEFER_IDLE_SPEAK_MAX ), GetSpeechTarget()->MyNPCPointer() );
 	}
 	else if ( pConceptInfo && (pConceptInfo->flags & AICF_ANSWER) && GetSpeechTarget() )
 	{
@@ -795,8 +795,8 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t _concept, AI_Respons
 		}
 		if ( GetSpeechTarget()->MyNPCPointer() )
 		{
-			AddLookTarget( GetSpeechTarget()->MyNPCPointer(), 1.0, duration + random->RandomFloat( 0, 0.3 ), 0.5 );
-			GetSpeechTarget()->MyNPCPointer()->AddLookTarget( this, 1.0, duration + random->RandomFloat( 0.2, 0.5 ), 0.7 );
+			AddLookTarget( GetSpeechTarget()->MyNPCPointer(), 1.0, duration + RandomFloat( 0, 0.3 ), 0.5 );
+			GetSpeechTarget()->MyNPCPointer()->AddLookTarget( this, 1.0, duration + RandomFloat( 0.2, 0.5 ), 0.7 );
 		}
 	}
 
@@ -895,7 +895,7 @@ void CAI_PlayerAlly::AnswerQuestion( CAI_PlayerAlly *pQuestioner, int iQARandomN
 		SpeakDispatchResponse( selection._concept.c_str(), selection.Response );
 
 		// Prevent idle speech for a while
-		DeferAllIdleSpeech( random->RandomFloat( TALKER_DEFER_IDLE_SPEAK_MIN, TALKER_DEFER_IDLE_SPEAK_MAX ), GetSpeechTarget()->MyNPCPointer() );
+		DeferAllIdleSpeech( RandomFloat( TALKER_DEFER_IDLE_SPEAK_MIN, TALKER_DEFER_IDLE_SPEAK_MAX ), GetSpeechTarget()->MyNPCPointer() );
 	}
 	else if ( rr_debug_qa.GetBool() )
 	{
@@ -1547,7 +1547,7 @@ bool CAI_PlayerAlly::ShouldSpeakRandom( AIConcept_t _concept, int iChance )
 	if ( iChance == 1 )
 		return true;
 		
-	return (random->RandomInt(1,iChance) == 1);
+	return (RandomInt(1,iChance) == 1);
 }
 
 //-----------------------------------------------------------------------------

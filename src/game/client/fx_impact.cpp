@@ -341,9 +341,9 @@ void PerformCustomEffects( const Vector &vecOrigin, trace_t &tr, const Vector &s
 		float	dot = shotDir.Dot( tr.plane.normal );
 		reflect = shotDir + ( tr.plane.normal * ( dot*-2.0f ) );
 
-		reflect[0] += random->RandomFloat( -0.2f, 0.2f );
-		reflect[1] += random->RandomFloat( -0.2f, 0.2f );
-		reflect[2] += random->RandomFloat( -0.2f, 0.2f );
+		reflect[0] += RandomFloat( -0.2f, 0.2f );
+		reflect[1] += RandomFloat( -0.2f, 0.2f );
+		reflect[2] += RandomFloat( -0.2f, 0.2f );
 
 		FX_MetalSpark( vecOrigin, reflect, tr.plane.normal, iScale );
 	}

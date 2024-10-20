@@ -17,7 +17,7 @@
 
 #define		TOSS_HEIGHT_MAX		300 // altitude of initial trace done to see how high something can be tossed
 
-//float flRandom = random->RandomFloat(0,1);
+//float flRandom = RandomFloat(0,1);
 
 bool g_fDrawLines = false;
 
@@ -40,9 +40,9 @@ bool FBoxVisible( CBaseEntity *pLooker, CBaseEntity *pTarget, Vector &vecTargetO
 	for (int i = 0; i < 5; i++)
 	{
 		Vector vecTarget = pTarget->GetAbsOrigin();
-		vecTarget.x += random->RandomFloat( pTarget->WorldAlignMins().x + flSize, pTarget->WorldAlignMaxs().x - flSize);
-		vecTarget.y += random->RandomFloat( pTarget->WorldAlignMins().y + flSize, pTarget->WorldAlignMaxs().y - flSize);
-		vecTarget.z += random->RandomFloat( pTarget->WorldAlignMins().z + flSize, pTarget->WorldAlignMaxs().z - flSize);
+		vecTarget.x += RandomFloat( pTarget->WorldAlignMins().x + flSize, pTarget->WorldAlignMaxs().x - flSize);
+		vecTarget.y += RandomFloat( pTarget->WorldAlignMins().y + flSize, pTarget->WorldAlignMaxs().y - flSize);
+		vecTarget.z += RandomFloat( pTarget->WorldAlignMins().z + flSize, pTarget->WorldAlignMaxs().z - flSize);
 
 		UTIL_TraceLine(vecLookerOrigin, vecTarget, MASK_BLOCKLOS, pLooker, COLLISION_GROUP_NONE, &tr);
 		
@@ -97,8 +97,8 @@ Vector VecCheckToss( CBaseEntity *pEntity, ITraceFilter *pFilter, Vector vecSpot
 	if (bRandomize)
 	{
 		// toss a little bit to the left or right, not right down on the enemy's bean (head). 
-		vecSpot2 += right * ( random->RandomFloat(-8,8) + random->RandomFloat(-16,16) );
-		vecSpot2 += forward * ( random->RandomFloat(-8,8) + random->RandomFloat(-16,16) );
+		vecSpot2 += right * ( RandomFloat(-8,8) + RandomFloat(-16,16) );
+		vecSpot2 += forward * ( RandomFloat(-8,8) + RandomFloat(-16,16) );
 	}
 
 	// calculate the midpoint and apex of the 'triangle'

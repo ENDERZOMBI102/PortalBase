@@ -359,7 +359,7 @@ void CItem_DynamicResupply::SpawnFullItem( CItem_DynamicResupply *pMaster, CBase
 		flTotalProb = 1.0f;
 	}
 	
-	float flChoice = random->RandomFloat( 0.0f, flTotalProb ); 
+	float flChoice = RandomFloat( 0.0f, flTotalProb );
 	for ( i = 0; i < NUM_AMMO_ITEMS; ++i )
 	{
 		if ( flChoice <= flRatio[i] )
@@ -560,8 +560,8 @@ bool CItem_DynamicResupply::SpawnItemFromRatio( int nCount, DynamicResupplyItems
 	// Update the spawn position to spawn them on top of each other
 	pVecSpawnOrigin->z = vecWorldMaxs.z + 6.0f;
 
-	pVecSpawnOrigin->x += random->RandomFloat( -6, 6 );
-	pVecSpawnOrigin->y += random->RandomFloat( -6, 6 );
+	pVecSpawnOrigin->x += RandomFloat( -6, 6 );
+	pVecSpawnOrigin->y += RandomFloat( -6, 6 );
 
 	return true;
 }

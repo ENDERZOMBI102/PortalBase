@@ -325,7 +325,7 @@ Vector CNPC_Monk::GetActualShootTrajectory( const Vector &shootOrigin )
 	{
 		Vector vecShootDir;
 
-		if( m_bPerfectAccuracy || random->RandomInt( 1, monk_headshot_freq.GetInt() ) == 1 )
+		if( m_bPerfectAccuracy || RandomInt( 1, monk_headshot_freq.GetInt() ) == 1 )
 		{
 			vecShootDir = GetEnemy()->HeadTarget( shootOrigin ) - shootOrigin;
 		}
@@ -496,7 +496,7 @@ void CNPC_Monk::StartTask( const Task_t *pTask )
 				return;
 			}
 
-			if( m_iNumZombies >= 2 && random->RandomInt( 1, 3 ) == 1 )
+			if( m_iNumZombies >= 2 && RandomInt( 1, 3 ) == 1 )
 			{
 				SpeakIfAllowed( TLK_ATTACKING );
 			}
@@ -650,7 +650,7 @@ void CNPC_Monk::OnKilledNPC( CBaseCombatCharacter *pKilled )
 			}
 		}
 
-		if( m_iNumZombies == 1 || random->RandomInt( 1, 3 ) == 1 )
+		if( m_iNumZombies == 1 || RandomInt( 1, 3 ) == 1 )
 		{
 			SpeakIfAllowed( TLK_ENEMY_DEAD );
 		}

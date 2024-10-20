@@ -584,7 +584,7 @@ int CAI_ScriptConditions::AddNewElement( CBaseEntity *pActor )
 
 	if( m_flMaxTimeout > 0 )
 	{
-		conditionelement.GetTimeOut()->Set( random->RandomFloat( m_flMinTimeout, m_flMaxTimeout ), false );
+		conditionelement.GetTimeOut()->Set( RandomFloat( m_flMinTimeout, m_flMaxTimeout ), false );
 	}
 	else
 	{

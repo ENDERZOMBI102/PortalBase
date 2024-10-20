@@ -451,7 +451,7 @@ void DispelCallback( const CEffectData &data )
 			1.0f,	// start alpha
 			0.0f,	// end alpha
 			0.3f,
-			random->RandomFloat( 0, 360 ),
+			RandomFloat( 0, 360 ),
 			0.0f,
 			Vector( 0.5f, 1.0f, 0.5f ), 
 			0.75f, 
@@ -467,7 +467,7 @@ void DispelCallback( const CEffectData &data )
 			1.0f,	// start alpha
 			0.0f,	// end alpha
 			0.9f,
-			random->RandomFloat( 0, 360 ),
+			RandomFloat( 0, 360 ),
 			0.0f,
 			Vector( 0.5f, 1.0f, 0.5f ), 
 			1.25f, 

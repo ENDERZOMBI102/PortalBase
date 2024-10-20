@@ -841,7 +841,7 @@ void CNPC_Dog::ThrowObject( const char *pAttachmentName )
 				Vector vThrowOrigin = m_hThrowTarget->GetAbsOrigin();
 				
 				if ( m_hThrowTarget->IsPlayer() )
-					 vThrowOrigin = vThrowOrigin + Vector( random->RandomFloat( -128, 128 ), random->RandomFloat( -128, 128 ), 0 );
+					 vThrowOrigin = vThrowOrigin + Vector( RandomFloat( -128, 128 ), RandomFloat( -128, 128 ), 0 );
 
 				Vector vecToss = VecCheckToss( this, vGunPos, vThrowOrigin, m_flThrowArcModifier, 1.0f, true );
 

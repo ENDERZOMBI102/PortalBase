@@ -38,7 +38,7 @@ public:
 
 	void Set( float minInterval, float maxInterval ) {
 		if ( maxInterval > 0.0 )
-			m_next = gpGlobals->curtime + random->RandomFloat( minInterval, maxInterval );
+			m_next = gpGlobals->curtime + RandomFloat( minInterval, maxInterval );
 		else
 			m_next = gpGlobals->curtime + minInterval;
 	}
@@ -107,7 +107,7 @@ public:
 			if ( m_maxInterval == 0 )
 				m_next = gpGlobals->curtime + m_minInterval;
 			else
-				m_next = gpGlobals->curtime + random->RandomFloat( m_minInterval, m_maxInterval );
+				m_next = gpGlobals->curtime + RandomFloat( m_minInterval, m_maxInterval );
 		}
 	}
 
@@ -115,7 +115,7 @@ public:
 		if ( m_maxInterval == 0 )
 			m_next = gpGlobals->curtime + m_minInterval;
 		else
-			m_next = gpGlobals->curtime + random->RandomFloat( m_minInterval, m_maxInterval );
+			m_next = gpGlobals->curtime + RandomFloat( m_minInterval, m_maxInterval );
 	}
 
 	float GetMinInterval() const {
@@ -224,7 +224,7 @@ public:
 		if ( maxOverride == 0 )
 			m_next = gpGlobals->curtime + minOverride;
 		else
-			m_next = gpGlobals->curtime + random->RandomFloat( minOverride, maxOverride );
+			m_next = gpGlobals->curtime + RandomFloat( minOverride, maxOverride );
 	}
 
 	void Start() {

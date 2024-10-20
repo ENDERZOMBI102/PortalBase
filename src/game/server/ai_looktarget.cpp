@@ -33,7 +33,7 @@ int CAI_LookTarget::DrawDebugTextOverlays(void)
 
 	if (m_debugOverlays & OVERLAY_BBOX_BIT)
 	{
-		int color = random->RandomInt( 50, 255 );
+		int color = RandomInt( 50, 255 );
 		NDebugOverlay::Cross3D( GetAbsOrigin(), 12, color, color, color, false, 0.1 );
 	}
 

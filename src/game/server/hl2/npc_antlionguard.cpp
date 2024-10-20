@@ -1761,8 +1761,8 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 					// Build an arc around the top of the target that we'll offset our aim by
 					Vector vecOffset;
 					float flSin, flCos;
-					float flRad = random->RandomFloat( 0, M_PI / 6.0f ); // +/- 30 deg
-					if ( random->RandomInt( 0, 1 ) )
+					float flRad = RandomFloat( 0, M_PI / 6.0f ); // +/- 30 deg
+					if ( RandomInt( 0, 1 ) )
 						flRad *= -1.0f;
 
 					SinCos( flRad, &flSin, &flCos );
@@ -1805,7 +1805,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 			}
 
 			//Send it flying
-			AngularImpulse angVel( random->RandomFloat(-180, 180), 100, random->RandomFloat(-360, 360) );
+			AngularImpulse angVel( RandomFloat(-180, 180), 100, RandomFloat(-360, 360) );
 			physObj->ApplyForceCenter( vecShoveVel );
 			physObj->AddVelocity( NULL, &angVel );
 		}
@@ -1931,7 +1931,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 
 		float duration = 0.0f;
 
-		if ( random->RandomInt( 0, 10 ) < 6 )
+		if ( RandomInt( 0, 10 ) < 6 )
 		{
 			duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pGrowlHighSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardFastGrowl, ARRAYSIZE(envAntlionGuardFastGrowl) );
 		}
@@ -1942,7 +1942,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 			ENVELOPE_CONTROLLER.SoundFadeOut( m_pGrowlHighSound, 0.5f, false );
 		}
 		
-		m_flAngerNoiseTime = gpGlobals->curtime + duration + random->RandomFloat( 2.0f, 4.0f );
+		m_flAngerNoiseTime = gpGlobals->curtime + duration + RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
@@ -1961,7 +1961,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 		float duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pGrowlHighSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardBark1, ARRAYSIZE(envAntlionGuardBark1) );
 		ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pConfusedSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardBark2, ARRAYSIZE(envAntlionGuardBark2) );
 		
-		m_flAngerNoiseTime = gpGlobals->curtime + duration + random->RandomFloat( 2.0f, 4.0f );
+		m_flAngerNoiseTime = gpGlobals->curtime + duration + RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
@@ -1976,7 +1976,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 
 		float duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pGrowlHighSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardFastGrowl, ARRAYSIZE(envAntlionGuardFastGrowl) );
 		
-		m_flAngerNoiseTime = gpGlobals->curtime + duration + random->RandomFloat( 2.0f, 4.0f );
+		m_flAngerNoiseTime = gpGlobals->curtime + duration + RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
@@ -2007,8 +2007,8 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 
 		float duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pGrowlHighSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardSqueeze, ARRAYSIZE(envAntlionGuardSqueeze) );
 		
-		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.6f, random->RandomFloat( 2.0f, 4.0f ) );
-		ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, random->RandomInt( 60, 80 ), random->RandomFloat( 2.0f, 4.0f ) );
+		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.6f, RandomFloat( 2.0f, 4.0f ) );
+		ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, RandomInt( 60, 80 ), RandomFloat( 2.0f, 4.0f ) );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
@@ -2022,10 +2022,10 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 	{	
 		StartSounds();
 
-		float duration = random->RandomFloat( 2.0f, 4.0f );
+		float duration = RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.6f, duration );
-		ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, random->RandomInt( 60, 80 ), duration );
+		ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, RandomInt( 60, 80 ), duration );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
@@ -2214,7 +2214,7 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 					pParticle->Activate();
 				
 				pParticle->SetThink( &CBaseEntity::SUB_Remove );
-				pParticle->SetNextThink( gpGlobals->curtime + random->RandomFloat( 2.0f, 3.0f ) );
+				pParticle->SetNextThink( gpGlobals->curtime + RandomFloat( 2.0f, 3.0f ) );
 			}
 		}
 		*/
@@ -2793,7 +2793,7 @@ bool CNPC_AntlionGuard::HandleChargeImpact( Vector vecImpact, CBaseEntity *pEnti
 			CTakeDamageInfo info( this, this, 250, DMG_BLAST );
 			info.SetDamagePosition( vecImpact );
 			float flForce = ImpulseScale( pEntity->VPhysicsGetObject()->GetMass(), 250 );
-			flForce *= random->RandomFloat( 0.85, 1.15 );
+			flForce *= RandomFloat( 0.85, 1.15 );
 
 			// Calculate the vector and stuff it into the takedamageinfo
 			Vector vecForce = BodyDirection3D();
@@ -3575,13 +3575,13 @@ void CNPC_AntlionGuard::PrescheduleThink( void )
 		{
 			StartSounds();
 
-			float duration = random->RandomFloat( 2.0f, 8.0f );
+			float duration = RandomFloat( 2.0f, 8.0f );
 
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, duration );
-			ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, random->RandomInt( 40, 60 ), duration );
+			ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, RandomInt( 40, 60 ), duration );
 			
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, duration );
-			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, random->RandomInt( 120, 140 ), duration );
+			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, RandomInt( 120, 140 ), duration );
 
 			m_flBreathTime = gpGlobals->curtime + duration - (duration*0.75f);
 		}
@@ -3592,10 +3592,10 @@ void CNPC_AntlionGuard::PrescheduleThink( void )
 		{
 			StartSounds();
 
-			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, random->RandomFloat( 0.2f, 0.3f ), random->RandomFloat( 0.5f, 1.0f ) );
-			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, random->RandomInt( 80, 120 ), random->RandomFloat( 0.5f, 1.0f ) );
+			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, RandomFloat( 0.2f, 0.3f ), RandomFloat( 0.5f, 1.0f ) );
+			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, RandomInt( 80, 120 ), RandomFloat( 0.5f, 1.0f ) );
 
-			m_flBreathTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 8.0f );
+			m_flBreathTime = gpGlobals->curtime + RandomFloat( 1.0f, 8.0f );
 		}
 	}
 	else
@@ -3604,11 +3604,11 @@ void CNPC_AntlionGuard::PrescheduleThink( void )
 		{
 			StartSounds();
 
-			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.6f, random->RandomFloat( 2.0f, 4.0f ) );
-			ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, random->RandomInt( 140, 160 ), random->RandomFloat( 2.0f, 4.0f ) );
+			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.6f, RandomFloat( 2.0f, 4.0f ) );
+			ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, RandomInt( 140, 160 ), RandomFloat( 2.0f, 4.0f ) );
 
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 1.0f );
-			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, random->RandomInt( 90, 110 ), 0.2f );
+			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, RandomInt( 90, 110 ), 0.2f );
 		}
 
 

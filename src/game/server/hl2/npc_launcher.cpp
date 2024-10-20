@@ -305,7 +305,7 @@ void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 
 	if (m_bSmokeLaunch)
 	{
-		UTIL_Smoke(GetAbsOrigin(), random->RandomInt(20,30), random->RandomInt(10,15));
+		UTIL_Smoke(GetAbsOrigin(), RandomInt(20,30), RandomInt(10,15));
 	}
 	m_flNextAttack = gpGlobals->curtime + LAUNCHER_REST_TIME;
 

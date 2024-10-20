@@ -308,9 +308,9 @@ Vector CPropVehiclePrisonerPod::BodyTarget( const Vector &posSrc, bool bNoisy )
 
 	if ( bNoisy )
 	{
-		shotPos[0] += random->RandomFloat( -8.0f, 8.0f );
-		shotPos[1] += random->RandomFloat( -8.0f, 8.0f );
-		shotPos[2] += random->RandomFloat( -8.0f, 8.0f );
+		shotPos[0] += RandomFloat( -8.0f, 8.0f );
+		shotPos[1] += RandomFloat( -8.0f, 8.0f );
+		shotPos[2] += RandomFloat( -8.0f, 8.0f );
 	}
 
 	return shotPos;

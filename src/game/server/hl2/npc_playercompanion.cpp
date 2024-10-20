@@ -229,7 +229,7 @@ void CNPC_PlayerCompanion::Spawn()
 	SetAimTarget(NULL);
 	m_bReadinessCapable = IsReadinessCapable();
 	SetReadinessValue( 0.0f );
-	SetReadinessSensitivity( random->RandomFloat( 0.7, 1.3 ) );
+	SetReadinessSensitivity( RandomFloat( 0.7, 1.3 ) );
 	m_flReadinessLockedUntil = 0.0f;
 
 	m_AnnounceAttackTimer.Set( 10, 30 );
@@ -1362,7 +1362,7 @@ Activity CNPC_PlayerCompanion::NPC_TranslateActivity( Activity activity )
 
 	if ( activity == ACT_RUN && ( IsCurSchedule( SCHED_TAKE_COVER_FROM_BEST_SOUND ) || IsCurSchedule( SCHED_FLEE_FROM_BEST_SOUND ) ) )
 	{
-		if ( random->RandomInt( 0, 1 ) && HaveSequenceForActivity( ACT_RUN_PROTECTED ) )
+		if ( RandomInt( 0, 1 ) && HaveSequenceForActivity( ACT_RUN_PROTECTED ) )
 			activity = ACT_RUN_PROTECTED;
 	}
 
@@ -1430,7 +1430,7 @@ void CNPC_PlayerCompanion::HandleAnimEvent( animevent_t *pEvent )
 		Vector vecToss;
 		AngleVectors( GetAbsAngles(), &vecToss );
 		VectorNormalize( vecToss );
-		vecToss *= random->RandomFloat( 64.0f, 72.0f );
+		vecToss *= RandomFloat( 64.0f, 72.0f );
 		vecToss[2] += 64.0f;
 
 		// Throw it
@@ -1875,12 +1875,12 @@ bool CNPC_PlayerCompanion::PickTacticalLookTarget( AILookTargetArgs_t *pArgs )
 	{
 	case AIRL_RELAXED:
 		// Linger on targets, look at them for quite a while.
-		flMinLookTime = COMPANION_MAX_LOOK_TIME + random->RandomFloat( 0.0f, 2.0f );
+		flMinLookTime = COMPANION_MAX_LOOK_TIME + RandomFloat( 0.0f, 2.0f );
 		break;
 
 	case AIRL_STIMULATED:
 		// Look around a little quicker.
-		flMinLookTime = COMPANION_MIN_LOOK_TIME + random->RandomFloat( 0.0f, COMPANION_MAX_LOOK_TIME - 1.0f );
+		flMinLookTime = COMPANION_MIN_LOOK_TIME + RandomFloat( 0.0f, COMPANION_MAX_LOOK_TIME - 1.0f );
 		break;
 
 	case AIRL_AGITATED:
@@ -1889,13 +1889,13 @@ bool CNPC_PlayerCompanion::PickTacticalLookTarget( AILookTargetArgs_t *pArgs )
 		break;
 	}
 
-	flMaxLookTime = flMinLookTime + random->RandomFloat( 0.0f, 0.5f );
-	pArgs->flDuration = random->RandomFloat( flMinLookTime, flMaxLookTime );
+	flMaxLookTime = flMinLookTime + RandomFloat( 0.0f, 0.5f );
+	pArgs->flDuration = RandomFloat( flMinLookTime, flMaxLookTime );
 
 	if( HasCondition(COND_SEE_PLAYER) && hl2_episodic.GetBool() )
 	{
 		// 1/3rd chance to authoritatively look at player
-		if( random->RandomInt( 0, 2 ) == 0 )
+		if( RandomInt( 0, 2 ) == 0 )
 		{
 			pArgs->hTarget = AI_GetSinglePlayer();
 			return true;
@@ -2268,7 +2268,7 @@ void CNPC_PlayerCompanion::OnUpdateShotRegulator()
 			if( hl2_episodic.GetBool() )
 			{
 				// Longer burst
-				int longBurst = random->RandomInt( 10, 15 );
+				int longBurst = RandomInt( 10, 15 );
 				GetShotRegulator()->SetBurstShotsRemaining( longBurst );
 				GetShotRegulator()->SetRestInterval( 0.1, 0.2 );
 			}
@@ -2317,7 +2317,7 @@ bool CNPC_PlayerCompanion::FCanCheckAttacks()
 #define CITIZEN_HEADSHOT_FREQUENCY	3 // one in this many shots at a zombie will be aimed at the zombie's head
 Vector CNPC_PlayerCompanion::GetActualShootPosition( const Vector &shootOrigin )
 {
-	if( GetEnemy() && GetEnemy()->Classify() == CLASS_ZOMBIE && random->RandomInt( 1, CITIZEN_HEADSHOT_FREQUENCY ) == 1 )
+	if( GetEnemy() && GetEnemy()->Classify() == CLASS_ZOMBIE && RandomInt( 1, CITIZEN_HEADSHOT_FREQUENCY ) == 1 )
 	{
 		return GetEnemy()->HeadTarget( shootOrigin );
 	}

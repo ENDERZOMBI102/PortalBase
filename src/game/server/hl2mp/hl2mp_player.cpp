@@ -261,7 +261,7 @@ void CHL2MP_Player::PickDefaultSpawnTeam( void )
 
 			if ( pCombine == NULL || pRebels == NULL )
 			{
-				ChangeTeam( random->RandomInt( TEAM_COMBINE, TEAM_REBELS ) );
+				ChangeTeam( RandomInt( TEAM_COMBINE, TEAM_REBELS ) );
 			}
 			else
 			{
@@ -275,7 +275,7 @@ void CHL2MP_Player::PickDefaultSpawnTeam( void )
 				}
 				else
 				{
-					ChangeTeam( random->RandomInt( TEAM_COMBINE, TEAM_REBELS ) );
+					ChangeTeam( RandomInt( TEAM_COMBINE, TEAM_REBELS ) );
 				}
 			}
 		}
@@ -1339,7 +1339,7 @@ CBaseEntity* CHL2MP_Player::EntSelectSpawnPoint( void )
 
 	pSpot = pLastSpawnPoint;
 	// Randomize the start spot
-	for ( int i = random->RandomInt(1,5); i > 0; i-- )
+	for ( int i = RandomInt(1,5); i > 0; i-- )
 		pSpot = gEntList.FindEntityByClassname( pSpot, pSpawnpointName );
 	if ( !pSpot )  // skip over the null point
 		pSpot = gEntList.FindEntityByClassname( pSpot, pSpawnpointName );

@@ -126,7 +126,7 @@ public:
 			175*magnitude,	//magnitude
 			&vecForward );	//normal
 		
-		int	colorRamp = random->RandomInt( 128, 255 );
+		int	colorRamp = RandomInt( 128, 255 );
 
 		//Shockring
 		CBroadcastRecipientFilter filter2;
@@ -467,15 +467,15 @@ void CWeaponCGuard::AddViewKick( void )
 	//Disorient the player
 	QAngle angles = pPlayer->GetLocalAngles();
 
-	angles.x += random->RandomInt( -5, 5 );
-	angles.y += random->RandomInt( -8, 8 );
+	angles.x += RandomInt( -5, 5 );
+	angles.y += RandomInt( -8, 8 );
 	angles.z = 0.0f;
 
 	SetLocalAngles( angles );
 
 	pPlayer->SnapEyeAngles( angles );
 	
-	pPlayer->ViewPunch( QAngle( random->RandomInt( -8, -12 ), random->RandomInt( -2, 2 ), random->RandomInt( -8, 8 ) ) );
+	pPlayer->ViewPunch( QAngle( RandomInt( -8, -12 ), RandomInt( -2, 2 ), RandomInt( -8, 8 ) ) );
 }
 
 #endif

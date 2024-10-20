@@ -768,9 +768,9 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 	SimpleParticle *pParticle;
 	Vector			forward(1,0,0), offset; //NOTENOTE: All coords are in local space
 
-	float flScale = random->RandomFloat( 3.0f, 4.0f );
+	float flScale = RandomFloat( 3.0f, 4.0f );
 
-	float burstSpeed = random->RandomFloat( 400.0f, 600.0f );
+	float burstSpeed = RandomFloat( 400.0f, 600.0f );
 
 #define	FRONT_LENGTH 12
 
@@ -779,7 +779,7 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 	{
 		offset = (forward * (i*2.0f*flScale));
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", random->RandomInt(1,2) ) ), offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", RandomInt(1,2) ) ), offset );
 			
 		if ( pParticle == NULL )
 			return;
@@ -796,9 +796,9 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 		pParticle->m_uchStartAlpha	= 255.0f;
 		pParticle->m_uchEndAlpha	= 0;
 
-		pParticle->m_uchStartSize	= ( (random->RandomFloat( 6.0f, 8.0f ) * (FRONT_LENGTH-(i))/(FRONT_LENGTH*0.75f)) * flScale );
+		pParticle->m_uchStartSize	= ( (RandomFloat( 6.0f, 8.0f ) * (FRONT_LENGTH-(i))/(FRONT_LENGTH*0.75f)) * flScale );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 	
@@ -807,14 +807,14 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 
 #define	SIDE_LENGTH	8
 
-	burstSpeed = random->RandomFloat( 400.0f, 600.0f );
+	burstSpeed = RandomFloat( 400.0f, 600.0f );
 
 	// Diagonal flash
 	for ( int i = 1; i < SIDE_LENGTH; i++ )
 	{
 		offset = (dir * (i*flScale));
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", random->RandomInt(1,2) ) ), offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", RandomInt(1,2) ) ), offset );
 			
 		if ( pParticle == NULL )
 			return;
@@ -831,21 +831,21 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
 
-		pParticle->m_uchStartSize	= ( (random->RandomFloat( 2.0f, 4.0f ) * (SIDE_LENGTH-(i))/(SIDE_LENGTH*0.5f)) * flScale );
+		pParticle->m_uchStartSize	= ( (RandomFloat( 2.0f, 4.0f ) * (SIDE_LENGTH-(i))/(SIDE_LENGTH*0.5f)) * flScale );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
 	dir = right + up;
-	burstSpeed = random->RandomFloat( 400.0f, 600.0f );
+	burstSpeed = RandomFloat( 400.0f, 600.0f );
 
 	// Diagonal flash
 	for ( int i = 1; i < SIDE_LENGTH; i++ )
 	{
 		offset = (-dir * (i*flScale));
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", random->RandomInt(1,2) ) ), offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", RandomInt(1,2) ) ), offset );
 			
 		if ( pParticle == NULL )
 			return;
@@ -862,21 +862,21 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
 
-		pParticle->m_uchStartSize	= ( (random->RandomFloat( 2.0f, 4.0f ) * (SIDE_LENGTH-(i))/(SIDE_LENGTH*0.5f)) * flScale );
+		pParticle->m_uchStartSize	= ( (RandomFloat( 2.0f, 4.0f ) * (SIDE_LENGTH-(i))/(SIDE_LENGTH*0.5f)) * flScale );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
 	dir = up;
-	burstSpeed = random->RandomFloat( 400.0f, 600.0f );
+	burstSpeed = RandomFloat( 400.0f, 600.0f );
 
 	// Top flash
 	for ( int i = 1; i < SIDE_LENGTH; i++ )
 	{
 		offset = (dir * (i*flScale));
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", random->RandomInt(1,2) ) ), offset );
+		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/combinemuzzle%d", RandomInt(1,2) ) ), offset );
 			
 		if ( pParticle == NULL )
 			return;
@@ -893,9 +893,9 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
 
-		pParticle->m_uchStartSize	= ( (random->RandomFloat( 2.0f, 4.0f ) * (SIDE_LENGTH-(i))/(SIDE_LENGTH*0.5f)) * flScale );
+		pParticle->m_uchStartSize	= ( (RandomFloat( 2.0f, 4.0f ) * (SIDE_LENGTH-(i))/(SIDE_LENGTH*0.5f)) * flScale );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
@@ -905,7 +905,7 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 		return;
 
 	pParticle->m_flLifetime		= 0.0f;
-	pParticle->m_flDieTime		= random->RandomFloat( 0.3f, 0.4f );
+	pParticle->m_flDieTime		= RandomFloat( 0.3f, 0.4f );
 
 	pParticle->m_vecVelocity.Init();
 
@@ -916,9 +916,9 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 	pParticle->m_uchStartAlpha	= 255;
 	pParticle->m_uchEndAlpha	= 0;
 
-	pParticle->m_uchStartSize	= flScale * random->RandomFloat( 12.0f, 16.0f );
+	pParticle->m_uchStartSize	= flScale * RandomFloat( 12.0f, 16.0f );
 	pParticle->m_uchEndSize		= 0.0f;
-	pParticle->m_flRoll			= random->RandomInt( 0, 360 );
+	pParticle->m_flRoll			= RandomInt( 0, 360 );
 	pParticle->m_flRollDelta	= 0.0f;
 
 	Vector		origin;
@@ -936,7 +936,7 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 		el->color.b = 255;
 		el->color.exponent = 5;
 
-		el->radius	= random->RandomInt( 100, 150 );
+		el->radius	= RandomInt( 100, 150 );
 		el->decay	= el->radius / 0.05f;
 		el->die		= gpGlobals->curtime + 0.1f;
 	}
@@ -1007,9 +1007,9 @@ void StriderBlood( const Vector &origin, const Vector &normal, float scale )
 	for ( i = 0; i < 64; i++ )
 	{
 		offset = origin;
-		offset[0] += random->RandomFloat( -8.0f, 8.0f ) * flScale;
-		offset[1] += random->RandomFloat( -8.0f, 8.0f ) * flScale;
-		offset[2] += random->RandomFloat( -8.0f, 8.0f ) * flScale;
+		offset[0] += RandomFloat( -8.0f, 8.0f ) * flScale;
+		offset[1] += RandomFloat( -8.0f, 8.0f ) * flScale;
+		offset[2] += RandomFloat( -8.0f, 8.0f ) * flScale;
 
 		tParticle = (TrailParticle *) sparkEmitter->AddParticle( sizeof(TrailParticle), hMaterial, offset );
 
@@ -1021,13 +1021,13 @@ void StriderBlood( const Vector &origin, const Vector &normal, float scale )
 
 		offDir = normal + RandomVector( -1.0f, 1.0f );
 
-		tParticle->m_vecVelocity = offDir * random->RandomFloat( BLOOD_MIN_SPEED * flScale * 2.0f, BLOOD_MAX_SPEED * flScale * 2.0f );
-		tParticle->m_vecVelocity[2] += random->RandomFloat( 8.0f, 32.0f ) * flScale;
+		tParticle->m_vecVelocity = offDir * RandomFloat( BLOOD_MIN_SPEED * flScale * 2.0f, BLOOD_MAX_SPEED * flScale * 2.0f );
+		tParticle->m_vecVelocity[2] += RandomFloat( 8.0f, 32.0f ) * flScale;
 
-		tParticle->m_flWidth		= random->RandomFloat( 20.0f, 26.0f ) * flScale;
-		tParticle->m_flLength		= random->RandomFloat( length*0.5f, length ) * flScale;
+		tParticle->m_flWidth		= RandomFloat( 20.0f, 26.0f ) * flScale;
+		tParticle->m_flLength		= RandomFloat( length*0.5f, length ) * flScale;
 
-		int nColor = random->RandomInt( luminosity*0.75f, luminosity );
+		int nColor = RandomInt( luminosity*0.75f, luminosity );
 		tParticle->m_color.r = nColor * tint.x;
 		tParticle->m_color.g = nColor * tint.y;
 		tParticle->m_color.b = nColor * tint.z;

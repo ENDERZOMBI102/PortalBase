@@ -302,24 +302,24 @@ void WheelDustCallback( const CEffectData &data )
 	if ( pParticle != NULL )
 	{			
 		pParticle->m_flLifetime		= 0.0f;
-		pParticle->m_flDieTime		= random->RandomFloat( 0.25f, 0.5f );
+		pParticle->m_flDieTime		= RandomFloat( 0.25f, 0.5f );
 		
 		pParticle->m_vecVelocity = RandomVector( -1.0f, 1.0f );
 		VectorNormalize( pParticle->m_vecVelocity );
-		pParticle->m_vecVelocity[2] += random->RandomFloat( 16.0f, 32.0f ) * (data.m_flScale*2.0f);
+		pParticle->m_vecVelocity[2] += RandomFloat( 16.0f, 32.0f ) * (data.m_flScale*2.0f);
 
-		int	color = random->RandomInt( 100, 150 );
+		int	color = RandomInt( 100, 150 );
 
 		pParticle->m_uchColor[0] = 16 + ( worldLight[0] * (float) color );
 		pParticle->m_uchColor[1] = 8 + ( worldLight[1] * (float) color );
 		pParticle->m_uchColor[2] = ( worldLight[2] * (float) color );
 
-		pParticle->m_uchStartAlpha	= random->RandomInt( 64.0f*data.m_flScale, 128.0f*data.m_flScale );
+		pParticle->m_uchStartAlpha	= RandomInt( 64.0f*data.m_flScale, 128.0f*data.m_flScale );
 		pParticle->m_uchEndAlpha	= 0;
-		pParticle->m_uchStartSize	= random->RandomInt( 16, 24 ) * data.m_flScale;
-		pParticle->m_uchEndSize		= random->RandomInt( 32, 48 ) * data.m_flScale;
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -2.0f, 2.0f );
+		pParticle->m_uchStartSize	= RandomInt( 16, 24 ) * data.m_flScale;
+		pParticle->m_uchEndSize		= RandomInt( 32, 48 ) * data.m_flScale;
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -2.0f, 2.0f );
 	}
 }
 

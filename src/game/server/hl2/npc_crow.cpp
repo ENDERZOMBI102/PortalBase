@@ -111,12 +111,12 @@ void CNPC_Crow::Spawn( void )
 	m_flFieldOfView = VIEW_FIELD_FULL;
 	SetViewOffset( Vector(6, 0, 11) );		// Position of the eyes relative to NPC's origin.
 
-	m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 0.0f, 5.0f );
+	m_flGroundIdleMoveTime = gpGlobals->curtime + RandomFloat( 0.0f, 5.0f );
 
 	SetBloodColor( BLOOD_COLOR_RED );
 	m_NPCState = NPC_STATE_NONE;
 
-	m_nMorale = random->RandomInt( 0, 12 );
+	m_nMorale = RandomInt( 0, 12 );
 	
 	SetCollisionGroup( HL2COLLISION_GROUP_CROW );
 
@@ -264,7 +264,7 @@ void CNPC_Crow::HandleAnimEvent( animevent_t *pEvent )
 			vecJumpDir = vecJumpDir * ( 650.0 / distance );
 		}
 
-		m_nMorale -= random->RandomInt( 1, 6 );
+		m_nMorale -= RandomInt( 1, 6 );
 		if ( m_nMorale <= 0 )
 		{
 			m_nMorale = 0;
@@ -285,7 +285,7 @@ void CNPC_Crow::HandleAnimEvent( animevent_t *pEvent )
 		SetActivity( ACT_FLY );
 
 		m_bSoar = false;
-		m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+		m_flSoarTime = gpGlobals->curtime + RandomFloat( 3, 5 );
 
 		return;
 	}
@@ -313,7 +313,7 @@ void CNPC_Crow::OnChangeActivity( Activity eNewActivity )
 	BaseClass::OnChangeActivity( eNewActivity );
 	if ( fRandomize )
 	{
-		SetCycle( random->RandomFloat( 0.0, 0.75 ) );
+		SetCycle( RandomFloat( 0.0, 0.75 ) );
 	}
 }
 
@@ -452,15 +452,15 @@ Activity CNPC_Crow::NPC_TranslateActivity( Activity eNewActivity )
 		if ( m_flSoarTime < gpGlobals->curtime )
 		{
 			//Adrian: This should be revisited.
-			if ( random->RandomInt( 0, 100 ) <= 50 && m_bSoar == false && GetAbsVelocity().z < 0 )
+			if ( RandomInt( 0, 100 ) <= 50 && m_bSoar == false && GetAbsVelocity().z < 0 )
 			{
 				m_bSoar = true;
-				m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 1, 4 );
+				m_flSoarTime = gpGlobals->curtime + RandomFloat( 1, 4 );
 			}
 			else
 			{
 				m_bSoar = false;
-				m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+				m_flSoarTime = gpGlobals->curtime + RandomFloat( 3, 5 );
 			}
 		}
 
@@ -670,7 +670,7 @@ void CNPC_Crow::SetFlyingState( FlyState_t eState )
 		SetMoveType( MOVETYPE_STEP );
 		m_vLastStoredOrigin = GetAbsOrigin();
 		m_flLastStuckCheck = gpGlobals->curtime + 3.0f;
-		m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
+		m_flGroundIdleMoveTime = gpGlobals->curtime + RandomFloat( 5.0f, 10.0f );
 	}
 	else if ( eState == FlyState_Walking )
 	{
@@ -686,7 +686,7 @@ void CNPC_Crow::SetFlyingState( FlyState_t eState )
 		CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 		SetMoveType( MOVETYPE_STEP );
 		m_vLastStoredOrigin = vec3_origin;
-		m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
+		m_flGroundIdleMoveTime = gpGlobals->curtime + RandomFloat( 5.0f, 10.0f );
 	}
 	else
 	{
@@ -696,7 +696,7 @@ void CNPC_Crow::SetFlyingState( FlyState_t eState )
 		CapabilitiesRemove( bits_CAP_MOVE_FLY );
 		CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 		SetMoveType( MOVETYPE_STEP );
-		m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
+		m_flGroundIdleMoveTime = gpGlobals->curtime + RandomFloat( 5.0f, 10.0f );
 	}
 }
 
@@ -783,7 +783,7 @@ void CNPC_Crow::StartTask( const Task_t *pTask )
 
 		case TASK_CROW_TAKEOFF:
 		{
-			if ( random->RandomInt( 1, 4 ) == 1 )
+			if ( RandomInt( 1, 4 ) == 1 )
 			{
 				AlertSound();
 			}
@@ -809,7 +809,7 @@ void CNPC_Crow::StartTask( const Task_t *pTask )
 				//
 				m_vSavePosition = GetAbsOrigin() - vecEnemyOrigin;
 				VectorNormalize( m_vSavePosition );
-				m_vSavePosition = GetAbsOrigin() + m_vSavePosition * ( 32 + random->RandomInt( 0, 32 ) );
+				m_vSavePosition = GetAbsOrigin() + m_vSavePosition * ( 32 + RandomInt( 0, 32 ) );
 
 				GetMotor()->SetIdealYawToTarget( m_vSavePosition );
 				TaskComplete();
@@ -907,23 +907,23 @@ void CNPC_Crow::StartTask( const Task_t *pTask )
 		//
 		case TASK_CROW_FLY:
 		{
-			float flYaw = UTIL_AngleMod( random->RandomInt( -180, 180 ) );
+			float flYaw = UTIL_AngleMod( RandomInt( -180, 180 ) );
 
-			Vector vecNewVelocity( cos( DEG2RAD( flYaw ) ), sin( DEG2RAD( flYaw ) ), random->RandomFloat( 0.1f, 0.5f ) );
+			Vector vecNewVelocity( cos( DEG2RAD( flYaw ) ), sin( DEG2RAD( flYaw ) ), RandomFloat( 0.1f, 0.5f ) );
 			vecNewVelocity *= CROW_AIRSPEED;
 			SetAbsVelocity( vecNewVelocity );
 
 			SetIdealActivity( ACT_FLY );
 
 			m_bSoar = false;
-			m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 2, 5 );
+			m_flSoarTime = gpGlobals->curtime + RandomFloat( 2, 5 );
 
 			break;
 		}
 
 		case TASK_CROW_PICK_RANDOM_GOAL:
 		{
-			m_vSavePosition = GetLocalOrigin() + Vector( random->RandomFloat( -48.0f, 48.0f ), random->RandomFloat( -48.0f, 48.0f ), 0 );
+			m_vSavePosition = GetLocalOrigin() + Vector( RandomFloat( -48.0f, 48.0f ), RandomFloat( -48.0f, 48.0f ), 0 );
 			TaskComplete();
 			break;
 		}
@@ -971,7 +971,7 @@ void CNPC_Crow::RunTask( const Task_t *pTask )
 				SetIdealActivity( ACT_FLY );
 
 				m_bSoar = false;
-				m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 2, 5 );
+				m_flSoarTime = gpGlobals->curtime + RandomFloat( 2, 5 );
 			}
 			
 			break;
@@ -1036,7 +1036,7 @@ void CNPC_Crow::RunTask( const Task_t *pTask )
 		{
 			if ( m_flNextFlinchTime < gpGlobals->curtime )
 			{
-				m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 2.0f );
+				m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 0.5f, 2.0f );
 				// dvs: TODO: squirm
 				// dvs: TODO: spawn feathers
 				EmitSound( "NPC_Crow.Squawk" );
@@ -1230,7 +1230,7 @@ int CNPC_Crow::SelectSchedule( void )
 				//
 				if ( gpGlobals->curtime > m_flGroundIdleMoveTime )
 				{
-					m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 10.0f, 20.0f );
+					m_flGroundIdleMoveTime = gpGlobals->curtime + RandomFloat( 10.0f, 20.0f );
 					return SCHED_CROW_IDLE_WALK;
 				}
 

@@ -117,10 +117,10 @@ void CNPC_BaseScanner::Spawn(void)
 
 	// Noise modifier
 	Vector	bobAmount;
-	bobAmount.x = random->RandomFloat( -2.0f, 2.0f );
-	bobAmount.y = random->RandomFloat( -2.0f, 2.0f );
-	bobAmount.z = random->RandomFloat( 2.0f, 4.0f );
-	if ( random->RandomInt( 0, 1 ) )
+	bobAmount.x = RandomFloat( -2.0f, 2.0f );
+	bobAmount.y = RandomFloat( -2.0f, 2.0f );
+	bobAmount.z = RandomFloat( 2.0f, 4.0f );
+	if ( RandomInt( 0, 1 ) )
 	{
 		bobAmount.z *= -1.0f;
 	}
@@ -135,7 +135,7 @@ void CNPC_BaseScanner::Spawn(void)
 
 	NPCInit();
 
-	m_flFlyNoiseBase = random->RandomFloat( 0, M_PI );
+	m_flFlyNoiseBase = RandomFloat( 0, M_PI );
 
 	m_flNextAttack = gpGlobals->curtime;
 }
@@ -217,7 +217,7 @@ int CNPC_BaseScanner::SelectSchedule(void)
 		}
 		else
 		{
-			if ( random->RandomInt( 0, 10 ) < 4 )
+			if ( RandomInt( 0, 10 ) < 4 )
 				return SCHED_SMALL_FLINCH;
 		}
 	}
@@ -352,13 +352,13 @@ void CNPC_BaseScanner::StartTask( const Task_t *pTask )
 				// Pick a random forward and down direction.
 				Vector forward;
 				GetVectors( &forward, NULL, NULL );
-				m_vecDiveBombDirection = forward + Vector( random->RandomFloat( -10, 10 ), random->RandomFloat( -10, 10 ), random->RandomFloat( -20, -10 ) );
+				m_vecDiveBombDirection = forward + Vector( RandomFloat( -10, 10 ), RandomFloat( -10, 10 ), RandomFloat( -20, -10 ) );
 			}
 			VectorNormalize( m_vecDiveBombDirection );
 
 			// Calculate a roll force.
-			m_flDiveBombRollForce = random->RandomFloat( 20.0, 420.0 );
-			if ( random->RandomInt( 0, 1 ) )
+			m_flDiveBombRollForce = RandomFloat( 20.0, 420.0 );
+			if ( RandomInt( 0, 1 ) )
 			{
 				m_flDiveBombRollForce *= -1;
 			}
@@ -542,9 +542,9 @@ void CNPC_BaseScanner::Gib( void )
 	for ( int i = 0; i < 4; i++ )
 	{
 		Vector sparkPos = GetAbsOrigin();
-		sparkPos.x += random->RandomFloat(-12,12);
-		sparkPos.y += random->RandomFloat(-12,12);
-		sparkPos.z += random->RandomFloat(-12,12);
+		sparkPos.x += RandomFloat(-12,12);
+		sparkPos.y += RandomFloat(-12,12);
+		sparkPos.z += RandomFloat(-12,12);
 		g_pEffects->Sparks(sparkPos);
 	}
 
@@ -1447,7 +1447,7 @@ Vector CNPC_BaseScanner::VelocityToEvade(CBaseCombatCharacter *pEnemy)
 
 			Vector crossProduct;
 			CrossProduct(vEnemyFacing, vEnemyDir, crossProduct);
-			if (random->RandomInt(0,1))
+			if (RandomInt(0,1))
 			{
 				vDir = vDir * -1;
 			}
@@ -1613,7 +1613,7 @@ bool CNPC_BaseScanner::ShouldPlayIdleSound( void )
 	if ( HasSpawnFlags( SF_NPC_GAG ) )
 		return false;
 
-	if ( random->RandomInt( 0, 25 ) != 0 )
+	if ( RandomInt( 0, 25 ) != 0 )
 		return false;
 
 	return true;

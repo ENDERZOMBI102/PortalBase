@@ -2310,7 +2310,7 @@ void CFlexCycler::Spawn( )
 
 	ResetSequenceInfo( );
 
-	m_flCycle = random->RandomFloat( 0, 1.0 );
+	m_flCycle = RandomFloat( 0, 1.0 );
 }
 
 const char *predef_flexcontroller_names[] = { 
@@ -2376,7 +2376,7 @@ int CFlexCycler::OnTakeDamage( const CTakeDamageInfo &info )
 
 void CFlexCycler::SetFlexTarget( LocalFlexController_t flexnum )
 {
-	m_flextarget[flexnum] = random->RandomFloat( 0.5, 1.0 );
+	m_flextarget[flexnum] = RandomFloat( 0.5, 1.0 );
 
 	const char *pszType = GetFlexControllerType( flexnum );
 
@@ -2535,8 +2535,8 @@ void CFlexCycler::Think( void )
 		else if (m_flextime < gpGlobals->curtime)
 		{
 			// m_flextime = gpGlobals->curtime + 1.0; // RandomFloat( 0.1, 0.5 );
-			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
-			m_flexnum = (LocalFlexController_t)random->RandomInt( 0, GetNumFlexControllers() - 1 );
+			m_flextime = gpGlobals->curtime + RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
+			m_flexnum = (LocalFlexController_t)RandomInt( 0, GetNumFlexControllers() - 1 );
 
 			// m_flexnum = (pflex->num + 1) % r_psubmodel->numflexes;
 
@@ -2582,7 +2582,7 @@ void CFlexCycler::Think( void )
 
 			if (weight != m_flextarget[i])
 			{
-				weight = weight + (m_flextarget[i] - weight) / random->RandomFloat( 2.0, 4.0 );
+				weight = weight + (m_flextarget[i] - weight) / RandomFloat( 2.0, 4.0 );
 			}
 			weight = clamp( weight, 0.0f, 1.0f );
 			SetFlexWeight( i, weight );
@@ -2635,11 +2635,11 @@ void CFlexCycler::Think( void )
 				if (m_istalking)
 				{
 					m_looktime = gpGlobals->curtime - 1.0;
-					m_speaktime = gpGlobals->curtime + random->RandomFloat( 0.5, 2.0 );
+					m_speaktime = gpGlobals->curtime + RandomFloat( 0.5, 2.0 );
 				}
 				else
 				{
-					m_speaktime = gpGlobals->curtime + random->RandomFloat( 1.0, 3.0 );
+					m_speaktime = gpGlobals->curtime + RandomFloat( 1.0, 3.0 );
 				}
 			}
 
@@ -2650,10 +2650,10 @@ void CFlexCycler::Think( void )
 
 			if (m_istalking)
 			{
-				m_flextime = gpGlobals->curtime + random->RandomFloat( 0.0, 0.2 );
-				m_flexWeight[random->RandomInt(m_phoneme, GetNumFlexControllers()-1)] = random->RandomFloat( 0.5, 1.0 );
-				float mouth = random->RandomFloat( 0.0, 1.0 );
-				float jaw = random->RandomFloat( 0.0, 1.0 );
+				m_flextime = gpGlobals->curtime + RandomFloat( 0.0, 0.2 );
+				m_flexWeight[RandomInt(m_phoneme, GetNumFlexControllers()-1)] = RandomFloat( 0.5, 1.0 );
+				float mouth = RandomFloat( 0.0, 1.0 );
+				float jaw = RandomFloat( 0.0, 1.0 );
 
 				m_flexWeight[m_phoneme - 2] = jaw * (mouth);
 				m_flexWeight[m_phoneme - 1] = jaw * (1.0 - mouth);
@@ -2669,7 +2669,7 @@ void CFlexCycler::Think( void )
 		if (m_blinktime < gpGlobals->curtime)
 		{
 			Blink();
-			m_blinktime = gpGlobals->curtime + random->RandomFloat( 1.5, 4.5 );
+			m_blinktime = gpGlobals->curtime + RandomFloat( 1.5, 4.5 );
 		}
 	}
 
@@ -2683,14 +2683,14 @@ void CFlexCycler::Think( void )
 		if (pPlayer->GetSmoothedVelocity().Length() != 0 && DotProduct( forward, pPlayer->EyePosition() - EyePosition()) > 0.5)
 		{
 			m_lookTarget = pPlayer->EyePosition();
-			m_looktime = gpGlobals->curtime + random->RandomFloat(2.0,4.0);
+			m_looktime = gpGlobals->curtime + RandomFloat(2.0,4.0);
 		}
 		else if (m_looktime < gpGlobals->curtime)
 		{
-			if ((!m_istalking) && random->RandomInt( 0, 1 ) == 0)
+			if ((!m_istalking) && RandomInt( 0, 1 ) == 0)
 			{
-				m_lookTarget = EyePosition() + forward * 128 + right * random->RandomFloat(-64,64) + up * random->RandomFloat(-32,32);
-				m_looktime = gpGlobals->curtime + random->RandomFloat(0.3,1.0);
+				m_lookTarget = EyePosition() + forward * 128 + right * RandomFloat(-64,64) + up * RandomFloat(-32,32);
+				m_looktime = gpGlobals->curtime + RandomFloat(0.3,1.0);
 
 				if (m_blinktime - 0.5 < gpGlobals->curtime)
 				{
@@ -2700,7 +2700,7 @@ void CFlexCycler::Think( void )
 			else
 			{
 				m_lookTarget = pPlayer->EyePosition();
-				m_looktime = gpGlobals->curtime + random->RandomFloat(1.0,4.0);
+				m_looktime = gpGlobals->curtime + RandomFloat(1.0,4.0);
 			}
 		}
 

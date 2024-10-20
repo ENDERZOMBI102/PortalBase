@@ -210,7 +210,7 @@ inline bool CFuncTank::CanFire( void )
 	// If less than persistence2, occasionally do another burst
 	if ( flTimeDelay <= m_persist2 )
 	{
-		if ( random->RandomInt( 0, 30 ) == 0 )
+		if ( RandomInt( 0, 30 ) == 0 )
 		{
 			m_persist2burst = flTimeDelay + 0.5f;
 			return true;
@@ -1421,7 +1421,7 @@ float CFuncTank::GetRandomFireTime( void )
 	float flOOFireRate = 1.0f / m_fireRate;
 	float flOOFireRateBy2 = flOOFireRate * 0.5f;
 	float flOOFireRateBy4 = flOOFireRate * 0.25f;
-	return random->RandomFloat( flOOFireRateBy4, flOOFireRateBy2 );
+	return RandomFloat( flOOFireRateBy4, flOOFireRateBy2 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1430,7 +1430,7 @@ float CFuncTank::GetRandomFireTime( void )
 //-----------------------------------------------------------------------------
 int CFuncTank::GetRandomBurst( void )
 {
-	return random->RandomInt( m_fireRate-2, m_fireRate+2 );
+	return RandomInt( m_fireRate-2, m_fireRate+2 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1846,8 +1846,8 @@ void CFuncTank::ComputeLeadingPosition( const Vector &vecShootPosition, CBaseEnt
 	{
 		m_flStartLeadFactor = m_flNextLeadFactor;
 		m_flStartLeadFactorTime = gpGlobals->curtime;
-		m_flNextLeadFactor = random->RandomFloat( 0.8f, 1.3f );
-		m_flNextLeadFactorTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f );
+		m_flNextLeadFactor = RandomFloat( 0.8f, 1.3f );
+		m_flNextLeadFactorTime = gpGlobals->curtime + RandomFloat( 2.0f, 4.0f );
 	}
 
 	float flFactor = (gpGlobals->curtime - m_flStartLeadFactorTime) / (m_flNextLeadFactorTime - m_flStartLeadFactorTime);
@@ -2215,10 +2215,10 @@ void CFuncTank::Fire( int bulletCount, const Vector &barrelEnd, const Vector &fo
 		if ( m_iszSpriteSmoke != NULL_STRING )
 		{
 			CSprite *pSprite = CSprite::SpriteCreate( STRING(m_iszSpriteSmoke), barrelEnd, true );
-			pSprite->AnimateAndDie( random->RandomFloat( 15.0, 20.0 ) );
+			pSprite->AnimateAndDie( RandomFloat( 15.0, 20.0 ) );
 			pSprite->SetTransparency( kRenderTransAlpha, m_clrRender->r(), m_clrRender->g(), m_clrRender->b(), 255, kRenderFxNone );
 
-			Vector vecVelocity( 0, 0, random->RandomFloat(40, 80) ); 
+			Vector vecVelocity( 0, 0, RandomFloat(40, 80) );
 			pSprite->SetAbsVelocity( vecVelocity );
 			pSprite->SetScale( m_spriteScale );
 		}
@@ -2250,8 +2250,8 @@ void CFuncTank::TankTrace( const Vector &vecStart, const Vector &vecForward, con
 	// get circular gaussian spread
 	float x, y, z;
 	do {
-		x = random->RandomFloat(-0.5,0.5) + random->RandomFloat(-0.5,0.5);
-		y = random->RandomFloat(-0.5,0.5) + random->RandomFloat(-0.5,0.5);
+		x = RandomFloat(-0.5,0.5) + RandomFloat(-0.5,0.5);
+		y = RandomFloat(-0.5,0.5) + RandomFloat(-0.5,0.5);
 		z = x*x+y*y;
 	} while (z > 1);
 	Vector vecDir = vecForward +
@@ -2550,8 +2550,8 @@ void CFuncTankPulseLaser::Fire( int bulletCount, const Vector &barrelEnd, const 
 		// get circular gaussian spread
 		float x, y, z;
 		do {
-			x = random->RandomFloat(-0.5,0.5) + random->RandomFloat(-0.5,0.5);
-			y = random->RandomFloat(-0.5,0.5) + random->RandomFloat(-0.5,0.5);
+			x = RandomFloat(-0.5,0.5) + RandomFloat(-0.5,0.5);
+			y = RandomFloat(-0.5,0.5) + RandomFloat(-0.5,0.5);
 			z = x*x+y*y;
 		} while (z > 1);
 
@@ -3098,14 +3098,14 @@ void CFuncTankAPCRocket::FireDying( const Vector &barrelEnd )
 	VectorNormalize( vecDir );
 
 	Vector vecVelocity;
-	VectorMultiply( vecDir, m_flRocketSpeed * random->RandomFloat( 0.75f, 1.25f ), vecVelocity );
+	VectorMultiply( vecDir, m_flRocketSpeed * RandomFloat( 0.75f, 1.25f ), vecVelocity );
 
 	QAngle angles;
 	VectorAngles( vecDir, angles );
 
 	CAPCMissile *pRocket = (CAPCMissile *) CAPCMissile::Create( barrelEnd, angles, vecVelocity, this );
-	float flDeathTime = random->RandomFloat( 0.3f, 0.5f );
-	if ( random->RandomFloat( 0.0f, 1.0f ) < 0.3f )
+	float flDeathTime = RandomFloat( 0.3f, 0.5f );
+	if ( RandomFloat( 0.0f, 1.0f ) < 0.3f )
 	{
 		pRocket->ExplodeDelay( flDeathTime );
 	}
@@ -3115,7 +3115,7 @@ void CFuncTankAPCRocket::FireDying( const Vector &barrelEnd )
 	}
 
 	// Make erratic firing
-	m_fireRate = random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_RATE, DEATH_VOLLEY_MAX_FIRE_RATE ); 
+	m_fireRate = RandomFloat( DEATH_VOLLEY_MIN_FIRE_RATE, DEATH_VOLLEY_MAX_FIRE_RATE );
 	if ( --m_nBulletCount <= 0 )
 	{
 		UTIL_Remove( this );
@@ -3154,7 +3154,7 @@ void CFuncTankAPCRocket::Fire( int bulletCount, const Vector &barrelEnd, const V
 		m_nBulletCount = m_nBurstCount;
 
 		// This will cause it to wait for a little while before shooting
-		m_fireLast += random->RandomFloat( 2.0f, 3.0f );
+		m_fireLast += RandomFloat( 2.0f, 3.0f );
 	}
 	EmitSound( "PropAPC.FireCannon" );
 }
@@ -3185,7 +3185,7 @@ void CFuncTankAPCRocket::InputDeathVolley( inputdata_t &inputdata )
 {
 	if ( !m_bDying )
 	{
-		m_fireRate = random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_RATE, DEATH_VOLLEY_MAX_FIRE_RATE );
+		m_fireRate = RandomFloat( DEATH_VOLLEY_MIN_FIRE_RATE, DEATH_VOLLEY_MAX_FIRE_RATE );
 		SetNextAttack( gpGlobals->curtime + (1.0f / m_fireRate ) );
 		m_nBulletCount = DEATH_VOLLEY_MISSILE_COUNT;
 		m_bDying = true;
@@ -3816,7 +3816,7 @@ void CFuncTankMortar::Precache( void )
 void CFuncTankMortar::SetNextAttack( float flWait )
 {
 	if ( m_flFireVariance > 0.09 )
-		flWait += random->RandomFloat( -m_flFireVariance, m_flFireVariance );
+		flWait += RandomFloat( -m_flFireVariance, m_flFireVariance );
 	BaseClass::SetNextAttack( flWait );
 }
 
@@ -4229,15 +4229,15 @@ void CFuncTankCombineCannon::FuncTankPostThink()
 
 				if( bHarass )
 				{
-					vecTest.x += random->RandomFloat( -48, 48 );
-					vecTest.y += random->RandomFloat( -48, 48 );
-					vecTest.z += random->RandomFloat( 16, 48 );
+					vecTest.x += RandomFloat( -48, 48 );
+					vecTest.y += RandomFloat( -48, 48 );
+					vecTest.z += RandomFloat( 16, 48 );
 				}
 				else
 				{
-					vecTest.x += random->RandomFloat( -48, 48 );
-					vecTest.y += random->RandomFloat( -48, 48 );
-					vecTest.z += random->RandomFloat( -48, 48 );
+					vecTest.x += RandomFloat( -48, 48 );
+					vecTest.y += RandomFloat( -48, 48 );
+					vecTest.z += RandomFloat( -48, 48 );
 				}
 
 				// Get the barrel position
@@ -4272,11 +4272,11 @@ void CFuncTankCombineCannon::FuncTankPostThink()
 
 			if( bHarass )
 			{
-				m_flTimeNextSweep = gpGlobals->curtime + random->RandomFloat( 0.25f, 0.75f );
+				m_flTimeNextSweep = gpGlobals->curtime + RandomFloat( 0.25f, 0.75f );
 			}
 			else
 			{
-				m_flTimeNextSweep = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+				m_flTimeNextSweep = gpGlobals->curtime + RandomFloat( 1, 3 );
 			}
 		}
 	}
@@ -4339,7 +4339,7 @@ void CFuncTankCombineCannon::Fire( int bulletCount, const Vector &barrelEnd, con
 	DestroyBeam();
 	m_flTimeBeamOn = gpGlobals->curtime + 0.2f;
 
-	m_flTimeNextSweep = gpGlobals->curtime + random->RandomInt( 1.0f, 2.0f );
+	m_flTimeNextSweep = gpGlobals->curtime + RandomInt( 1.0f, 2.0f );
 }
 
 //---------------------------------------------------------

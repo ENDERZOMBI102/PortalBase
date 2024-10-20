@@ -143,8 +143,8 @@ void C_PropCombineBall::DrawMotionBlur( void )
 //-----------------------------------------------------------------------------
 void C_PropCombineBall::DrawFlicker( void )
 {
-	float rand1 = random->RandomFloat( 0.2f, 0.3f );
-	float rand2 = random->RandomFloat( 1.5f, 2.5f );
+	float rand1 = RandomFloat( 0.2f, 0.3f );
+	float rand2 = RandomFloat( 1.5f, 2.5f );
 
 	if ( gpGlobals->frametime == 0.0f )
 	{
@@ -296,7 +296,7 @@ void CombineBallImpactCallback( const CEffectData &data )
 				1.0f,
 				0.0f,
 				0.4f,
-				random->RandomInt( 0, 360 ), 
+				RandomInt( 0, 360 ),
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				0.25f, 
@@ -312,7 +312,7 @@ void CombineBallImpactCallback( const CEffectData &data )
 				1.0f,
 				0.0f,
 				0.4f,
-				random->RandomInt( 0, 360 ), 
+				RandomInt( 0, 360 ),
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				0.5f, 

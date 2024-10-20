@@ -344,7 +344,7 @@ bool CParticleCollision::MoveParticle( Vector &origin, Vector &velocity, float *
 					velocity += pTrace->plane.normal * (-proj*2.0f);
 					
 					//Apply dampening
-					velocity *= random->RandomFloat( (m_flCollisionDampen-0.1f), (m_flCollisionDampen+0.1f) );
+					velocity *= RandomFloat( (m_flCollisionDampen-0.1f), (m_flCollisionDampen+0.1f) );
 
 					//Dampen the roll of the particles
 					if ( rollDelta != NULL )

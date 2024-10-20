@@ -205,7 +205,7 @@ void CNPC_Stalker::PrescheduleThink()
 	if (gpGlobals->curtime > m_flNextBreatheSoundTime)
 	{
 		EmitSound( "NPC_Stalker.Ambient01" );
-		m_flNextBreatheSoundTime = gpGlobals->curtime + 3.0 + random->RandomFloat( 0.0, 5.0 );
+		m_flNextBreatheSoundTime = gpGlobals->curtime + 3.0 + RandomFloat( 0.0, 5.0 );
 	}
 }
 
@@ -286,7 +286,7 @@ void CNPC_Stalker::Spawn( void )
 	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1);
 
 	m_flNextAttackSoundTime		= 0;
-	m_flNextBreatheSoundTime	= gpGlobals->curtime + random->RandomFloat( 0.0, 10.0 );
+	m_flNextBreatheSoundTime	= gpGlobals->curtime + RandomFloat( 0.0, 10.0 );
 	m_flNextScrambleSoundTime	= 0;
 	m_nextSmokeTime = 0;
 	m_bPlayingHitWall			= false;
@@ -499,7 +499,7 @@ void CNPC_Stalker::StartTask( const Task_t *pTask )
 		if( gpGlobals->curtime > m_flNextScreamTime )
 		{
 			EmitSound( "NPC_Stalker.Scream" );
-			m_flNextScreamTime = gpGlobals->curtime + random->RandomFloat( 10.0, 15.0 );
+			m_flNextScreamTime = gpGlobals->curtime + RandomFloat( 10.0, 15.0 );
 		}
 
 		TaskComplete();
@@ -541,13 +541,13 @@ void CNPC_Stalker::StartTask( const Task_t *pTask )
 				
 				if( pEnemy->Classify() == CLASS_BULLSEYE && hl2_episodic.GetBool() )
 				{
-					missPos.x += 60 + 120*random->RandomInt(-1,1);
-					missPos.y += 60 + 120*random->RandomInt(-1,1);
+					missPos.x += 60 + 120*RandomInt(-1,1);
+					missPos.y += 60 + 120*RandomInt(-1,1);
 				}
 				else
 				{
-					missPos.x += 80*random->RandomInt(-1,1);
-					missPos.y += 80*random->RandomInt(-1,1);
+					missPos.x += 80*RandomInt(-1,1);
+					missPos.y += 80*RandomInt(-1,1);
 				}
 
 				// ----------------------------------------------------------------------
@@ -977,7 +977,7 @@ void CNPC_Stalker::DoSmokeEffect( const Vector &position )
 	if ( gpGlobals->curtime > m_nextSmokeTime )
 	{
 		m_nextSmokeTime = gpGlobals->curtime + 0.5;
-		UTIL_Smoke(position, random->RandomInt(5, 10), 10);
+		UTIL_Smoke(position, RandomInt(5, 10), 10);
 	}
 }
 
@@ -1267,7 +1267,7 @@ void CNPC_Stalker::HandleAnimEvent( animevent_t *pEvent )
 			{
 				if ( pHurt->GetFlags() & (FL_NPC|FL_CLIENT) )
 				{
-					pHurt->ViewPunch( QAngle( 5, 0, random->RandomInt(-10,10)) );
+					pHurt->ViewPunch( QAngle( 5, 0, RandomInt(-10,10)) );
 				}
 				
 				// Spawn some extra blood if we hit a BCC
@@ -1358,7 +1358,7 @@ void CNPC_Stalker::AddZigZagToPath(void)
 	if (waypointDir.LengthSqr() > ZIG_ZAG_SIZE)
 	{
 		// Pick a random distance for the zigzag (less that sqrt(ZIG_ZAG_SIZE)
-		float distance = random->RandomFloat( 30, 60 );
+		float distance = RandomFloat( 30, 60 );
 
 		// Get me a vector orthogonal to the direction of motion
 		VectorNormalize( waypointDir );
@@ -1367,7 +1367,7 @@ void CNPC_Stalker::AddZigZagToPath(void)
 		CrossProduct( waypointDir, vDirUp, vDir);
 
 		// Pick a random direction (left/right) for the zigzag
-		if (random->RandomInt(0,1))
+		if (RandomInt(0,1))
 		{
 			vDir = -1 * vDir;
 		}

@@ -355,7 +355,7 @@ void CNPC_Antlion::Spawn( void )
 
 	BaseClass::Spawn();
 
-	m_nSkin = random->RandomInt( 0, ANTLION_SKIN_COUNT-1 );
+	m_nSkin = RandomInt( 0, ANTLION_SKIN_COUNT-1 );
 }
 
 //-----------------------------------------------------------------------------
@@ -713,8 +713,8 @@ bool CNPC_Antlion::FindChasePosition( const Vector &targetPos, Vector &result )
 	for ( int i = 0; i < NUM_CHASE_POSITION_ATTEMPTS; i++ )
 	{
 		result	= targetPos;
-		result += -runDir * random->RandomInt( 64, 128 );
-		result += vRight * random->RandomInt( -128, 128 );
+		result += -runDir * RandomInt( 64, 128 );
+		result += vRight * RandomInt( -128, 128 );
 		
 		//FIXME: We need to do a more robust search here
 		// Find a ground position and try to get there
@@ -860,12 +860,12 @@ bool CNPC_Antlion::GetPathToSoundFleePoint( int soundType )
 	}
 
 	//Make us offset this a little at least
-	float flFleeYaw = VecToYaw( vecFleeDir ) + random->RandomInt( -20, 20 );
+	float flFleeYaw = VecToYaw( vecFleeDir ) + RandomInt( -20, 20 );
 
 	vecFleeDir = UTIL_YawToVector( flFleeYaw );
 
 	// Move us to the outer radius of the noise (with some randomness)
-	vecFleeGoal = vecSoundPos + vecFleeDir * ( pSound->Volume() + random->RandomInt( 32, 64 ) );
+	vecFleeGoal = vecSoundPos + vecFleeDir * ( pSound->Volume() + RandomInt( 32, 64 ) );
 
 	// Find a route to that position
 	AI_NavGoal_t goal( vecFleeGoal + Vector( 0, 0, 8 ), (Activity) ACT_ANTLION_RUN_AGITATED, 512, AIN_DEF_FLAGS );
@@ -1037,7 +1037,7 @@ void CNPC_Antlion::DelaySquadAttack( float flDuration )
 	if ( GetSquad() )
 	{
 		// Reduce the duration by as much as 50% of the total time to make this less robotic
-		float flAdjDuration = flDuration - random->RandomFloat( 0.0f, (flDuration*0.5f) );
+		float flAdjDuration = flDuration - RandomFloat( 0.0f, (flDuration*0.5f) );
 		GetSquad()->BroadcastInteraction( g_interactionAntlionFiredAtTarget, (void *)&flAdjDuration, this );
 	}
 }
@@ -1071,7 +1071,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 					vTarget = GetEnemy()->BodyTarget( vSpitPos, true );
 				}
 				
-				vTarget[2] += random->RandomFloat( 0.0f, 32.0f );
+				vTarget[2] += RandomFloat( 0.0f, 32.0f );
 				
 				// Try and spit at our target
 				Vector	vecToss;				
@@ -1096,7 +1096,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 				CSoundEnt::InsertSound( SOUND_DANGER, vTarget, (15*12), flTime, this );
 
 				// Don't fire again until this volley would have hit the ground (with some lag behind it)
-				SetNextAttack( gpGlobals->curtime + flTime + random->RandomFloat( 0.5f, 2.0f ) );
+				SetNextAttack( gpGlobals->curtime + flTime + RandomFloat( 0.5f, 2.0f ) );
 
 				// Tell any squadmates not to fire for some portion of the time this volley will be in the air (except on hard)
 				if ( g_pGameRules->IsSkillLevel( SKILL_HARD ) == false )
@@ -1119,14 +1119,14 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 					else
 					{
 						pGrenade->SetAbsVelocity( ( vecToss + RandomVector( -0.035f, 0.035f ) ) * flVelocity );
-						pGrenade->SetSpitSize( random->RandomInt( SPIT_SMALL, SPIT_MEDIUM ) );
+						pGrenade->SetSpitSize( RandomInt( SPIT_SMALL, SPIT_MEDIUM ) );
 					}
 
 					// Tumble through the air
 					pGrenade->SetLocalAngularVelocity(
-						QAngle( random->RandomFloat( -250, -500 ),
-								random->RandomFloat( -250, -500 ),
-								random->RandomFloat( -250, -500 ) ) );
+						QAngle( RandomFloat( -250, -500 ),
+								RandomFloat( -250, -500 ),
+								RandomFloat( -250, -500 ) ) );
 				}
 
 				for ( int i = 0; i < 8; i++ )
@@ -1458,7 +1458,7 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 		// Set the gravity really low here! Sink slowly
 		SetGravity( 0 );
 		SetAbsVelocity( vec3_origin );
-		m_flTimeDrownSplash = gpGlobals->curtime + random->RandomFloat( 0, 0.5 );
+		m_flTimeDrownSplash = gpGlobals->curtime + RandomFloat( 0, 0.5 );
 		m_flTimeDrown = gpGlobals->curtime + 4;
 		break;
 	}
@@ -1608,7 +1608,7 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 		if ( pTask->flTaskData == 1.0f )
 		{
 			//Set our next burrow time
-			m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 1, 6 );
+			m_flBurrowTime = gpGlobals->curtime + RandomFloat( 1, 6 );
 		}
 
 		break;
@@ -1758,11 +1758,11 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 			data.m_vOrigin = GetAbsOrigin();
 			data.m_vOrigin.z = flWaterZ;
 			data.m_vNormal = Vector( 0, 0, 1 );
-			data.m_flScale = random->RandomFloat( 12.0, 16.0 );
+			data.m_flScale = RandomFloat( 12.0, 16.0 );
 
 			DispatchEffect( "watersplash", data );
 			
-			m_flTimeDrownSplash = gpGlobals->curtime + random->RandomFloat( 0.5, 2.5 );
+			m_flTimeDrownSplash = gpGlobals->curtime + RandomFloat( 0.5, 2.5 );
 		}
 	
 		if ( gpGlobals->curtime > m_flTimeDrown )
@@ -1796,7 +1796,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 				UTIL_SetOrigin( this, GetAbsOrigin() + Vector( 0, 0 , 1 ) );
 				
 				Vector vecRandom = RandomVector( -250.0f, 250.0f );
-				vecRandom[2] = random->RandomFloat( 100.0f, 200.0f );
+				vecRandom[2] = RandomFloat( 100.0f, 200.0f );
 				SetAbsVelocity( vecRandom );
 
 				// Doing ACT_RESET first assures they play the animation, even when in transition
@@ -1865,7 +1865,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 		}
 
 		//Try again in a couple of seconds
-		m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+		m_flBurrowTime = gpGlobals->curtime + RandomFloat( 0.5f, 1.0f );
 		m_iUnBurrowAttempts++;
 
 		// Robin: If we fail 10 times, kill ourself.
@@ -2027,8 +2027,8 @@ int CNPC_Antlion::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 			
 			while( vecJumpDir.x == 0 && vecJumpDir.y == 0 )
 			{
-				vecJumpDir.x = random->RandomInt( -1, 1 ); 
-				vecJumpDir.y = random->RandomInt( -1, 1 );
+				vecJumpDir.x = RandomInt( -1, 1 );
+				vecJumpDir.y = RandomInt( -1, 1 );
 			}
 
 			vecJumpDir.NormalizeInPlace();
@@ -2093,7 +2093,7 @@ bool CNPC_Antlion::ShouldJump( void )
 	//FIXME: Check your own distance from last attempt as well
 	if ( ( ( m_vecLastJumpAttempt - vecPredictedPos ).LengthSqr() ) < (128*128) )
 	{
-		m_flJumpTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );		
+		m_flJumpTime = gpGlobals->curtime + RandomFloat( 1.0f, 2.0f );
 		return false;
 	}
 
@@ -2123,7 +2123,7 @@ bool CNPC_Antlion::ShouldJump( void )
 			NDebugOverlay::Line( GetAbsOrigin(), targetPos, 255, 0, 0, 0, 5 );
 		}
 
-		m_flJumpTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );
+		m_flJumpTime = gpGlobals->curtime + RandomFloat( 1.0f, 2.0f );
 		return false;
 	}
 
@@ -2244,13 +2244,13 @@ void CNPC_Antlion::ZapThink( void )
 	CEffectData	data;
 	data.m_nEntIndex = entindex();
 	data.m_flMagnitude = 4;
-	data.m_flScale = random->RandomFloat( 0.25f, 1.0f );
+	data.m_flScale = RandomFloat( 0.25f, 1.0f );
 
 	DispatchEffect( "TeslaHitboxes", data );
 	
 	if ( m_flZapDuration > gpGlobals->curtime )
 	{
-		SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->curtime + random->RandomFloat( 0.05f, 0.25f ), "ZapThink" );
+		SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->curtime + RandomFloat( 0.05f, 0.25f ), "ZapThink" );
 	}
 	else
 	{
@@ -2380,7 +2380,7 @@ int CNPC_Antlion::SelectSchedule( void )
 					AddEntityRelationship( pNPC, D_HT, 99 );
 					
 					//Try to spread out the enemy distribution
-					if ( ( pNewEnemy == NULL ) || ( random->RandomInt( 0, 1 ) ) )
+					if ( ( pNewEnemy == NULL ) || ( RandomInt( 0, 1 ) ) )
 					{
 						pNewEnemy = pNPC;
 						continue;
@@ -2433,7 +2433,7 @@ int CNPC_Antlion::SelectSchedule( void )
 				// A squadmate died, so run away!
 				if ( HasCondition( COND_ANTLION_SQUADMATE_KILLED ) )
 				{
-					SetNextAttack( gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f ) );
+					SetNextAttack( gpGlobals->curtime + RandomFloat( 2.0f, 4.0f ) );
 					ClearCondition( COND_ANTLION_SQUADMATE_KILLED );
 					return SCHED_ANTLION_TAKE_COVER_FROM_ENEMY;
 				}
@@ -2441,7 +2441,7 @@ int CNPC_Antlion::SelectSchedule( void )
 				// Flee on heavy damage
 				if ( HasCondition( COND_HEAVY_DAMAGE ) )
 				{
-					SetNextAttack( gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f ) );
+					SetNextAttack( gpGlobals->curtime + RandomFloat( 2.0f, 4.0f ) );
 					return SCHED_ANTLION_TAKE_COVER_FROM_ENEMY;
 				}
 
@@ -2451,7 +2451,7 @@ int CNPC_Antlion::SelectSchedule( void )
 					if ( OccupyStrategySlot( SQUAD_SLOT_ANTLION_WORKER_FIRE ) )
 					{
 						EmitSound( "NPC_Antlion.PoisonBurstScream" );
-						SetNextAttack( gpGlobals->curtime + random->RandomFloat( 0.5f, 2.5f ) );
+						SetNextAttack( gpGlobals->curtime + RandomFloat( 0.5f, 2.5f ) );
 						if ( GetEnemy() )
 						{
 							m_vSavePosition = GetEnemy()->BodyTarget( GetAbsOrigin() );
@@ -2665,7 +2665,7 @@ void CNPC_Antlion::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 		if ( newInfo.GetDamageType() & (DMG_CRUSH|DMG_PHYSGUN) )
 		{
 			PainSound( newInfo );
-			Vector vecForce = ( vecShoveDir * random->RandomInt( 500.0f, 1000.0f ) ) + Vector(0,0,64.0f);
+			Vector vecForce = ( vecShoveDir * RandomInt( 500.0f, 1000.0f ) ) + Vector(0,0,64.0f);
 			CascadePush( vecForce );
 			ApplyAbsVelocityImpulse( vecForce );
 			SetGroundEntity( NULL );
@@ -2692,7 +2692,7 @@ void CNPC_Antlion::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 					SetCondition( COND_ANTLION_FLIPPED );
 				}
 
-				Vector vecForce = ( vecShoveDir * random->RandomInt( 500.0f, 1000.0f ) ) + Vector(0,0,64.0f);
+				Vector vecForce = ( vecShoveDir * RandomInt( 500.0f, 1000.0f ) ) + Vector(0,0,64.0f);
 
 				CascadePush( vecForce );
 				ApplyAbsVelocityImpulse( vecForce );
@@ -2708,7 +2708,7 @@ void CNPC_Antlion::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 					SetCondition( COND_ANTLION_FLIPPED );
 
 					//Get tossed!
-					ApplyAbsVelocityImpulse( ( vecShoveDir * random->RandomInt( 500.0f, 1000.0f ) ) + Vector(0,0,64.0f) );
+					ApplyAbsVelocityImpulse( ( vecShoveDir * RandomInt( 500.0f, 1000.0f ) ) + Vector(0,0,64.0f) );
 					SetGroundEntity( NULL );
 				}
 			}
@@ -2802,7 +2802,7 @@ bool CNPC_Antlion::ShouldPlayIdleSound( void )
 		return false;
 
 	//Randomize it a bit
-	if ( random->RandomInt( 0, 20 ) )
+	if ( RandomInt( 0, 20 ) )
 		return false;
 
 	return true;
@@ -2985,7 +2985,7 @@ bool CNPC_Antlion::HandleInteraction( int interactionType, void *data, CBaseComb
 		CBaseEntity	*pOther = (CBaseEntity *) data;
 		
 		//Randomly delay
-		m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+		m_flBurrowTime = gpGlobals->curtime + RandomFloat( 0.5f, 1.0f );
 		BurrowUse( pOther, pOther, USE_ON, 0.0f );
 
 		return true;
@@ -3053,7 +3053,7 @@ void CNPC_Antlion::StartJump( void )
 #endif
 
 	//Setup our jump time so that we don't try it again too soon
-	m_flJumpTime = gpGlobals->curtime + random->RandomInt( 2, 6 );
+	m_flJumpTime = gpGlobals->curtime + RandomInt( 2, 6 );
 }
 
 //-----------------------------------------------------------------------------
@@ -3796,7 +3796,7 @@ void CNPC_Antlion::PrescheduleThink( void )
 //-----------------------------------------------------------------------------
 bool CNPC_Antlion::IsLightDamage( const CTakeDamageInfo &info )
 {
-	if ( ( random->RandomInt( 0, 1 ) ) && ( info.GetDamage() > 3 ) )
+	if ( ( RandomInt( 0, 1 ) ) && ( info.GetDamage() > 3 ) )
 		return true;
 
 	return false;
@@ -3828,7 +3828,7 @@ bool CNPC_Antlion::ShouldResumeFollow( void )
 
 	if ( GetEnemy() != NULL )
 	{
-		m_flSuppressFollowTime = gpGlobals->curtime + random->RandomInt( 5, 10 );
+		m_flSuppressFollowTime = gpGlobals->curtime + RandomInt( 5, 10 );
 		return false;
 	}
 
@@ -4057,7 +4057,7 @@ void CNPC_Antlion::Touch( CBaseEntity *pOther )
 					{
 						float flDamage = m_iHealth;
 
-						if ( random->RandomInt( 0, 10 ) > 4 )
+						if ( RandomInt( 0, 10 ) > 4 )
 							 flDamage += 25;
 									
 						CTakeDamageInfo	dmgInfo( pVehicleEnt, pPlayer, flDamage, DMG_VEHICLE );
@@ -4273,7 +4273,7 @@ void CNPC_Antlion::SetMoveState( AntlionMoveState_e state )
 		m_FollowBehavior.SetFollowTarget( NULL );
 
 		// Keep the time we started this
-		m_flSuppressFollowTime = gpGlobals->curtime + random->RandomInt( 10, 15 );
+		m_flSuppressFollowTime = gpGlobals->curtime + RandomInt( 10, 15 );
 		break;
 
 	default:

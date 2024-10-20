@@ -258,7 +258,7 @@ void CTriggerWeaponDissolve::DissolveThink( void )
 		}
 
 		// Randomly dissolve them all
-		float flLifetime = random->RandomFloat( 2.5f, 4.0f );
+		float flLifetime = RandomFloat( 2.5f, 4.0f );
 		CreateBeam( vecConduit, pWeapon, flLifetime );
 		pWeapon->Dissolve( NULL, gpGlobals->curtime + ( 3.0f - flLifetime ), false );
 
@@ -271,7 +271,7 @@ void CTriggerWeaponDissolve::DissolveThink( void )
 		EmitSound( "WeaponDissolve.Beam" );
 
 		m_pWeapons.Remove( i );
-		SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->curtime + random->RandomFloat( 0.5f, 1.5f ), s_pDissolveThinkContext );
+		SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->curtime + RandomFloat( 0.5f, 1.5f ), s_pDissolveThinkContext );
 		return;
 	}
 
@@ -519,11 +519,11 @@ void CWateryDeathLeech::Spawn( void )
 	SetThink( &CWateryDeathLeech::LeechThink );
 	SetNextThink( gpGlobals->curtime + 0.1 );
 
-	m_flPlaybackRate = random->RandomFloat( 0.5, 1.5 );
-	SetCycle( random->RandomFloat( 0.0f, 0.9f ) );
+	m_flPlaybackRate = RandomFloat( 0.5, 1.5 );
+	SetCycle( RandomFloat( 0.0f, 0.9f ) );
 
 	QAngle vAngle;
-	vAngle[YAW] = random->RandomFloat( 0, 360 );
+	vAngle[YAW] = RandomFloat( 0, 360 );
 	SetAbsAngles( vAngle );
 
 	m_iFadeState = 1;

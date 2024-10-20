@@ -547,7 +547,7 @@ bool CNPC_Combine::ShouldMoveAndShoot()
 	m_flStopMoveShootTime = FLT_MAX;
 
 	if( IsCurSchedule( SCHED_COMBINE_HIDE_AND_RELOAD, false ) )
-		m_flStopMoveShootTime = gpGlobals->curtime + random->RandomFloat( 0.4f, 0.6f );
+		m_flStopMoveShootTime = gpGlobals->curtime + RandomFloat( 0.4f, 0.6f );
 
 	if( IsCurSchedule( SCHED_TAKE_COVER_FROM_BEST_SOUND, false ) )
 		return false;
@@ -559,10 +559,10 @@ bool CNPC_Combine::ShouldMoveAndShoot()
 		return false;
 
 	if( HasCondition( COND_NO_PRIMARY_AMMO, false ) )
-		m_flStopMoveShootTime = gpGlobals->curtime + random->RandomFloat( 0.4f, 0.6f );
+		m_flStopMoveShootTime = gpGlobals->curtime + RandomFloat( 0.4f, 0.6f );
 
 	if( m_pSquad && IsCurSchedule( SCHED_COMBINE_TAKE_COVER1, false ) )
-		m_flStopMoveShootTime = gpGlobals->curtime + random->RandomFloat( 0.4f, 0.6f );
+		m_flStopMoveShootTime = gpGlobals->curtime + RandomFloat( 0.4f, 0.6f );
 
 	return BaseClass::ShouldMoveAndShoot();
 }
@@ -1229,9 +1229,9 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 				if ( pObj )
 				{
 					Vector			vel;
-					vel.x = random->RandomFloat( -100.0f, 100.0f );
-					vel.y = random->RandomFloat( -100.0f, 100.0f );
-					vel.z = random->RandomFloat( 800.0f, 1200.0f );
+					vel.x = RandomFloat( -100.0f, 100.0f );
+					vel.y = RandomFloat( -100.0f, 100.0f );
+					vel.z = RandomFloat( 800.0f, 1200.0f );
 					AngularImpulse	angImp	= RandomAngularImpulse( -300.0f, 300.0f );
 
 					vel[2] = 0.0f;
@@ -1376,7 +1376,7 @@ bool CNPC_Combine::QueryHearSound( CSound *pSound )
 //-----------------------------------------------------------------------------
 void CNPC_Combine::AnnounceAssault(void)
 {
-	if (random->RandomInt(0,5) > 1)
+	if (RandomInt(0,5) > 1)
 		return;
 
 	// If enemy can see me make assualt sound
@@ -1553,7 +1553,7 @@ int CNPC_Combine::SelectCombatSchedule()
 
 				if( !bFirstContact && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
 				{
-					if( random->RandomInt(0, 100) < 60 )
+					if( RandomInt(0, 100) < 60 )
 					{
 						return SCHED_ESTABLISH_LINE_OF_FIRE;
 					}
@@ -1591,7 +1591,7 @@ int CNPC_Combine::SelectCombatSchedule()
 			// A crouching guy tries to stay stuck in.
 			if( !IsCrouching() )
 			{
-				if( GetEnemy() && random->RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
+				if( GetEnemy() && RandomFloat( 0, 100 ) < 50 && CouldShootIfCrouching( GetEnemy() ) )
 				{
 					Crouch();
 				}
@@ -2072,7 +2072,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			else
 			{
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
-				if ( random->RandomInt(0,1) && HasCondition(COND_CAN_RANGE_ATTACK2) )
+				if ( RandomInt(0,1) && HasCondition(COND_CAN_RANGE_ATTACK2) )
 				{
 					return SCHED_COMBINE_GRENADE_COVER1;
 				}
@@ -2178,7 +2178,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 			// stand up, just in case
 			// Stand();
 			// DesireStand();
-			if( CanGrenadeEnemy() && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) && random->RandomInt( 0, 100 ) < 20 )
+			if( CanGrenadeEnemy() && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) && RandomInt( 0, 100 ) < 20 )
 			{
 				// If I COULD throw a grenade and I need to reload, 20% chance I'll throw a grenade before I hide to reload.
 				return SCHED_COMBINE_GRENADE_AND_RELOAD;
@@ -2380,9 +2380,9 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		case COMBINE_AE_GREN_TOSS:
 			{
 				Vector vecSpin;
-				vecSpin.x = random->RandomFloat( -1000.0, 1000.0 );
-				vecSpin.y = random->RandomFloat( -1000.0, 1000.0 );
-				vecSpin.z = random->RandomFloat( -1000.0, 1000.0 );
+				vecSpin.x = RandomFloat( -1000.0, 1000.0 );
+				vecSpin.y = RandomFloat( -1000.0, 1000.0 );
+				vecSpin.z = RandomFloat( -1000.0, 1000.0 );
 
 				Vector vecStart;
 				GetAttachment( "lefthand", vecStart );
@@ -2419,7 +2419,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				pGrenade->Spawn( );
 
 				if ( g_pGameRules->IsSkillLevel(SKILL_HARD) )
-					m_flNextGrenadeCheck = gpGlobals->curtime + random->RandomFloat( 2, 5 );// wait a random amount of time before shooting again
+					m_flNextGrenadeCheck = gpGlobals->curtime + RandomFloat( 2, 5 );// wait a random amount of time before shooting again
 				else
 					m_flNextGrenadeCheck = gpGlobals->curtime + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			}
@@ -2614,7 +2614,7 @@ void CNPC_Combine::LostEnemySound( void)
 
 	if ( m_Sentences.Speak( pSentence ) >= 0 )
 	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		m_flNextLostSoundTime = gpGlobals->curtime + RandomFloat(5.0,15.0);
 	}
 }
 
@@ -2682,12 +2682,12 @@ void CNPC_Combine::DeathSound ( void )
 //=========================================================
 void CNPC_Combine::IdleSound( void )
 {
-	if (g_fCombineQuestion || random->RandomInt(0,1))
+	if (g_fCombineQuestion || RandomInt(0,1))
 	{
 		if (!g_fCombineQuestion)
 		{
 			// ask question or make statement
-			switch (random->RandomInt(0,2))
+			switch (RandomInt(0,2))
 			{
 			case 0: // check in
 				if ( m_Sentences.Speak( "COMBINE_CHECK" ) >= 0 )

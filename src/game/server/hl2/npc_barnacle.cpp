@@ -292,7 +292,7 @@ void CNPC_Barnacle::Spawn()
 
 	// Add some variation because we're often in large bunches
 	SetActivity( ACT_IDLE );
-	SetPlaybackRate( random->RandomFloat( 0.8f, 1.2f ) );
+	SetPlaybackRate( RandomFloat( 0.8f, 1.2f ) );
 
 	SetThink ( &CNPC_Barnacle::BarnacleThink );
 	SetNextThink( gpGlobals->curtime + 0.5f );
@@ -476,7 +476,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 				}
 
 				// bite prey every once in a while
-				if ( random->RandomInt(0,25) == 0 )
+				if ( RandomInt(0,25) == 0 )
 				{
 					EmitSound( "NPC_Barnacle.Digest" );
 				}
@@ -521,7 +521,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 				}
 
 				// bite prey every once in a while
-				if ( random->RandomInt(0,25) == 0 )
+				if ( RandomInt(0,25) == 0 )
 				{
 					EmitSound( "NPC_Barnacle.Digest" );
 				}
@@ -566,7 +566,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 		CollisionProp()->WorldSpaceSurroundingBounds( &vecSurroundMins, &vecSurroundMaxs );
 		if ( !UTIL_FindClientInPVS( vecSurroundMins, vecSurroundMaxs ) )
 		{
-			SetNextThink( gpGlobals->curtime + random->RandomFloat(1,1.5) );	// Stagger a bit to keep barnacles from thinking on the same frame
+			SetNextThink( gpGlobals->curtime + RandomFloat(1,1.5) );	// Stagger a bit to keep barnacles from thinking on the same frame
 		}
 
 		if ( IsActivityFinished() && GetActivity() != ACT_IDLE )
@@ -575,10 +575,10 @@ void CNPC_Barnacle::BarnacleThink ( void )
 
 			// Add some variation because we're often in large bunches
 			SetActivity( ACT_IDLE );
-			SetPlaybackRate( random->RandomFloat( 0.8f, 1.2f ) );
+			SetPlaybackRate( RandomFloat( 0.8f, 1.2f ) );
 		}
 
-		if ( m_cGibs && random->RandomInt(0,99) == 1 )
+		if ( m_cGibs && RandomInt(0,99) == 1 )
 		{
 			// cough up a gib.
 			CGib::SpawnSpecificGibs( this, 1, 50, 1, "models/gibs/hgibs_rib.mdl");
@@ -1782,7 +1782,7 @@ void CNPC_Barnacle::SwallowPrey( void )
 	//NDebugOverlay::Box( vecSwallowPos, -Vector(5,5,5), Vector(5,5,5), 255,255,255, 0, 0.1 );
 
 	// bite prey every once in a while
-	if ( random->RandomInt(0,25) == 0 )
+	if ( RandomInt(0,25) == 0 )
 	{
 		EmitSound( "NPC_Barnacle.Digest" );
 	}
@@ -1981,7 +1981,7 @@ void CNPC_Barnacle::SpawnDeathGibs( void )
 	// Drop a random number of gibs
 	for ( int i=0; i < ARRAYSIZE(m_szGibNames); i++ )
 	{
-		if ( random->RandomInt( 0, 1 ) )
+		if ( RandomInt( 0, 1 ) )
 		{
 			CGib::SpawnSpecificGibs( this, 1, 32, 1, m_szGibNames[i] );
 			bDroppedAny = true;
@@ -2042,7 +2042,7 @@ void CNPC_Barnacle::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	// Puke gibs unless we're told to be cheap
-	bool spawnGibs = ( !HasSpawnFlags( SF_BARNACLE_CHEAP_DEATH ) || random->RandomInt( 0, 1 ) );
+	bool spawnGibs = ( !HasSpawnFlags( SF_BARNACLE_CHEAP_DEATH ) || RandomInt( 0, 1 ) );
 
 	if ( spawnGibs )
 	{

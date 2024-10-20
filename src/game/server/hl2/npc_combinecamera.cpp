@@ -372,7 +372,7 @@ void CNPC_CombineCamera::Spawn()
 	AddEffects( EF_NOSHADOW );
 
 	// Stagger our starting times
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(0.1f, 0.3f) );
+	SetNextThink( gpGlobals->curtime + RandomFloat(0.1f, 0.3f) );
 
 	// Don't allow us to skip animation setup because our attachments are critical to us!
 	SetBoneCacheFlags( BCF_NO_ANIMATION_SKIP );

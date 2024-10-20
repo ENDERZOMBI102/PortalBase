@@ -335,7 +335,7 @@ void CNPC_Manhack::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 	if ( info.GetDamageType() & DMG_CLUB )
 	{
 		// Clubbed!
-//		UTIL_Smoke(GetAbsOrigin(), random->RandomInt(10, 15), 10);
+//		UTIL_Smoke(GetAbsOrigin(), RandomInt(10, 15), 10);
 		g_pEffects->Sparks( ptr->endpos, 1, 1, &ptr->plane.normal );
 	}
 
@@ -375,9 +375,9 @@ void CNPC_Manhack::Event_Killed( const CTakeDamageInfo &info )
 	for (int i = 0; i < 3; i++)
 	{
 		Vector sparkPos = GetAbsOrigin();
-		sparkPos.x += random->RandomFloat(-12,12);
-		sparkPos.y += random->RandomFloat(-12,12);
-		sparkPos.z += random->RandomFloat(-12,12);
+		sparkPos.x += RandomFloat(-12,12);
+		sparkPos.y += RandomFloat(-12,12);
+		sparkPos.z += RandomFloat(-12,12);
 		g_pEffects->Sparks( sparkPos, 2 );
 	}
 
@@ -393,7 +393,7 @@ void CNPC_Manhack::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	// Always gib when clubbed or blasted or crushed, or just randomly
-	if ( ( info.GetDamageType() & (DMG_CLUB|DMG_CRUSH|DMG_BLAST) ) || ( random->RandomInt( 0, 1 ) ) )
+	if ( ( info.GetDamageType() & (DMG_CLUB|DMG_CRUSH|DMG_BLAST) ) || ( RandomInt( 0, 1 ) ) )
 	{
 		m_bGib = true;
 	}
@@ -824,18 +824,18 @@ bool CNPC_Manhack::CorpseGib( const CTakeDamageInfo &info )
 		// If clubbed to death, break apart before the attacker's eyes!
 		vecGibVelocity = g_vecAttackDir * -150;
 
-		vecGibAVelocity.x = random->RandomFloat( -2000, 2000 );
-		vecGibAVelocity.y = random->RandomFloat( -2000, 2000 );
-		vecGibAVelocity.z = random->RandomFloat( -2000, 2000 );
+		vecGibAVelocity.x = RandomFloat( -2000, 2000 );
+		vecGibAVelocity.y = RandomFloat( -2000, 2000 );
+		vecGibAVelocity.z = RandomFloat( -2000, 2000 );
 	}
 	else
 	{
 		// Shower the pieces with my velocity.
 		vecGibVelocity = GetCurrentVelocity();
 
-		vecGibAVelocity.x = random->RandomFloat( -500, 500 );
-		vecGibAVelocity.y = random->RandomFloat( -500, 500 );
-		vecGibAVelocity.z = random->RandomFloat( -500, 500 );
+		vecGibAVelocity.x = RandomFloat( -500, 500 );
+		vecGibAVelocity.y = RandomFloat( -500, 500 );
+		vecGibAVelocity.z = RandomFloat( -500, 500 );
 	}
 
 	PropBreakableCreateAll( GetModelIndex(), NULL, GetAbsOrigin(), GetAbsAngles(), vecGibVelocity, vecGibAVelocity, 1.0, 60, COLLISION_GROUP_DEBRIS );
@@ -871,7 +871,7 @@ void CNPC_Manhack::OnStateChange( NPC_STATE OldState, NPC_STATE NewState )
 	if( m_vNoiseMod.z == MANHACK_NOISEMOD_HIDE && !(m_spawnflags & SF_NPC_WAIT_FOR_SCRIPT) && !(m_spawnflags & SF_MANHACK_PACKED_UP) )
 	{
 		// This manhack should get a normal noisemod now.
-		float flNoiseMod = random->RandomFloat( 1.7, 2.3 );
+		float flNoiseMod = RandomFloat( 1.7, 2.3 );
 		
 		// Just bob up and down.
 		SetNoiseMod( 0, 0, flNoiseMod );
@@ -1195,7 +1195,7 @@ bool CNPC_Manhack::OverrideMove( float flInterval )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::TurnHeadRandomly(float flInterval )
 {
-	float desYaw = random->RandomFloat(0,360);
+	float desYaw = RandomFloat(0,360);
 
 	float	iRate	 = 0.8;
 	// Make frame rate independent
@@ -1844,7 +1844,7 @@ void CNPC_Manhack::PlayFlySound(void)
 	// Play special engine every once in a while
 	if (gpGlobals->curtime > m_flNextEngineSoundTime && flEnemyDist < 48)
 	{
-		m_flNextEngineSoundTime	= gpGlobals->curtime + random->RandomFloat( 3.0, 10.0 );
+		m_flNextEngineSoundTime	= gpGlobals->curtime + RandomFloat( 3.0, 10.0 );
 
 		EmitSound( "NPC_Manhack.EngineNoise" );
 	}
@@ -1974,8 +1974,8 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 	{
 		/*
 		// If I'm stalled add random noise
-		angles.x += -20+(random->RandomInt(-10,10));
-		angles.z += -20+(random->RandomInt(0,40));
+		angles.x += -20+(RandomInt(-10,10));
+		angles.z += -20+(RandomInt(0,40));
 
 		TurnHeadRandomly(flInterval);
 		*/
@@ -2108,15 +2108,15 @@ void CNPC_Manhack::MoveExecute_Dead(float flInterval)
 	// Periodically emit smoke.
 	if (gpGlobals->curtime > m_fSmokeTime && GetWaterLevel() == 0)
 	{
-//		UTIL_Smoke(GetAbsOrigin(), random->RandomInt(10, 15), 10);
-		m_fSmokeTime = gpGlobals->curtime + random->RandomFloat( 0.1, 0.3);
+//		UTIL_Smoke(GetAbsOrigin(), RandomInt(10, 15), 10);
+		m_fSmokeTime = gpGlobals->curtime + RandomFloat( 0.1, 0.3);
 	}
 
 	// Periodically emit sparks.
 	if (gpGlobals->curtime > m_fSparkTime)
 	{
 		g_pEffects->Sparks( GetAbsOrigin() );
-		m_fSparkTime = gpGlobals->curtime + random->RandomFloat(0.1, 0.3);
+		m_fSparkTime = gpGlobals->curtime + RandomFloat(0.1, 0.3);
 	}
 
 	Vector newVelocity = GetCurrentVelocity();
@@ -2149,8 +2149,8 @@ void CNPC_Manhack::MoveExecute_Dead(float flInterval)
 	// ------------------------------------------
 	// If I'm dying, add random banking noise
 	// ------------------------------------------
-	angles.x += -20+(random->RandomInt(0,40));
-	angles.z += -20+(random->RandomInt(0,40));
+	angles.x += -20+(RandomInt(0,40));
+	angles.z += -20+(RandomInt(0,40));
 
 	CheckCollisions(flInterval);
 	PlayFlySound();
@@ -3083,10 +3083,10 @@ void CNPC_Manhack::UpdatePanels( void )
 {
 	if ( m_flEngineStallTime > gpGlobals->curtime )
 	{
-		SetPoseParameter( m_iPanel1, random->RandomFloat( 0.0f, 90.0f ) );
-		SetPoseParameter( m_iPanel2, random->RandomFloat( 0.0f, 90.0f ) );
-		SetPoseParameter( m_iPanel3, random->RandomFloat( 0.0f, 90.0f ) );
-		SetPoseParameter( m_iPanel4, random->RandomFloat( 0.0f, 90.0f ) );
+		SetPoseParameter( m_iPanel1, RandomFloat( 0.0f, 90.0f ) );
+		SetPoseParameter( m_iPanel2, RandomFloat( 0.0f, 90.0f ) );
+		SetPoseParameter( m_iPanel3, RandomFloat( 0.0f, 90.0f ) );
+		SetPoseParameter( m_iPanel4, RandomFloat( 0.0f, 90.0f ) );
 		return;
 	}
 

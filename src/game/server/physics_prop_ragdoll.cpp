@@ -599,7 +599,7 @@ void CRagdollProp::HandleFirstCollisionInteractions( int index, gamevcollisionev
 		trace_t tr;
 		UTIL_TraceLine( vecPos, vecPos + pEvent->preVelocity[0] * 1.5, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
-		switch( random->RandomInt( 1, 3 ) )
+		switch( RandomInt( 1, 3 ) )
 		{
 		case 1:
 			UTIL_DecalTrace( &tr, "PaintSplatBlue" );

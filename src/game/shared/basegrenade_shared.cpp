@@ -404,7 +404,7 @@ void CBaseGrenade::BounceTouch( CBaseEntity *pOther )
 		// add a bit of static friction
 //		SetAbsVelocity( GetAbsVelocity() * 0.8 );
 
-		// SetSequence( random->RandomInt( 1, 1 ) ); // FIXME: missing tumble animations
+		// SetSequence( RandomInt( 1, 1 ) ); // FIXME: missing tumble animations
 	}
 	else
 	{

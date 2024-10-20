@@ -79,7 +79,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 
 					vecDir[0] = i;
 					vecDir[1] = j;
-					vecDir[2] = random->RandomFloat(100, 800);
+					vecDir[2] = RandomFloat(100, 800);
 
 					pParticle->m_uchStartAlpha	= 255;
 					pParticle->m_uchEndAlpha	= 0;
@@ -88,7 +88,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 				{
 					pParticle->m_Pos[0] = m_vecOrigin[0] + i;
 					pParticle->m_Pos[1] = m_vecOrigin[1] + j;
-					pParticle->m_Pos[2] = m_vecOrigin[2] + random->RandomFloat(100, 800);
+					pParticle->m_Pos[2] = m_vecOrigin[2] + RandomFloat(100, 800);
 
 					// send particle heading to org at a random speed
 					vecDir = m_vecOrigin - pParticle->m_Pos;
@@ -104,7 +104,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 				pParticle->m_flLifetime = 0;
 				pParticle->m_flDieTime = invratio;	
 
-				if( random->RandomInt( 0, 10 ) < 5 )
+				if( RandomInt( 0, 10 ) < 5 )
 				{
 					// small green particle
 					pParticle->m_uchColor[0] = 0;

@@ -330,7 +330,7 @@ int CParticleEffectBinding::DrawModel( int flags )
 	VMatrix mTempModel, mTempView;
 	RenderStart( mTempModel, mTempView );
 
-	bool bBucketSort = random->RandomInt( 0, BUCKET_SORT_EVERY_N ) == 0;
+	bool bBucketSort = RandomInt( 0, BUCKET_SORT_EVERY_N ) == 0;
 
 	// Set frametime to zero if we've already rendered this frame.
 	float flFrameTime = 0;
@@ -672,7 +672,7 @@ void CParticleEffectBinding::SimulateParticles( float flTimeDelta )
 		// auto update the bbox after N frames then randomly 1/N or after 2*N frames 
 		bool bFullBBoxUpdate = false;
 		++m_UpdateBBoxCounter;
-		if ( ( m_UpdateBBoxCounter >= BBOX_UPDATE_EVERY_N && random->RandomInt( 0, BBOX_UPDATE_EVERY_N ) == 0 ) ||
+		if ( ( m_UpdateBBoxCounter >= BBOX_UPDATE_EVERY_N && RandomInt( 0, BBOX_UPDATE_EVERY_N ) == 0 ) ||
 			 ( m_UpdateBBoxCounter >= 2*BBOX_UPDATE_EVERY_N ) )
 		{
 			bFullBBoxUpdate = true;
@@ -2181,7 +2181,7 @@ float Helper_RandomFloat( float minVal, float maxVal )
 #if defined( PARTICLEPROTOTYPE_APP )
 	return Lerp( (float)rand() / RAND_MAX, minVal, maxVal );
 #else
-	return random->RandomFloat( minVal, maxVal );
+	return RandomFloat( minVal, maxVal );
 #endif
 }
 
@@ -2191,7 +2191,7 @@ int Helper_RandomInt( int minVal, int maxVal )
 #if defined( PARTICLEPROTOTYPE_APP )
 	return minVal + (rand() * (maxVal - minVal)) / RAND_MAX;
 #else
-	return random->RandomInt( minVal, maxVal );
+	return RandomInt( minVal, maxVal );
 #endif
 }
 

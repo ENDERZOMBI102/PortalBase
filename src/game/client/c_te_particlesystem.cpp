@@ -259,7 +259,7 @@ void CTEParticleRenderer::SimulateParticles( CParticleSimulateIterator *pIterato
 				pParticle->m_Velocity[1] -= pParticle->m_Velocity[1]*0.5*ft;
 				pParticle->m_Velocity[2] -= grav * 5;
 
-				if ( random->RandomInt(0,3) )
+				if ( RandomInt(0,3) )
 				{
 					SetParticleType(pParticle, pt_blob);
 					pParticle->SetAlpha(0);

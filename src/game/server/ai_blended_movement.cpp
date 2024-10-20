@@ -1594,7 +1594,7 @@ void CAI_BlendedMotor::MaintainTurnActivity( void )
 		// accumulate turn angle, delay response for short turns
 		m_doTurn += m_doRight + m_doLeft;
 		// accumulate random foot stick clearing
-		m_doTurn += random->RandomFloat( 0.4, 0.6 );
+		m_doTurn += RandomFloat( 0.4, 0.6 );
 	}
 
 	if (m_doTurn > 15.0f)
@@ -1619,7 +1619,7 @@ void CAI_BlendedMotor::MaintainTurnActivity( void )
 			{
 				GetOuter()->SetLayerPriority( iLayer, 100 );
 				// increase speed if we're getting behind or they're turning quickly
-				float rate = random->RandomFloat( 0.8, 1.2 );
+				float rate = RandomFloat( 0.8, 1.2 );
 				if (m_doTurn > 90.0)
 				{
 					rate *= 1.5;
@@ -1739,7 +1739,7 @@ bool CAI_BlendedMotor::AddTurnGesture( float flYD )
 			SetLayerPlaybackRate( iLayer, 1.0 );
 			float actualDuration = GetOuter()->GetLayerDuration( iLayer );
 
-			float rate = random->RandomFloat( 0.5f, 1.1f );
+			float rate = RandomFloat( 0.5f, 1.1f );
 			float diff = fabs( flYD );
 			float speed = (diff / (turnCompletion * actualDuration / rate)) * 0.1f;
 

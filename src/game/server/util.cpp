@@ -1418,9 +1418,9 @@ Vector UTIL_RandomBloodVector( void )
 {
 	Vector direction;
 
-	direction.x = random->RandomFloat ( -1, 1 );
-	direction.y = random->RandomFloat ( -1, 1 );
-	direction.z = random->RandomFloat ( 0, 1 );
+	direction.x = RandomFloat ( -1, 1 );
+	direction.y = RandomFloat ( -1, 1 );
+	direction.z = RandomFloat ( 0, 1 );
 
 	return direction;
 }

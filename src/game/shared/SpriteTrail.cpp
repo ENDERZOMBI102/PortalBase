@@ -352,7 +352,7 @@ bool CSpriteTrail::IsInSkybox() const {
 			TrailPoint_t* pNewPoint = GetTrailPoint( m_nStepCount );
 			pNewPoint->m_vecScreenPos = screenPos;
 			pNewPoint->m_flDieTime = gpGlobals->curtime + m_flLifeTime;
-			pNewPoint->m_flWidthVariance = random->RandomFloat( -m_flStartWidthVariance, m_flStartWidthVariance );
+			pNewPoint->m_flWidthVariance = RandomFloat( -m_flStartWidthVariance, m_flStartWidthVariance );
 			if ( pLast ) {
 				pNewPoint->m_flTexCoord = pLast->m_flTexCoord + pLast->m_vecScreenPos.DistTo( screenPos ) * m_flTextureRes;
 			} else {

@@ -123,6 +123,7 @@
 #include "sourcevr/isourcevirtualreality.h"
 
 // NVNT includes
+#include "con_nprint.h"
 #include "haptics/haptic_msgs.h"
 #include "haptics/haptic_utils.h"
 #include "haptics/ihaptics.h"
@@ -526,8 +527,8 @@ void DisplayBoneSetupEnts() {
 				printInfo.color[1] = 0;
 				printInfo.color[2] = 0;
 			} else if ( pEnt->m_Count == 2 ) {
-				printInfo.color[0] = (float) 200 / 255;
-				printInfo.color[1] = (float) 220 / 255;
+				printInfo.color[0] = static_cast<float>( 200 ) / 255;
+				printInfo.color[1] = static_cast<float>( 220 ) / 255;
 				printInfo.color[2] = 0;
 			} else {
 				printInfo.color[0] = 1;
@@ -864,9 +865,6 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	}
 	if ( ( filesystem = static_cast<IFileSystem*>( appSystemFactory( FILESYSTEM_INTERFACE_VERSION, nullptr ) ) ) == nullptr ){
-		return false;
-	}
-	if ( ( random = static_cast<IUniformRandomStream*>( appSystemFactory( VENGINE_CLIENT_RANDOM_INTERFACE_VERSION, nullptr ) ) ) == nullptr ){
 		return false;
 	}
 	if ( ( gameuifuncs = static_cast<IGameUIFuncs*>( appSystemFactory( VENGINE_GAMEUIFUNCS_VERSION, nullptr ) ) ) == nullptr ){

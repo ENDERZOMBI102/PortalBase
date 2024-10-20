@@ -315,7 +315,7 @@ void C_AR2Explosion::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 						pParticle->m_Lifetime = -dist / 13031.5f - 0.1;
 						pParticle->m_Roll = FRand( 0, M_PI * 2 );
 						pParticle->m_RollSpeed = FRand( -1, 1 ) * 0.4;
-						pParticle->m_Dwell = AR2_DUST_LIFETIME + random->RandomFloat( 0, AR2_DUST_LIFETIME_DELTA );
+						pParticle->m_Dwell = AR2_DUST_LIFETIME + RandomFloat( 0, AR2_DUST_LIFETIME_DELTA );
 						nParticles++;
 						break;
 					}
@@ -333,7 +333,7 @@ void C_AR2Explosion::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 		Vector endPos = vCenter + randVec * AR2_DUST_RADIUS / 4.0;
 
 		Vector direction = (endPos - vCenter );
-		float dist = VectorNormalize( direction ) + random->RandomFloat( 0, AR2_DUST_RADIUS / 4.0 );
+		float dist = VectorNormalize( direction ) + RandomFloat( 0, AR2_DUST_RADIUS / 4.0 );
 		if(dist > AR2_DUST_RADIUS)
 			dist = AR2_DUST_RADIUS;
 
@@ -354,7 +354,7 @@ void C_AR2Explosion::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 			pParticle->m_Lifetime = -dist / 13031.5f - 0.1;
 			pParticle->m_Roll = FRand( 0, M_PI * 2 );
 			pParticle->m_RollSpeed = FRand( -1, 1 ) * 4.0;
-			pParticle->m_Dwell = 0.5 * (AR2_DUST_LIFETIME + random->RandomFloat( 0, AR2_DUST_LIFETIME_DELTA ));
+			pParticle->m_Dwell = 0.5 * (AR2_DUST_LIFETIME + RandomFloat( 0, AR2_DUST_LIFETIME_DELTA ));
 		}
 	}
 }

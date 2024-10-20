@@ -2298,7 +2298,7 @@ void C_BaseEntity::ValidateModelIndex() {
 		// If this entity was new, then latch in various values no matter what.
 		if ( updateType == DATA_UPDATE_CREATED ) {
 			// Construct a random value for this instance
-			m_flProxyRandomValue = random->RandomFloat( 0, 1 );
+			m_flProxyRandomValue = RandomFloat( 0, 1 );
 
 			ResetLatched();
 
@@ -2642,14 +2642,14 @@ static ConVar cl_watchplayer( "cl_watchplayer", "-1", 0 );
 			dl->origin = GetAbsOrigin();
 			dl->origin[ 2 ] += 16;
 			dl->color.r = dl->color.g = dl->color.b = 250;
-			dl->radius = random->RandomFloat( 400, 431 );
+			dl->radius = RandomFloat( 400, 431 );
 			dl->die = gpGlobals->curtime + 0.001;
 		}
 		if ( IsEffectActive( EF_DIMLIGHT ) ) {
 			dl = effects->CL_AllocDlight( index );
 			dl->origin = GetAbsOrigin();
 			dl->color.r = dl->color.g = dl->color.b = 100;
-			dl->radius = random->RandomFloat( 200, 231 );
+			dl->radius = RandomFloat( 200, 231 );
 			dl->die = gpGlobals->curtime + 0.001;
 		}
 	}
@@ -3075,7 +3075,7 @@ static ConVar cl_watchplayer( "cl_watchplayer", "-1", 0 );
 						blend = m_clrRender->a();
 					else
 						blend = (int) ( ( 1.0 - ( dist - 100 ) * ( 1.0 / 400.0 ) ) * m_clrRender->a() );
-					blend += random->RandomInt( -32, 31 );
+					blend += RandomInt( -32, 31 );
 				}
 			} break;
 

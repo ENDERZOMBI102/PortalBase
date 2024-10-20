@@ -506,7 +506,7 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 			
 			if ( ( m_PolicingBehavior.IsEnabled() == false ) && ( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS ) )
 			{
-				m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.5f, 4.0f );
+				m_flBatonDebounceTime = gpGlobals->curtime + RandomFloat( 2.5f, 4.0f );
 				SetTarget( pPlayer );
 				SetBatonState( true );
 			}
@@ -1354,7 +1354,7 @@ void CNPC_MetroPolice::AimBurstRandomly( int nMinCount, int nMaxCount, float flM
 	// Choose a random direction vector perpendicular to the delta position
 	Vector vecRight, vecUp;
 	VectorVectors( vecDelta, vecRight, vecUp );
-	float flAngle = random->RandomFloat( 0.0f, 2 * M_PI );
+	float flAngle = RandomFloat( 0.0f, 2 * M_PI );
 	VectorMultiply( vecRight, cos(flAngle), m_vecBurstDelta );
 	VectorMA( m_vecBurstDelta, sin(flAngle), vecUp, m_vecBurstDelta );
 
@@ -1394,7 +1394,7 @@ void CNPC_MetroPolice::RandomDirectionBetweenVectors( const Vector &vecStart, co
 	}
 
 	// Rotate the starting angle the specified amount
-	float flAngle = acos(flCosAngle) * random->RandomFloat( 0.0f, 1.0f );
+	float flAngle = acos(flCosAngle) * RandomFloat( 0.0f, 1.0f );
 	VMatrix rotationMatrix;
 	MatrixBuildRotationAboutAxis( rotationMatrix, vecNormal, flAngle );
 	Vector3DMultiply( rotationMatrix, vecStart, *pResult );
@@ -1601,11 +1601,11 @@ void CNPC_MetroPolice::AimBurstTightGrouping( float flShotTime )
 	if (( flDistToTargetSqr > TIGHT_GROUP_MIN_DIST*TIGHT_GROUP_MIN_DIST ) || 
 		( vecTargetVel.LengthSqr() > TIGHT_GROUP_MIN_SPEED * TIGHT_GROUP_MIN_SPEED ))
 	{
-		m_nMaxBurstHits = random->RandomInt( nHitCount, nHitCount + 1 );
+		m_nMaxBurstHits = RandomInt( nHitCount, nHitCount + 1 );
 	}
 	else
 	{
-		m_nMaxBurstHits = random->RandomInt( 2 * nHitCount - 1, 2 * nHitCount + 1 );
+		m_nMaxBurstHits = RandomInt( 2 * nHitCount - 1, 2 * nHitCount + 1 );
 	}
 
 	m_nBurstMode = BURST_TIGHT_GROUPING;
@@ -1684,7 +1684,7 @@ int CNPC_MetroPolice::AimBurstAtSetupHitCount( float flDistToTarget, float flCur
 {
 	// Max number of times we can hit the enemy
 	int nHitCount = sk_metropolice_stitch_at_hitcount.GetInt();
-	m_nMaxBurstHits = random->RandomInt( nHitCount, nHitCount + 1 );
+	m_nMaxBurstHits = RandomInt( nHitCount, nHitCount + 1 );
 
 	if ( IsEnemyInAnAirboat() )
 	{
@@ -1702,7 +1702,7 @@ int CNPC_MetroPolice::AimBurstAtSetupHitCount( float flDistToTarget, float flCur
 			flShotFactor += s_pShotCountFraction[nv+1][nu+1] * fu * fv;
 
 			int nExtraShots = nHitCount * flShotFactor;
-			m_nMaxBurstHits += random->RandomInt( nExtraShots, nExtraShots + 1 );
+			m_nMaxBurstHits += RandomInt( nExtraShots, nExtraShots + 1 );
 			return nExtraShots;
 		}
 	}
@@ -1809,7 +1809,7 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 		}
 
 		float flMinAdd = RemapVal( flEnemySpeed, 0.0f, 200.0f, 70.0f, 30.0f );
-		VectorMA( vecShootAt, random->RandomFloat( flMinAdd, 100.0f ), vecAcross, vecShootAt );
+		VectorMA( vecShootAt, RandomFloat( flMinAdd, 100.0f ), vecAcross, vecShootAt );
 	}
 
 	// Compute the distance along the stitch direction to the cop. we don't want to cross that line
@@ -1854,7 +1854,7 @@ void CNPC_MetroPolice::AimBurstInFrontOfEnemy( float flReactionTime )
 	int nShotCount = SetupBurstShotRegulator( flReactionTime );
 
 	// Max number of times we can hit the player in the airboat
-	m_nMaxBurstHits = random->RandomInt( 3, 4 );
+	m_nMaxBurstHits = RandomInt( 3, 4 );
 	m_nBurstMode = BURST_LOCK_ON_AFTER_HIT;
 	m_nBurstSteerMode = BURST_STEER_WITHIN_LINE_OF_DEATH;
 
@@ -1916,7 +1916,7 @@ void CNPC_MetroPolice::AimBurstBehindEnemy( float flShotTime )
 
 	// Max number of times we can hit the player in the airboat
 	int nHitCount = sk_metropolice_stitch_behind_hitcount.GetInt();
-	m_nMaxBurstHits = random->RandomInt( nHitCount, nHitCount + 1 );
+	m_nMaxBurstHits = RandomInt( nHitCount, nHitCount + 1 );
 	m_nBurstMode = BURST_LOCK_ON_AFTER_HIT;
 	m_nBurstSteerMode = BURST_STEER_WITHIN_LINE_OF_DEATH;
 
@@ -1974,7 +1974,7 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 
 	// Max number of times we can hit the player in the airboat
 	int nHitCount = sk_metropolice_stitch_along_hitcount.GetInt();
-	m_nMaxBurstHits = random->RandomInt( nHitCount, nHitCount + 1 );
+	m_nMaxBurstHits = RandomInt( nHitCount, nHitCount + 1 );
 	m_nBurstMode = BURST_LOCK_ON_AFTER_HIT;
 	m_nBurstSteerMode = BURST_STEER_WITHIN_LINE_OF_DEATH;
 
@@ -1988,7 +1988,7 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 	Vector vecTargetToGun;
 	VectorSubtract( Weapon_ShootPosition(), vecShootAt, vecTargetToGun );
 	float flSign = ( DotProduct( vecTargetToGun, vecAcross ) > 0.0f ) ? 1.0f : -1.0f;
-	float flDist = AIM_ALONG_SIDE_LINE_OF_DEATH_DISTANCE + random->RandomFloat( 0.0f, 50.0f );
+	float flDist = AIM_ALONG_SIDE_LINE_OF_DEATH_DISTANCE + RandomFloat( 0.0f, 50.0f );
 	VectorMA( vecShootAt, flSign * flDist, vecAcross, vecSidePoint );
 
 	vecShootAtVel.z = 0.0f;
@@ -2000,7 +2000,7 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 	VectorMultiply( vecShootAtVel, flStitchLength, m_vecBurstLineOfDeathDelta );
 
 	// Pull the endpoint a little toward the NPC firing it...
-	float flExtraDist = random->RandomFloat( 25.0f, 50.0f );
+	float flExtraDist = RandomFloat( 25.0f, 50.0f );
 	VectorNormalize( vecTargetToGun );
 	if ( flSign * DotProduct( vecTargetToGun, vecShootAtVel ) < 0.1f )
 	{
@@ -2124,7 +2124,7 @@ void CNPC_MetroPolice::SteerBurstWithinLineOfDeath( )
 			// This is necessary to make it not look like a machine is firing the gun
 			Vector vecBurstDir = m_vecBurstDelta;
 			float flLength = VectorNormalize( vecBurstDir );
-			vecBurstDir *= random->RandomFloat( -flLength * 0.5f, flLength * 0.5f );
+			vecBurstDir *= RandomFloat( -flLength * 0.5f, flLength * 0.5f );
 
 			m_vecBurstTargetPos += vecBurstDir;
 		}
@@ -2229,7 +2229,7 @@ Vector CNPC_MetroPolice::ComputeBurstTrajectory( const Vector &shootOrigin )
 	Vector vecNoise;
 	CrossProduct( m_vecBurstDelta, Vector( 0, 0, 1 ), vecNoise );
 	VectorNormalize( vecNoise );
-	vecNoise *= random->RandomFloat( -flNoise, flNoise );
+	vecNoise *= RandomFloat( -flNoise, flNoise );
 	vecPos += vecNoise;
 
 	VectorNormalize( vecPos );
@@ -2520,7 +2520,7 @@ void CNPC_MetroPolice::LostEnemySound( void)
 
 	if ( m_Sentences.Speak( pSentence ) >= 0 )
 	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		m_flNextLostSoundTime = gpGlobals->curtime + RandomFloat(5.0,15.0);
 	}
 }
 
@@ -2585,10 +2585,10 @@ void CNPC_MetroPolice::IdleSound( void )
 				return;
 			}
 
-			if ( !random->RandomInt(0,1) )
+			if ( !RandomInt(0,1) )
 				break;
 
-			int nQuestionType = random->RandomInt( 0, METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT );
+			int nQuestionType = RandomInt( 0, METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT );
 			if ( !IsInSquad() || ( nQuestionType == METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT ) )
 			{
 				m_Sentences.Speak( bIsCriminal ? "METROPOLICE_IDLE_CR" : "METROPOLICE_IDLE" );
@@ -2814,7 +2814,7 @@ void CNPC_MetroPolice::OnAnimEventDeployManhack( animevent_t *pEvent )
 
 	if ( pPhysObj )
 	{
-		Vector	yawOff = right * random->RandomFloat( -1.0f, 1.0f );
+		Vector	yawOff = right * RandomFloat( -1.0f, 1.0f );
 
 		Vector	forceVel = ( forward + yawOff * 16.0f ) + Vector( 0, 0, 250 );
 		Vector	forceAng = vec3_origin;
@@ -2968,7 +2968,7 @@ bool CNPC_MetroPolice::HandleInteraction(int interactionType, void *data, CBaseC
 	if ( interactionType == g_interactionMetrocopStartedStitch )
 	{
 		// If anybody in our squad started a stitch, we can't for a little while
-		m_flValidStitchTime = gpGlobals->curtime + random->RandomFloat( METROPOLICE_SQUAD_STITCH_MIN_INTERVAL, METROPOLICE_SQUAD_STITCH_MAX_INTERVAL );
+		m_flValidStitchTime = gpGlobals->curtime + RandomFloat( METROPOLICE_SQUAD_STITCH_MIN_INTERVAL, METROPOLICE_SQUAD_STITCH_MAX_INTERVAL );
 		return true;
 	}
 
@@ -3227,7 +3227,7 @@ int CNPC_MetroPolice::SelectScheduleNewEnemy()
 	{
 		SetTarget( GetEnemy() );
 		SetBatonState( true );
-		m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.5f, 4.0f );
+		m_flBatonDebounceTime = gpGlobals->curtime + RandomFloat( 2.5f, 4.0f );
 		return SCHED_METROPOLICE_ACTIVATE_BATON;
 	}
 
@@ -3659,7 +3659,7 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 	};
 
 	int i;
-	float flRand = random->RandomFloat( 0.0f, flWeight[STITCH_SCHEDULE_COUNT - 1] );
+	float flRand = RandomFloat( 0.0f, flWeight[STITCH_SCHEDULE_COUNT - 1] );
 	for ( i = 0; i < STITCH_SCHEDULE_COUNT; ++i )
 	{
 		if ( flRand <= flWeight[i] )
@@ -3882,7 +3882,7 @@ void CNPC_MetroPolice::AnnounceHarrassment( void )
 		"METROPOLICE_BACK_UP_C",
 	};
 
-	m_Sentences.Speak( pWarnings[ random->RandomInt( 0, ARRAYSIZE(pWarnings)-1 ) ], SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+	m_Sentences.Speak( pWarnings[ RandomInt( 0, ARRAYSIZE(pWarnings)-1 ) ], SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 }
 
 //-----------------------------------------------------------------------------
@@ -3908,7 +3908,7 @@ void CNPC_MetroPolice::IncrementPlayerCriminalStatus( void )
 		}
 	}
 
-	m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f );
+	m_flBatonDebounceTime = gpGlobals->curtime + RandomFloat( 2.0f, 4.0f );
 
 	AnnounceHarrassment();
 

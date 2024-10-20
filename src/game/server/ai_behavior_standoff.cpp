@@ -482,7 +482,7 @@ int CAI_StandoffBehavior::SelectScheduleUpdateWeapon( void )
 	if ( HasCondition( COND_LIGHT_DAMAGE ) )
 	{
 		// if hurt:
-		int iPercent = random->RandomInt(0,99);
+		int iPercent = RandomInt(0,99);
 
 		if ( iPercent <= m_params.oddsCover && GetEnemy() != NULL )
 		{
@@ -521,7 +521,7 @@ int CAI_StandoffBehavior::SelectScheduleCheckCover( void )
 		else
 			SetPosture( AIP_STANDING );
 
-		if ( random->RandomInt(0,99) < 80 )
+		if ( RandomInt(0,99) < 80 )
 			SetReuseCurrentCover();
 		return SCHED_TAKE_COVER_FROM_ENEMY;
 	}
@@ -575,7 +575,7 @@ int CAI_StandoffBehavior::SelectScheduleAttack( void )
 		{
 			if ( GetOuter()->GetActiveWeapon() && ( GetOuter()->GetActiveWeapon()->CapabilitiesGet() & bits_CAP_WEAPON_RANGE_ATTACK1 ) )
 			{
-				if ( !HasCondition( COND_ENEMY_OCCLUDED ) || random->RandomInt(0,99) < 50 )
+				if ( !HasCondition( COND_ENEMY_OCCLUDED ) || RandomInt(0,99) < 50 )
 					// Don't advance, just fire anyway
 					return SCHED_RANGE_ATTACK1;
 			}
@@ -908,7 +908,7 @@ void CAI_StandoffBehavior::StartTask( const Task_t *pTask )
 
 				if( pLeader && m_vecStandoffGoalPosition == GOAL_POSITION_INVALID )
 				{
-					if( random->RandomInt(1, 100) <= 50 )
+					if( RandomInt(1, 100) <= 50 )
 					{
 						// Half the time, if the player is leading, try to find a spot near them
 						bTryGoalPosFirst = false;

@@ -317,7 +317,7 @@ void CEnvShake::Think( void )
 		// Compute random shake extents (the shake will settle down from this)
 		for (i = 0; i < 2; i++ )
 		{
-			m_maxForce[i] = random->RandomFloat( -1, 1 );
+			m_maxForce[i] = RandomFloat( -1, 1 );
 		}
 		// make the force it point mostly up
 		m_maxForce.z = 4;

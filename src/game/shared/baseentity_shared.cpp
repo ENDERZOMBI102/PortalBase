@@ -2076,7 +2076,7 @@ bool CBaseEntity::HandleShotImpactingWater( const FireBulletsInfo_t &info,
 		CEffectData	data;
  		data.m_vOrigin = waterTrace.endpos;
 		data.m_vNormal = waterTrace.plane.normal;
-		data.m_flScale = random->RandomFloat( nMinSplashSize, nMaxSplashSize );
+		data.m_flScale = RandomFloat( nMinSplashSize, nMaxSplashSize );
 		if ( waterTrace.contents & CONTENTS_SLIME )
 		{
 			data.m_fFlags |= FX_WATER_IN_SLIME;
@@ -2328,9 +2328,9 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 	{
 		vecTraceDir = vecDir * -1;// trace in the opposite direction the shot came from (the direction the shot is going)
 
-		vecTraceDir.x += random->RandomFloat( -flNoise, flNoise );
-		vecTraceDir.y += random->RandomFloat( -flNoise, flNoise );
-		vecTraceDir.z += random->RandomFloat( -flNoise, flNoise );
+		vecTraceDir.x += RandomFloat( -flNoise, flNoise );
+		vecTraceDir.y += RandomFloat( -flNoise, flNoise );
+		vecTraceDir.z += RandomFloat( -flNoise, flNoise );
 
 		// Don't bleed on grates.
 		AI_TraceLine( ptr->endpos, ptr->endpos + vecTraceDir * -flTraceDist, MASK_SOLID_BRUSHONLY & ~CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &Bloodtr);

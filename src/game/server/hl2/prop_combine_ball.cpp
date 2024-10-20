@@ -422,7 +422,7 @@ void CPropCombineBall::Spawn( void )
 void CPropCombineBall::StartAnimating( void )
 {
 	// Start our animation cycle. Use the random to avoid everything thinking the same frame
-	SetContextThink( &CPropCombineBall::AnimThink, gpGlobals->curtime + random->RandomFloat( 0.0f, 0.1f), s_pAnimThinkContext );
+	SetContextThink( &CPropCombineBall::AnimThink, gpGlobals->curtime + RandomFloat( 0.0f, 0.1f), s_pAnimThinkContext );
 
 	int nSequence = LookupSequence( "idle" );
 
@@ -917,8 +917,8 @@ void CPropCombineBall::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t R
 		VectorAngles( vecForward, shotAng );
 
 		// Offset by some small cone
-		shotAng[PITCH] += random->RandomInt( -55, 55 );
-		shotAng[YAW] += random->RandomInt( -55, 55 );
+		shotAng[PITCH] += RandomInt( -55, 55 );
+		shotAng[YAW] += RandomInt( -55, 55 );
 
 		AngleVectors( shotAng, &vecForward, NULL, NULL );
 
@@ -1744,7 +1744,7 @@ void CFuncCombineBallSpawner::SpawnBall()
 	pBall->SetAbsOrigin( vecAbsOrigin );
 	pBall->SetSpawner( this );
 
-	float flSpeed = random->RandomFloat( m_flMinSpeed, m_flMaxSpeed );
+	float flSpeed = RandomFloat( m_flMinSpeed, m_flMaxSpeed );
 
 	zaxis *= flSpeed;
 	pBall->SetAbsVelocity( zaxis );
@@ -2018,7 +2018,7 @@ void CFuncCombineBallSpawner::GrabBallTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 float CFuncCombineBallSpawner::GetBallSpeed( ) const
 {
-	return random->RandomFloat( m_flMinSpeed, m_flMaxSpeed );
+	return RandomFloat( m_flMinSpeed, m_flMaxSpeed );
 }
 
 
@@ -2118,12 +2118,12 @@ void CPointCombineBallLauncher::SpawnBall()
 	pBall->SetAbsOrigin( vecAbsOrigin );
 	pBall->SetSpawner( this );
 
-	float flSpeed = random->RandomFloat( m_flMinSpeed, m_flMaxSpeed );
+	float flSpeed = RandomFloat( m_flMinSpeed, m_flMaxSpeed );
 
 	Vector vDirection;
 	QAngle qAngle = GetAbsAngles();
 
-	qAngle = qAngle + QAngle ( random->RandomFloat( -m_flConeDegrees, m_flConeDegrees ), random->RandomFloat( -m_flConeDegrees, m_flConeDegrees ), 0 );
+	qAngle = qAngle + QAngle ( RandomFloat( -m_flConeDegrees, m_flConeDegrees ), RandomFloat( -m_flConeDegrees, m_flConeDegrees ), 0 );
 
 	AngleVectors( qAngle, &vDirection, NULL, NULL );
 

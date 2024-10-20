@@ -902,7 +902,7 @@ Activity CBaseCombatCharacter::GetDeathActivity ( void )
 	if (IsPlayer())
 	{
 		// die in an interesting way
-		switch( random->RandomInt(0,7) )
+		switch( RandomInt(0,7) )
 		{
 		case 0:	return ACT_DIESIMPLE;
 		case 1: return ACT_DIEBACKWARD;
@@ -1368,7 +1368,7 @@ Vector CBaseCombatCharacter::CalcDamageForceVector( const CTakeDamageInfo &info 
 			// This simulates features that usually vary from
 			// person-to-person variables such as bodyweight,
 			// which are all indentical for characters using the same model.
-			float scale = random->RandomFloat( 0.85, 1.15 );
+			float scale = RandomFloat( 0.85, 1.15 );
 			Vector force = info.GetDamageForce();
 			force.x *= scale;
 			force.y *= scale;
@@ -1406,10 +1406,10 @@ Vector CBaseCombatCharacter::CalcDamageForceVector( const CTakeDamageInfo &info 
 			// taking damage from self?  Take a little random force, but still try to collapse on the spot.
 			if ( this == pForce )
 			{
-				forceVector.x = random->RandomFloat( -1.0f, 1.0f );
-				forceVector.y = random->RandomFloat( -1.0f, 1.0f );
+				forceVector.x = RandomFloat( -1.0f, 1.0f );
+				forceVector.y = RandomFloat( -1.0f, 1.0f );
 				forceVector.z = 0.0;
-				forceScale = random->RandomFloat( 1000.0f, 2000.0f );
+				forceScale = RandomFloat( 1000.0f, 2000.0f );
 			}
 			else
 			{
@@ -1765,12 +1765,12 @@ void CBaseCombatCharacter::ThrowDirForWeaponStrip( CBaseCombatWeapon *pWeapon, c
 	{
 		// Nowhere in particular; just drop it.
 		VMatrix zRot;
-		MatrixBuildRotateZ( zRot, random->RandomFloat( -60.0f, 60.0f ) );
+		MatrixBuildRotateZ( zRot, RandomFloat( -60.0f, 60.0f ) );
 
 		Vector vecThrow;
 		Vector3DMultiply( zRot, vecForward, *pVecThrowDir );
 
-		pVecThrowDir->z = random->RandomFloat( -0.5f, 0.5f );
+		pVecThrowDir->z = RandomFloat( -0.5f, 0.5f );
 		VectorNormalize( *pVecThrowDir );
 	}
 }
@@ -1802,7 +1802,7 @@ void CBaseCombatCharacter::DropWeaponForWeaponStrip( CBaseCombatWeapon *pWeapon,
 		VectorMA( vecOrigin, flDiameter, vecThrow, vecOffsetOrigin );
 	}
 
-	vecThrow *= random->RandomFloat( 400.0f, 600.0f );
+	vecThrow *= RandomFloat( 400.0f, 600.0f );
 
 	pWeapon->SetAbsOrigin( vecOrigin );
 	pWeapon->SetAbsAngles( vecAngles );
@@ -1878,7 +1878,7 @@ void CBaseCombatCharacter::Weapon_DropAll( bool bDisallowWeaponPickup )
 		ThrowDirForWeaponStrip( pActiveWeapon, vecForward, &vecThrow );
 
 		// Throw a little more vigorously; it starts closer to the player
-		vecThrow *= random->RandomFloat( 800.0f, 1000.0f );
+		vecThrow *= RandomFloat( 800.0f, 1000.0f );
 
 		Weapon_Drop( pActiveWeapon, NULL, &vecThrow );
 		pActiveWeapon->SetRemoveable( false );
@@ -2029,7 +2029,7 @@ void CBaseCombatCharacter::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector
 		else
 		{
 			// Nowhere in particular; just drop it.
-			float throwForce = ( IsPlayer() ) ? 400.0f : random->RandomInt( 64, 128 );
+			float throwForce = ( IsPlayer() ) ? 400.0f : RandomInt( 64, 128 );
 			vecThrow = BodyDirection3D() * throwForce;
 		}
 	}
@@ -2380,7 +2380,7 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 	if ( info.GetDamageType() & DMG_SHOCK )
 	{
 		g_pEffects->Sparks( info.GetDamagePosition(), 2, 2 );
-		UTIL_Smoke( info.GetDamagePosition(), random->RandomInt( 10, 15 ), 10 );
+		UTIL_Smoke( info.GetDamagePosition(), RandomInt( 10, 15 ), 10 );
 	}
 
 	// track damage history
@@ -3301,7 +3301,7 @@ CBaseEntity *CBaseCombatCharacter::FindMissTarget( void )
 	if( numMissCandidates == 0 )
 		return NULL;
 
-	return pMissCandidates[ random->RandomInt( 0, numMissCandidates - 1 ) ];
+	return pMissCandidates[ RandomInt( 0, numMissCandidates - 1 ) ];
 }
 
 //-----------------------------------------------------------------------------

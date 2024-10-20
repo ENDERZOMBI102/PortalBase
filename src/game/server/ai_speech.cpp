@@ -203,7 +203,7 @@ float CAI_Expresser::GetSemaphoreAvailableTime( CBaseEntity *pTalker )
 
 int CAI_Expresser::GetVoicePitch() const
 {
-	return m_voicePitch + random->RandomInt(0,3);
+	return m_voicePitch + RandomInt(0,3);
 }
 
 #if IsDebug()
@@ -347,7 +347,7 @@ bool CAI_Expresser::SpeakFindResponse( AI_Response &outResponse, AIConcept_t _co
 	if ( !szReponse[0] )
 		return false;
 
-	if ( ( outResponse.GetOdds() < 100 ) && ( random->RandomInt( 1, 100 ) <= outResponse.GetOdds() ) )
+	if ( ( outResponse.GetOdds() < 100 ) && ( RandomInt( 1, 100 ) <= outResponse.GetOdds() ) )
 		return false;
 
 	return true;

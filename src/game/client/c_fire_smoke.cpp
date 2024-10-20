@@ -392,7 +392,7 @@ void C_EntityFlame::Simulate( void )
 		dl->color.r = 254;
 		dl->color.g = 174;
 		dl->color.b = 10;
-		dl->radius = random->RandomFloat(400,431);
+		dl->radius = RandomFloat(400,431);
 		dl->die = gpGlobals->curtime + 0.001;
 	}
 

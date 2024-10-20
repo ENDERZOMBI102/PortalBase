@@ -283,25 +283,25 @@ void FX_Dust( const Vector &vecOrigin, const Vector &vecDirection, float flSize,
 
 		particle.m_Pos = offset;
 		particle.m_flLifetime = 0.0f;
-		particle.m_flDieTime  = random->RandomFloat( 0.4f, 1.0f );
+		particle.m_flDieTime  = RandomFloat( 0.4f, 1.0f );
 		
-		particle.m_vecVelocity = vecDirection * random->RandomFloat( speed*0.5f, speed ) * i;
+		particle.m_vecVelocity = vecDirection * RandomFloat( speed*0.5f, speed ) * i;
 		particle.m_vecVelocity[2] = 0.0f;
 
-		int	color = random->RandomInt( 48, 64 );
+		int	color = RandomInt( 48, 64 );
 
 		particle.m_uchColor[0] = (color+16) + ( worldLight[0] * (float) color );
 		particle.m_uchColor[1] = (color+8) + ( worldLight[1] * (float) color );
 		particle.m_uchColor[2] = color + ( worldLight[2] * (float) color );
 
-		particle.m_uchStartAlpha= random->RandomInt( 64, 128 );
+		particle.m_uchStartAlpha= RandomInt( 64, 128 );
 		particle.m_uchEndAlpha	= 0;
-		particle.m_uchStartSize = random->RandomInt( 2, 8 );
-		particle.m_uchEndSize	= random->RandomInt( 24, 48 );
-		particle.m_flRoll		= random->RandomInt( 0, 360 );
-		particle.m_flRollDelta	= random->RandomFloat( -0.5f, 0.5f );
+		particle.m_uchStartSize = RandomInt( 2, 8 );
+		particle.m_uchEndSize	= RandomInt( 24, 48 );
+		particle.m_flRoll		= RandomInt( 0, 360 );
+		particle.m_flRollDelta	= RandomFloat( -0.5f, 0.5f );
 
-		AddSimpleParticle( &particle, g_Mat_DustPuff[random->RandomInt(0,1)] );
+		AddSimpleParticle( &particle, g_Mat_DustPuff[RandomInt(0,1)] );
 	}
 }
 

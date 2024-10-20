@@ -163,8 +163,8 @@ static void FX_BuildTesla( C_BaseEntity *pEntity, Vector &vecOrigin, Vector &vec
 	beamInfo.m_vecEnd = vecEnd;
 	beamInfo.m_pszModelName = "sprites/lgtning.vmt";
 	beamInfo.m_flHaloScale = 0.0;
-	beamInfo.m_flLife = random->RandomFloat( 0.25f, 1.0f );
-	beamInfo.m_flWidth = random->RandomFloat( 8.0f, 14.0f );
+	beamInfo.m_flLife = RandomFloat( 0.25f, 1.0f );
+	beamInfo.m_flWidth = RandomFloat( 8.0f, 14.0f );
 	beamInfo.m_flEndWidth = 1.0f;
 	beamInfo.m_flFadeLength = 0.5f;
 	beamInfo.m_flAmplitude = 24;
@@ -400,7 +400,7 @@ void C_EntityDissolve::DoSparks( mstudiohitboxset_t *set, matrix3x4_t *hitboxbon
 	float flYawOffset = RandomFloat(0,360);
 	for ( int i = 0; i < iTotalBeams; i++ )
 	{
-		int nHitbox = random->RandomInt( 0, set->numhitboxes - 1 );
+		int nHitbox = RandomInt( 0, set->numhitboxes - 1 );
 		mstudiobbox_t *pBox = set->pHitbox(nHitbox);
 
 		float flActualYawOffset = 0;
@@ -682,7 +682,7 @@ int C_EntityDissolve::DrawModel( int flags )
 			offset = xDir * Helper_RandomFloat( -xScale*0.5f, xScale*0.5f ) + yDir * Helper_RandomFloat( -yScale*0.5f, yScale*0.5f );
 			offset += vecSkew;
 
-			if ( random->RandomInt( 0, 2 ) != 0 )
+			if ( RandomInt( 0, 2 ) != 0 )
 				continue;
 
 			sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), g_Material_Spark, vecAbsOrigin + offset );
@@ -704,14 +704,14 @@ int C_EntityDissolve::DrawModel( int flags )
 
 			if ( sParticle->m_vecVelocity.z > 0 )
 			{
-				sParticle->m_uchStartSize	= random->RandomFloat( 4, 6 ) * spriteScale;
+				sParticle->m_uchStartSize	= RandomFloat( 4, 6 ) * spriteScale;
 			}
 			else
 			{
 				sParticle->m_uchStartSize	= 2 * spriteScale;
 			}
 
-			sParticle->m_flDieTime = random->RandomFloat( 0.4f, 0.5f );
+			sParticle->m_flDieTime = RandomFloat( 0.4f, 0.5f );
 			
 			// If we're the last particles, last longer
 			if ( numParticles == 0 )
@@ -759,7 +759,7 @@ int C_EntityDissolve::DrawModel( int flags )
 				return 1;
 			
 			sParticle->m_vecVelocity	= Vector( Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -64.0f, 128.0f ) );
-			sParticle->m_uchStartSize	= random->RandomFloat( 8, 12 ) * spriteScale;
+			sParticle->m_uchStartSize	= RandomFloat( 8, 12 ) * spriteScale;
 			sParticle->m_flDieTime		= 0.1f;
 			sParticle->m_flLifetime		= 0.0f;
 

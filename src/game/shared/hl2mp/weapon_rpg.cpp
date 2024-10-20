@@ -311,8 +311,8 @@ void CMissile::AugerThink( void )
 
 	QAngle angles = GetLocalAngles();
 
-	angles.y += random->RandomFloat( -AUGER_YDEVIANCE, AUGER_YDEVIANCE );
-	angles.x += random->RandomFloat( -AUGER_XDEVIANCEDOWN, AUGER_XDEVIANCEUP );
+	angles.y += RandomFloat( -AUGER_YDEVIANCE, AUGER_YDEVIANCE );
+	angles.x += RandomFloat( -AUGER_XDEVIANCEDOWN, AUGER_XDEVIANCEUP );
 
 	SetLocalAngles( angles );
 
@@ -966,7 +966,7 @@ void CAPCMissile::AugerStartThink()
 	{
 		m_hRocketTrail->m_bDamaged = true;
 	}
-	m_flAugerTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );
+	m_flAugerTime = gpGlobals->curtime + RandomFloat( 1.0f, 2.0f );
 	SetThink( &CAPCMissile::AugerThink );
 	SetNextThink( gpGlobals->curtime );
 }
@@ -1992,7 +1992,7 @@ void CWeaponRPG::DrawEffects( void )
 	Vector	vecAttachment, vecDir;
 	QAngle	angles;
 
-	float scale = 8.0f + random->RandomFloat( -2.0f, 2.0f );
+	float scale = 8.0f + RandomFloat( -2.0f, 2.0f );
 
 	int	attachmentID = ( ShouldDrawUsingViewModel() ) ? RPG_GUIDE_ATTACHMENT : RPG_GUIDE_ATTACHMENT_3RD;
 
@@ -2012,7 +2012,7 @@ void CWeaponRPG::DrawEffects( void )
 	if ( m_pBeam != NULL )
 	{
 		m_pBeam->fadeLength = RPG_LASER_BEAM_LENGTH * tr.fraction;
-		m_pBeam->brightness = random->RandomInt( 128, 200 );
+		m_pBeam->brightness = RandomInt( 128, 200 );
 	}
 }
 
@@ -2259,7 +2259,7 @@ int CLaserDot::DrawModel( int flags )
 	}
 
 	// Randomly flutter
-	scale = 16.0f + random->RandomFloat( -4.0f, 4.0f );
+	scale = 16.0f + RandomFloat( -4.0f, 4.0f );
 
 	// Draw our laser dot in space
 	CMatRenderContextPtr pRenderContext( materials );

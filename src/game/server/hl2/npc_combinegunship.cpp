@@ -1490,11 +1490,11 @@ void CNPC_CombineGunship::PrescheduleThink( void )
 		float flTimeLeft = m_flEndDestructTime - gpGlobals->curtime;
 		if ( flTimeLeft > 1.5 )
 		{
-			bCreateExplosion = (random->RandomInt( 0, 3 ) == 0);
+			bCreateExplosion = (RandomInt( 0, 3 ) == 0);
 		}
 		else 
 		{
-			bCreateExplosion = (random->RandomInt( 0, 2 ) == 0);
+			bCreateExplosion = (RandomInt( 0, 2 ) == 0);
 		}
 
 		if ( bCreateExplosion )
@@ -1552,8 +1552,8 @@ void CNPC_CombineGunship::PrescheduleThink( void )
 	BaseClass::PrescheduleThink();
 
 #ifdef JACOBS_GUNSHIP	
-	SetPoseParameter( m_posePitch, random->RandomFloat( GUNSHIP_HEAD_MAX_LEFT, GUNSHIP_HEAD_MAX_RIGHT ) );
-	SetPoseParameter( m_poseYaw, random->RandomFloat( GUNSHIP_HEAD_MAX_UP, GUNSHIP_HEAD_MAX_DOWN ) );
+	SetPoseParameter( m_posePitch, RandomFloat( GUNSHIP_HEAD_MAX_LEFT, GUNSHIP_HEAD_MAX_RIGHT ) );
+	SetPoseParameter( m_poseYaw, RandomFloat( GUNSHIP_HEAD_MAX_UP, GUNSHIP_HEAD_MAX_DOWN ) );
 #endif
 
 }
@@ -1708,7 +1708,7 @@ void CNPC_CombineGunship::FireCannonRound( void )
 		// Check that the target is within some threshold
 		if ( ( DotProduct( threatDir, missileDir ) > 0.95f ) && ( threatDist < 1024.0f ) )
 		{
-			if ( random->RandomInt( 0, 1 ) == 0 )
+			if ( RandomInt( 0, 1 ) == 0 )
 			{
 				CTakeDamageInfo info( this, this, 200, DMG_MISSILEDEFENSE );
 				CalculateBulletDamageForce( &info, m_iAmmoType, -threatDir, WorldSpaceCenter() );
@@ -2833,13 +2833,13 @@ void CNPC_CombineGunship::TraceAttack( const CTakeDamageInfo &info, const Vector
 	// Reflect bullets
 	if ( info.GetDamageType() & DMG_BULLET )
 	{
-		if ( random->RandomInt( 0, 2 ) == 0 )
+		if ( RandomInt( 0, 2 ) == 0 )
 		{
 			Vector vecRicochetDir = vecDir * -1;
 
-			vecRicochetDir.x += random->RandomFloat( -0.5, 0.5 );
-			vecRicochetDir.y += random->RandomFloat( -0.5, 0.5 );
-			vecRicochetDir.z += random->RandomFloat( -0.5, 0.5 );
+			vecRicochetDir.x += RandomFloat( -0.5, 0.5 );
+			vecRicochetDir.y += RandomFloat( -0.5, 0.5 );
+			vecRicochetDir.z += RandomFloat( -0.5, 0.5 );
 
 			VectorNormalize( vecRicochetDir );
 
@@ -3037,8 +3037,8 @@ void CNPC_CombineGunship::StartCannonBurst( int iBurstSize )
 		VectorNormalize( offsetDir );
 		VectorAngles( offsetDir, offsetAngles );
 
-		int angleOffset = random->RandomInt( 15, 30 );
-		if ( random->RandomInt( 0, 1 ) )
+		int angleOffset = RandomInt( 15, 30 );
+		if ( RandomInt( 0, 1 ) )
 		{
 			angleOffset *= -1;
 		}

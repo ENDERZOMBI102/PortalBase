@@ -336,11 +336,11 @@ void CNPC_PoisonZombie::Spawn( void )
 	int nBitMask = 7;
 	if (nCrabs == 1)
 	{
-		nBitMask = nBits[random->RandomInt( 0, 2 )];
+		nBitMask = nBits[RandomInt( 0, 2 )];
 	}
 	else if (nCrabs == 2)
 	{
-		nBitMask = nBits[random->RandomInt( 3, 5 )];
+		nBitMask = nBits[RandomInt( 3, 5 )];
 	}
 
 	for ( int i = 0; i < MAX_CRABS; i++ )
@@ -712,14 +712,14 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 			CapabilitiesRemove( bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK2 );
 		}
 
-		m_flNextCrabThrowTime = gpGlobals->curtime + random->RandomInt( ZOMBIE_THROW_MIN_DELAY, ZOMBIE_THROW_MAX_DELAY );
+		m_flNextCrabThrowTime = gpGlobals->curtime + RandomInt( ZOMBIE_THROW_MIN_DELAY, ZOMBIE_THROW_MAX_DELAY );
 		return;
 	}
 
 	if ( pEvent->event == AE_ZOMBIE_POISON_SPIT )
 	{
 		Vector forward;
-		QAngle qaPunch( 45, random->RandomInt(-5, 5), random->RandomInt(-5, 5) );
+		QAngle qaPunch( 45, RandomInt(-5, 5), RandomInt(-5, 5) );
 		AngleVectors( GetLocalAngles(), &forward );
 		forward = forward * 200;
 		ClawAttack( GetClawAttackRange(), sk_zombie_poison_dmg_spit.GetFloat(), qaPunch, forward, ZOMBIE_BLOOD_BITE );
@@ -739,7 +739,7 @@ int CNPC_PoisonZombie::RandomThrowCrab( void )
 	int nCrab = -1;
 	do
 	{
-		int nTest = random->RandomInt( 0, 2 );
+		int nTest = RandomInt( 0, 2 );
 		if ( m_bCrabs[nTest] )
 		{
 			nCrab = nTest;
@@ -789,7 +789,7 @@ void CNPC_PoisonZombie::EvacuateNest( bool bExplosion, float flDamage, CBaseEnti
 			GetAttachment( szAttachment, vecPosition, vecAngles );
 
 			// Now slam the angles because the attachment point will have pitch and roll, which we can't use.
-			vecAngles = QAngle( 0, random->RandomFloat( 0, 360 ), 0 );
+			vecAngles = QAngle( 0, RandomFloat( 0, 360 ), 0 );
 
 			CBlackHeadcrab *pCrab = (CBlackHeadcrab *)CreateNoSpawn( GetHeadcrabClassname(), vecPosition, vecAngles, this );
 			pCrab->Spawn();
@@ -825,7 +825,7 @@ void CNPC_PoisonZombie::PrescheduleThink( void )
 {
 	if ( HasCondition( COND_NEW_ENEMY ) )
 	{
-		m_flNextCrabThrowTime = gpGlobals->curtime + random->RandomInt( ZOMBIE_THROW_FIRST_MIN_DELAY, ZOMBIE_THROW_FIRST_MAX_DELAY );
+		m_flNextCrabThrowTime = gpGlobals->curtime + RandomInt( ZOMBIE_THROW_FIRST_MIN_DELAY, ZOMBIE_THROW_FIRST_MAX_DELAY );
 	}
 
 	bool bNearEnemy = false;
@@ -843,9 +843,9 @@ void CNPC_PoisonZombie::PrescheduleThink( void )
 		if ( !m_bNearEnemy )
 		{
 			// Our enemy is nearby. Breathe faster.
-			float duration = random->RandomFloat( 1.0f, 2.0f );
+			float duration = RandomFloat( 1.0f, 2.0f );
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pFastBreathSound, BREATH_VOL_MAX, duration );
-			ENVELOPE_CONTROLLER.SoundChangePitch( m_pFastBreathSound, random->RandomInt( 100, 120 ), random->RandomFloat( 1.0f, 2.0f ) );
+			ENVELOPE_CONTROLLER.SoundChangePitch( m_pFastBreathSound, RandomInt( 100, 120 ), RandomFloat( 1.0f, 2.0f ) );
 
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pSlowBreathSound, 0.0f, duration );
 
@@ -855,10 +855,10 @@ void CNPC_PoisonZombie::PrescheduleThink( void )
 	else if ( m_bNearEnemy )
 	{
 		// Our enemy is far away. Slow our breathing down.
-		float duration = random->RandomFloat( 2.0f, 4.0f );
+		float duration = RandomFloat( 2.0f, 4.0f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pFastBreathSound, BREATH_VOL_MAX, duration );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pSlowBreathSound, 0.0f, duration );
-//		ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, random->RandomInt( 80, 100 ), duration );
+//		ENVELOPE_CONTROLLER.SoundChangePitch( m_pBreathSound, RandomInt( 80, 100 ), duration );
 
 		m_bNearEnemy = false;
 	}
@@ -914,7 +914,7 @@ int CNPC_PoisonZombie::SelectSchedule( void )
 
 	if ( nSchedule == SCHED_SMALL_FLINCH )
 	{
-		 m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+		 m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 1, 3 );
 	}
 
 	return nSchedule;
@@ -1006,7 +1006,7 @@ void CNPC_PoisonZombie::PainSound( const CTakeDamageInfo &info )
 	{	
 		BreatheOffShort();
 		EmitSound( "NPC_PoisonZombie.Pain" );
-		m_flNextPainSoundTime = gpGlobals->curtime + random->RandomFloat( 4.0, 7.0 );
+		m_flNextPainSoundTime = gpGlobals->curtime + RandomFloat( 4.0, 7.0 );
 	}
 }
 
@@ -1062,7 +1062,7 @@ void CNPC_PoisonZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize
 	{
 		// Don't set this up until the code calls for it.
 		const char *pszSound = GetMoanSound( m_iMoanSound );
-		m_flMoanPitch = random->RandomInt( 98, 110 );
+		m_flMoanPitch = RandomInt( 98, 110 );
 
 		CPASAttenuationFilter filter( this, 1.5 );
 		//m_pMoanSound = ENVELOPE_CONTROLLER.SoundCreate( entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
@@ -1074,14 +1074,14 @@ void CNPC_PoisonZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize
 	envPoisonZombieMoanVolumeFast[ 1 ].durationMin = 0.1;
 	envPoisonZombieMoanVolumeFast[ 1 ].durationMax = 0.4;
 
-	if ( random->RandomInt( 1, 2 ) == 1 )
+	if ( RandomInt( 1, 2 ) == 1 )
 	{
 		IdleSound();
 	}
 
 	float duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pMoanSound, SOUNDCTRL_CHANGE_VOLUME, pEnvelope, iEnvelopeSize );
 
-	float flPitchShift = random->RandomInt( -4, 4 );
+	float flPitchShift = RandomInt( -4, 4 );
 	ENVELOPE_CONTROLLER.SoundChangePitch( m_pMoanSound, m_flMoanPitch + flPitchShift, 0.3 );
 
 	m_flNextMoanSound = gpGlobals->curtime + duration + 9999;

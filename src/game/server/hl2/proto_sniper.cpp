@@ -664,9 +664,9 @@ void CProtoSniper::LaserOn( const Vector &vecTarget, const Vector &vecDeviance )
 		vecInitialAim = vecTarget;
 	}
 
-	vecInitialAim.x += random->RandomFloat( -vecDeviance.x, vecDeviance.x );
-	vecInitialAim.y += random->RandomFloat( -vecDeviance.y, vecDeviance.y );
-	vecInitialAim.z += random->RandomFloat( -vecDeviance.z, vecDeviance.z );
+	vecInitialAim.x += RandomFloat( -vecDeviance.x, vecDeviance.x );
+	vecInitialAim.y += RandomFloat( -vecDeviance.y, vecDeviance.y );
+	vecInitialAim.z += RandomFloat( -vecDeviance.z, vecDeviance.z );
 	
 	// The beam is backwards, sortof. The endpoint is the sniper. This is
 	// so that the beam can be tapered to very thin where it emits from the sniper.
@@ -1092,7 +1092,7 @@ void CProtoSniper::InputSweepGroupRandomly( inputdata_t &inputdata )
 
 	} while( pEnt );
 
-	m_hSweepTarget = m_pGroupTarget[ random->RandomInt( 0, m_iNumGroupTargets - 1 ) ];
+	m_hSweepTarget = m_pGroupTarget[ RandomInt( 0, m_iNumGroupTargets - 1 ) ];
 }
 
 
@@ -1328,7 +1328,7 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 	{
 		Vector vecForward;
 		
-		float flForce = random->RandomFloat( 500, 700 ) * 10;
+		float flForce = RandomFloat( 500, 700 ) * 10;
 
 		AngleVectors( GetLocalAngles(), &vecForward );
 		
@@ -1660,7 +1660,7 @@ bool CProtoSniper::FindDecoyObject( void )
 		trace_t		tr;
 
 		// Pick one of the decoys at random.
-		pProspect = pDecoys[ random->RandomInt( 0, iIterator - 1 ) ];
+		pProspect = pDecoys[ RandomInt( 0, iIterator - 1 ) ];
 
 		Vector vecDecoyTarget;
 		Vector vecDirToDecoy;
@@ -2040,7 +2040,7 @@ void CProtoSniper::StartTask( const Task_t *pTask )
 			else
 			{
 				m_flPaintTime = m_flKeyfieldPaintTimeNoise > 0									 ? 
-					m_flKeyfieldPaintTime + random->RandomFloat( 0, m_flKeyfieldPaintTimeNoise ) :
+					m_flKeyfieldPaintTime + RandomFloat( 0, m_flKeyfieldPaintTimeNoise ) :
 					m_flKeyfieldPaintTime
 				;
 
@@ -2092,7 +2092,7 @@ void CProtoSniper::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_SNIPER_PAINT_FRUSTRATED:
-		m_flPaintTime = SNIPER_PAINT_FRUSTRATED_TIME + random->RandomFloat( 0, SNIPER_PAINT_FRUSTRATED_TIME );
+		m_flPaintTime = SNIPER_PAINT_FRUSTRATED_TIME + RandomFloat( 0, SNIPER_PAINT_FRUSTRATED_TIME );
 		SetWait( m_flPaintTime );
 		if( FindFrustratedShot( pTask->flTaskData ) )
 		{
@@ -2218,7 +2218,7 @@ void CProtoSniper::RunTask( const Task_t *pTask )
 					{
 						do
 						{
-							m_hSweepTarget = m_pGroupTarget[ random->RandomInt( 0, m_iNumGroupTargets - 1 ) ];
+							m_hSweepTarget = m_pGroupTarget[ RandomInt( 0, m_iNumGroupTargets - 1 ) ];
 						} while( m_hSweepTarget == pOldTarget );
 					}
 				}
@@ -2614,7 +2614,7 @@ CBaseEntity *CProtoSniper::PickDeadPlayerTarget()
 		// Try a few times to randomly select a target. 
 		for( i = 0 ; i < 10 ; i++ )
 		{
-			CBaseEntity *pCandidate = pEntities[ random->RandomInt(0, iNumEntities - 1) ];
+			CBaseEntity *pCandidate = pEntities[ RandomInt(0, iNumEntities - 1) ];
 
 			if( !pCandidate->IsNPC() && FInViewCone(pCandidate) )
 			{
@@ -2671,9 +2671,9 @@ bool CProtoSniper::FindFrustratedShot( float flNoise )
 	{
 		Vector vecSpot = GetEnemyLKP();
 
-		vecSpot.x += random->RandomFloat( -64, 64 );
-		vecSpot.y += random->RandomFloat( -64, 64 );
-		vecSpot.z += random->RandomFloat( -40, 40 );
+		vecSpot.x += RandomFloat( -64, 64 );
+		vecSpot.y += RandomFloat( -64, 64 );
+		vecSpot.z += RandomFloat( -40, 40 );
 
 		// Help move the frustrated spot off the target's BBOX in X/Y space.
 		if( vecSpot.x < 0 )

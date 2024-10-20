@@ -259,7 +259,7 @@ int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 
 	// Project where the enemy will be in a little while, add some randomness so he doesn't always hit
 	float dt = sk_crowbar_lead_time.GetFloat();
-	dt += random->RandomFloat( -0.3f, 0.2f );
+	dt += RandomFloat( -0.3f, 0.2f );
 	if ( dt < 0.0f )
 		dt = 0.0f;
 
@@ -362,7 +362,7 @@ void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 				// Punch angles
 				if ( pPlayer != NULL && !(pPlayer->GetFlags() & FL_GODMODE) )
 				{
-					float yawKick = random->RandomFloat( -48, -24 );
+					float yawKick = RandomFloat( -48, -24 );
 
 					//Kick the player angles
 					pPlayer->ViewPunch( QAngle( -16, yawKick, 2 ) );
@@ -601,7 +601,7 @@ void C_WeaponStunStick::ClientThink( void )
 	if ( ShouldDrawUsingViewModel() )
 	{
 		// Update our effects
-		if ( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 3 ) == 0 ) )
+		if ( gpGlobals->frametime != 0.0f && ( RandomInt( 0, 3 ) == 0 ) )
 		{		
 			Vector	vecOrigin;
 			QAngle	vecAngles;
@@ -609,7 +609,7 @@ void C_WeaponStunStick::ClientThink( void )
 			// Inner beams
 			BeamInfo_t beamInfo;
 
-			int attachment = random->RandomInt( 0, 15 );
+			int attachment = RandomInt( 0, 15 );
 
 			UTIL_GetWeaponAttachment( this, attachment, vecOrigin, vecAngles );
 			::FormatViewModelAttachment( vecOrigin, false );
@@ -628,10 +628,10 @@ void C_WeaponStunStick::ClientThink( void )
 			beamInfo.m_pszModelName = STUNSTICK_BEAM_MATERIAL;
 			beamInfo.m_flHaloScale = 0.0f;
 			beamInfo.m_flLife = 0.05f;
-			beamInfo.m_flWidth = random->RandomFloat( 1.0f, 2.0f );
+			beamInfo.m_flWidth = RandomFloat( 1.0f, 2.0f );
 			beamInfo.m_flEndWidth = 0;
 			beamInfo.m_flFadeLength = 0.0f;
-			beamInfo.m_flAmplitude = random->RandomFloat( 16, 32 );
+			beamInfo.m_flAmplitude = RandomFloat( 16, 32 );
 			beamInfo.m_flBrightness = 255.0;
 			beamInfo.m_flSpeed = 0.0;
 			beamInfo.m_nStartFrame = 0.0;
@@ -725,15 +725,15 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 		pMaterial = materials->FindMaterial( STUNSTICK_GLOW_MATERIAL2, NULL, false );
 		pRenderContext->Bind( pMaterial );
 
-		color[0] = color[1] = color[2] = random->RandomFloat( 0.6f, 0.8f );
-		scale = random->RandomFloat( 4.0f, 6.0f );
+		color[0] = color[1] = color[2] = RandomFloat( 0.6f, 0.8f );
+		scale = RandomFloat( 4.0f, 6.0f );
 
 		// Draw an all encompassing glow around the entire head
 		UTIL_GetWeaponAttachment( this, m_BeamCenterAttachment, vecOrigin, vecAngles );
 		DrawHalo( pMaterial, vecOrigin, scale, color );
 
 		// Update our effects
-		if ( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 5 ) == 0 ) )
+		if ( gpGlobals->frametime != 0.0f && ( RandomInt( 0, 5 ) == 0 ) )
 		{
 			Vector	vecOrigin;
 			QAngle	vecAngles;
@@ -763,10 +763,10 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 			beamInfo.m_pszModelName = STUNSTICK_BEAM_MATERIAL;
 			beamInfo.m_flHaloScale = 0.0f;
 			beamInfo.m_flLife = 0.01f;
-			beamInfo.m_flWidth = random->RandomFloat( 1.0f, 3.0f );
+			beamInfo.m_flWidth = RandomFloat( 1.0f, 3.0f );
 			beamInfo.m_flEndWidth = 0;
 			beamInfo.m_flFadeLength = 0.0f;
-			beamInfo.m_flAmplitude = random->RandomFloat( 1, 2 );
+			beamInfo.m_flAmplitude = RandomFloat( 1, 2 );
 			beamInfo.m_flBrightness = 255.0;
 			beamInfo.m_flSpeed = 0.0;
 			beamInfo.m_nStartFrame = 0.0;
@@ -825,13 +825,13 @@ void C_WeaponStunStick::DrawFirstPersonEffects( void )
 	{
 		if ( InSwing() )
 		{
-			color[0] = color[1] = color[2] = random->RandomFloat( 0.05f, 0.5f );
-			scale = random->RandomFloat( 4.0f, 5.0f );
+			color[0] = color[1] = color[2] = RandomFloat( 0.05f, 0.5f );
+			scale = RandomFloat( 4.0f, 5.0f );
 		}
 		else
 		{
-			color[0] = color[1] = color[2] = random->RandomFloat( 0.05f, 0.5f ) * fadeAmount;
-			scale = random->RandomFloat( 4.0f, 5.0f ) * fadeAmount;
+			color[0] = color[1] = color[2] = RandomFloat( 0.05f, 0.5f ) * fadeAmount;
+			scale = RandomFloat( 4.0f, 5.0f ) * fadeAmount;
 		}
 
 		if ( color[0] > 0.0f )
@@ -877,7 +877,7 @@ void C_WeaponStunStick::ViewModelDrawn( C_BaseViewModel *pBaseViewModel )
 //-----------------------------------------------------------------------------
 void StunstickImpactCallback( const CEffectData &data )
 {
-	float scale = random->RandomFloat( 16, 32 );
+	float scale = RandomFloat( 16, 32 );
 
 	FX_AddQuad( data.m_vOrigin, 
 				data.m_vNormal, 
@@ -887,7 +887,7 @@ void StunstickImpactCallback( const CEffectData &data )
 				1.0f,
 				0.0f,
 				0.0f,
-				random->RandomInt( 0, 360 ), 
+				RandomInt( 0, 360 ),
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ), 
 				0.1f, 

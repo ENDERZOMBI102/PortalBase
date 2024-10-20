@@ -365,7 +365,7 @@ void CAI_PolicingBehavior::StartTask( const Task_t *pTask )
 			AnnouncePolicing();
 
 			// Randomly say this again in the future
-			m_flNextHarassTime = gpGlobals->curtime + random->RandomInt( 4, 6 );
+			m_flNextHarassTime = gpGlobals->curtime + RandomInt( 4, 6 );
 
 			// Scatter rubber-neckers
 			CSoundEnt::InsertSound( SOUND_MOVE_AWAY, GetAbsOrigin(), 256.0f, 2.0f, GetOuter() );

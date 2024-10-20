@@ -706,7 +706,7 @@ void CAmbientGeneric::RampThink( void )
 			break;
 		case LFO_RANDOM:
 			if (pos == 255)
-				m_dpv.lfomult = random->RandomInt(0, 255);
+				m_dpv.lfomult = RandomInt(0, 255);
 			break;
 		case LFO_TRIANGLE:
 		default: 
@@ -1374,8 +1374,8 @@ void UTIL_EmitSoundSuit(edict_t *entity, const char *sample)
 	int pitch = PITCH_NORM;
 
 	fvol = suitvolume.GetFloat();
-	if (random->RandomInt(0,1))
-		pitch = random->RandomInt(0,6) + 98;
+	if (RandomInt(0,1))
+		pitch = RandomInt(0,6) + 98;
 
 	// If friendlies are talking, reduce the volume of the suit
 	if ( !g_AIFriendliesTalkSemaphore.IsAvailable( GetContainingEntity( entity ) ) )
@@ -1408,8 +1408,8 @@ int UTIL_EmitGroupIDSuit(edict_t *entity, int isentenceg)
 	int sentenceIndex = -1;
 
 	fvol = suitvolume.GetFloat();
-	if (random->RandomInt(0,1))
-		pitch = random->RandomInt(0,6) + 98;
+	if (RandomInt(0,1))
+		pitch = RandomInt(0,6) + 98;
 
 	// If friendlies are talking, reduce the volume of the suit
 	if ( !g_AIFriendliesTalkSemaphore.IsAvailable( GetContainingEntity( entity ) ) )
@@ -1432,8 +1432,8 @@ int UTIL_EmitGroupnameSuit(edict_t *entity, const char *groupname)
 	int sentenceIndex = -1;
 
 	fvol = suitvolume.GetFloat();
-	if (random->RandomInt(0,1))
-		pitch = random->RandomInt(0,6) + 98;
+	if (RandomInt(0,1))
+		pitch = RandomInt(0,6) + 98;
 
 	// If friendlies are talking, reduce the volume of the suit
 	if ( !g_AIFriendliesTalkSemaphore.IsAvailable( GetContainingEntity( entity ) ) )

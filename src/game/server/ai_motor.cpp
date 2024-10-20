@@ -802,7 +802,7 @@ void CAI_Motor::SetIdealYawToTarget( const Vector &target, float noise, float of
 	if ( noise > 0 )
 	{
 		noise *= 0.5;
-		base += random->RandomFloat( -noise, noise );
+		base += RandomFloat( -noise, noise );
 		if ( base < 0 )
 			base += 360;
 		else if ( base >= 360 )

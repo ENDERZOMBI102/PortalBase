@@ -472,7 +472,7 @@ void CCombineDropshipContainer::CreateCorpse() {
 	CPASFilter filter( GetAbsOrigin() );
 	CollisionProp()->RandomPointInBounds( vecNormalizedMins, vecNormalizedMaxs, &vecAbsPoint );
 	te->Explosion( filter, 0.0f, &vecAbsPoint, g_sModelIndexFireball,
-				   random->RandomInt( 4, 10 ), random->RandomInt( 8, 15 ), TE_EXPLFLAG_NOPARTICLES, 100, 0 );
+				   RandomInt( 4, 10 ), RandomInt( 8, 15 ), TE_EXPLFLAG_NOPARTICLES, 100, 0 );
 
 	// Break into chunks
 	Vector angVelocity;
@@ -480,7 +480,7 @@ void CCombineDropshipContainer::CreateCorpse() {
 	PropBreakableCreateAll( GetModelIndex(), VPhysicsGetObject(), GetAbsOrigin(), GetAbsAngles(), GetAbsVelocity(), angVelocity, 1.0, 250, COLLISION_GROUP_NPC, this );
 
 	// Create flaming gibs
-	int iChunks = random->RandomInt( 4, 6 );
+	int iChunks = RandomInt( 4, 6 );
 	for ( int i = 0; i < iChunks; i++ ) {
 		ThrowFlamingGib();
 	}
@@ -516,10 +516,10 @@ void CCombineDropshipContainer::ThrowFlamingGib() {
 	pChunk->SetAbsOrigin( vecAbsPoint );
 	pChunk->SetAbsAngles( vecSpawnAngles );
 
-	int nGib = random->RandomInt( 0, DROPSHIP_CONTAINER_MAX_CHUNKS - 1 );
+	int nGib = RandomInt( 0, DROPSHIP_CONTAINER_MAX_CHUNKS - 1 );
 	pChunk->Spawn( s_pChunkModelName[ nGib ] );
 	pChunk->SetOwnerEntity( this );
-	pChunk->m_lifeTime = random->RandomFloat( 6.0f, 8.0f );
+	pChunk->m_lifeTime = RandomFloat( 6.0f, 8.0f );
 	pChunk->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 	IPhysicsObject* pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
 
@@ -529,12 +529,12 @@ void CCombineDropshipContainer::ThrowFlamingGib() {
 		Vector vecVelocity;
 
 		QAngle angles;
-		angles.x = random->RandomFloat( -20, 20 );
-		angles.y = random->RandomFloat( 0, 360 );
+		angles.x = RandomFloat( -20, 20 );
+		angles.y = RandomFloat( 0, 360 );
 		angles.z = 0.0f;
 		AngleVectors( angles, &vecVelocity );
 
-		vecVelocity *= random->RandomFloat( 300, 900 );
+		vecVelocity *= RandomFloat( 300, 900 );
 		vecVelocity += GetAbsVelocity();
 
 		AngularImpulse angImpulse;
@@ -2587,7 +2587,7 @@ bool CNPC_CombineDropship::FireCannonRound() {
 	// Add a muzzle flash
 	QAngle vecAimAngles;
 	VectorAngles( vecAimDir, vecAimAngles );
-	g_pEffects->MuzzleFlash( vecMuzzle, vecAimAngles, random->RandomFloat( 5.0f, 7.0f ), MUZZLEFLASH_TYPE_GUNSHIP );
+	g_pEffects->MuzzleFlash( vecMuzzle, vecAimAngles, RandomFloat( 5.0f, 7.0f ), MUZZLEFLASH_TYPE_GUNSHIP );
 	m_flTimeNextAttack = gpGlobals->curtime + 0.05f;
 
 	// Clamp to account for inaccuracy in aiming w/ pose parameters

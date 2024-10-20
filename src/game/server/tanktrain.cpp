@@ -300,8 +300,8 @@ void CTankTrainAI::SoundEngineStart( void )
 	{
 		controller.Play( m_soundEngine, 0.5, 90 );
 		controller.CommandClear( m_soundEngine );
-		controller.CommandAdd( m_soundEngine, 0, SOUNDCTRL_CHANGE_PITCH, 1.5, random->RandomInt(130, 145) );
-		controller.CommandAdd( m_soundEngine, 1.5, SOUNDCTRL_CHANGE_PITCH, 2, random->RandomInt(105, 115) );
+		controller.CommandAdd( m_soundEngine, 0, SOUNDCTRL_CHANGE_PITCH, 1.5, RandomInt(130, 145) );
+		controller.CommandAdd( m_soundEngine, 1.5, SOUNDCTRL_CHANGE_PITCH, 2, RandomInt(105, 115) );
 	}
 	
 	m_soundPlaying = true;

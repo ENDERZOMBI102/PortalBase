@@ -135,13 +135,13 @@ void C_CitadelEnergyCore::UpdateIdle( float percentage )
 
 	for ( int i = 0; i < numParticles; i++ )
 	{
-		dist = random->RandomFloat( 4.0f * percentage, 64.0f * percentage );
+		dist = RandomFloat( 4.0f * percentage, 64.0f * percentage );
 
 		offset = forward * dist;
 
 		dist = RemapValClamped( dist, 4.0f * percentage, 64.0f * percentage, 6.0f, 1.0f );
-		offset += right * random->RandomFloat( -4.0f * dist, 4.0f * dist );
-		offset += up * random->RandomFloat( -4.0f * dist, 4.0f * dist );
+		offset += right * RandomFloat( -4.0f * dist, 4.0f * dist );
+		offset += up * RandomFloat( -4.0f * dist, 4.0f * dist );
 
 		offset += GetAbsOrigin();
 
@@ -165,7 +165,7 @@ void C_CitadelEnergyCore::UpdateIdle( float percentage )
 		sParticle->m_uchStartAlpha	= alpha;
 		sParticle->m_uchEndAlpha	= 0;
 
-		sParticle->m_uchStartSize	= random->RandomFloat( 1, 2 );
+		sParticle->m_uchStartSize	= RandomFloat( 1, 2 );
 		sParticle->m_uchEndSize		= 0;
 	}
 }
@@ -220,7 +220,7 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 		}
 		else
 		{
-			if ( random->RandomInt( 0, 20 ) == 0 )
+			if ( RandomInt( 0, 20 ) == 0 )
 			{
 				sParticle->m_uchStartSize	= flScale * (i+1);
 				sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 4.0f;
@@ -251,13 +251,13 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 
 	for ( int i = 0; i < numParticles; i++ )
 	{
-		dist = random->RandomFloat( 4.0f * percentage, 64.0f * percentage );
+		dist = RandomFloat( 4.0f * percentage, 64.0f * percentage );
 
 		offset = forward * dist;
 
 		dist = RemapValClamped( dist, 4.0f * percentage, 64.0f * percentage, 6.0f, 1.0f );
-		offset += right * random->RandomFloat( -4.0f * dist, 4.0f * dist );
-		offset += up * random->RandomFloat( -4.0f * dist, 4.0f * dist );
+		offset += right * RandomFloat( -4.0f * dist, 4.0f * dist );
+		offset += up * RandomFloat( -4.0f * dist, 4.0f * dist );
 
 		offset += GetAbsOrigin();
 
@@ -281,7 +281,7 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 		sParticle->m_uchStartAlpha	= alpha;
 		sParticle->m_uchEndAlpha	= 0;
 
-		sParticle->m_uchStartSize	= random->RandomFloat( 1, 2 );
+		sParticle->m_uchStartSize	= RandomFloat( 1, 2 );
 		sParticle->m_uchEndSize		= 0;
 	}
 }
@@ -363,7 +363,7 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 		}
 		else
 		{
-			if ( random->RandomInt( 0, 20 ) == 0 )
+			if ( RandomInt( 0, 20 ) == 0 )
 			{
 				sParticle->m_uchStartSize	= flScale * (i+1);
 				sParticle->m_uchEndSize		= 0.0f;
@@ -389,13 +389,13 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 
 	for ( int i = 0; i < 4; i++ )
 	{
-		dist = random->RandomFloat( 4.0f * m_flScale, 64.0f * m_flScale );
+		dist = RandomFloat( 4.0f * m_flScale, 64.0f * m_flScale );
 
 		offset = forward * dist;
 
 		dist = RemapValClamped( dist, 4.0f * m_flScale, 64.0f * m_flScale, 6.0f, 1.0f );
-		offset += right * random->RandomFloat( -2.0f * dist * m_flScale, 2.0f * dist * m_flScale );
-		offset += up * random->RandomFloat( -2.0f * dist * m_flScale, 2.0f * dist * m_flScale );
+		offset += right * RandomFloat( -2.0f * dist * m_flScale, 2.0f * dist * m_flScale );
+		offset += up * RandomFloat( -2.0f * dist * m_flScale, 2.0f * dist * m_flScale );
 
 		offset += GetAbsOrigin();
 

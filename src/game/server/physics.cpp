@@ -2680,7 +2680,7 @@ void PhysCollisionDust( gamevcollisionevent_t *pEvent, surfacedata_t *phit )
 	pEvent->pInternalData->GetContactPoint( vecPos );
 
 	vecVel.Random( -1.0f, 1.0f );
-	vecVel.z = random->RandomFloat( 0.3f, 1.0f );
+	vecVel.z = RandomFloat( 0.3f, 1.0f );
 	VectorNormalize( vecVel );
 	g_pEffects->Dust( vecPos, vecVel, 8.0f, pEvent->collisionSpeed );
 }

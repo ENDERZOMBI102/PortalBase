@@ -464,7 +464,7 @@ CGib *CGibShooter::CreateGib ( void )
 		DevWarning( 2, "GibShooter Body is <= 1!\n" );
 	}
 
-	pGib->m_nBody = random->RandomInt ( 1, m_nMaxGibModelFrame - 1 );// avoid throwing random amounts of the 0th gib. (skull).
+	pGib->m_nBody = RandomInt ( 1, m_nMaxGibModelFrame - 1 );// avoid throwing random amounts of the 0th gib. (skull).
 
 	if ( m_iszLightingOrigin != NULL_STRING )
 	{
@@ -483,12 +483,12 @@ void CGibShooter::InitPointGib( CGib *pGib, const Vector &vecShootDir, float flS
 		pGib->SetLocalOrigin( GetAbsOrigin() );
 		pGib->SetAbsVelocity( vecShootDir * flSpeed );
 
-		QAngle angVel( random->RandomFloat ( 100, 200 ), random->RandomFloat ( 100, 300 ), 0 );
+		QAngle angVel( RandomFloat ( 100, 200 ), RandomFloat ( 100, 300 ), 0 );
 		pGib->SetLocalAngularVelocity( angVel );
 
 		float thinkTime = ( pGib->GetNextThink() - gpGlobals->curtime );
 
-		pGib->m_lifeTime = (m_flGibLife * random->RandomFloat( 0.95, 1.05 ));	// +/- 5%
+		pGib->m_lifeTime = (m_flGibLife * RandomFloat( 0.95, 1.05 ));	// +/- 5%
 
 		// HL1 gibs always die after a certain time, other games have to opt-in
 #ifndef HL1_DLL
@@ -548,7 +548,7 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 				pGib->SetAbsOrigin( GetAbsOrigin() );
 				pGib->SetAbsAngles( m_angGibRotation );
 
-				pGib->m_lifeTime = (m_flGibLife * random->RandomFloat( 0.95, 1.05 ));	// +/- 5%
+				pGib->m_lifeTime = (m_flGibLife * RandomFloat( 0.95, 1.05 ));	// +/- 5%
 
 				pGib->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 				IPhysicsObject *pPhysicsObject = pGib->VPhysicsInitNormal( SOLID_VPHYSICS, pGib->GetSolidFlags(), false );
@@ -561,8 +561,8 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 					pPhysicsObject->AddVelocity(&vVel, NULL);
 
 					AngularImpulse torque;
-					torque.x = m_flGibAngVelocity * random->RandomFloat( 0.1f, 1.0f );
-					torque.y = m_flGibAngVelocity * random->RandomFloat( 0.1f, 1.0f );
+					torque.x = m_flGibAngVelocity * RandomFloat( 0.1f, 1.0f );
+					torque.y = m_flGibAngVelocity * RandomFloat( 0.1f, 1.0f );
 					torque.z = 0.0f;
 					torque *= pPhysicsObject->GetMass();
 
@@ -614,9 +614,9 @@ void CGibShooter::ShootThink ( void )
 	Vector vecShootDir, vForward,vRight,vUp;
 	AngleVectors( GetAbsAngles(), &vForward, &vRight, &vUp );
 	vecShootDir = vForward;
-	vecShootDir = vecShootDir + vRight * random->RandomFloat( -1, 1) * m_flVariance;
-	vecShootDir = vecShootDir + vForward * random->RandomFloat( -1, 1) * m_flVariance;
-	vecShootDir = vecShootDir + vUp * random->RandomFloat( -1, 1) * m_flVariance;
+	vecShootDir = vecShootDir + vRight * RandomFloat( -1, 1) * m_flVariance;
+	vecShootDir = vecShootDir + vForward * RandomFloat( -1, 1) * m_flVariance;
+	vecShootDir = vecShootDir + vUp * RandomFloat( -1, 1) * m_flVariance;
 
 	VectorNormalize( vecShootDir );
 
@@ -749,7 +749,7 @@ CGib *CEnvShooter::CreateGib ( void )
 
 	if ( m_nMaxGibModelFrame > 1 )
 	{
-		bodyPart = random->RandomInt( 0, m_nMaxGibModelFrame-1 );
+		bodyPart = RandomInt( 0, m_nMaxGibModelFrame-1 );
 	}
 
 	pGib->m_nBody = bodyPart;
@@ -879,7 +879,7 @@ CBaseEntity *CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector 
 	}
 
 	m_flLastWashStartTime = flWashStartTime;
-	m_flNextGibTime	= gpGlobals->curtime + m_flTimeUnderRotor + random->RandomFloat( -1, 1) * m_flTimeUnderRotorVariance;
+	m_flNextGibTime	= gpGlobals->curtime + m_flTimeUnderRotor + RandomFloat( -1, 1) * m_flTimeUnderRotorVariance;
 	if ( m_flNextGibTime <= gpGlobals->curtime )
 	{
 		m_flNextGibTime = gpGlobals->curtime + 0.01f;
@@ -890,9 +890,9 @@ CBaseEntity *CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector 
 	Vector vecShootDir = vecForce;
 	VectorNormalize( vecShootDir );
 
-	vecShootDir.x += random->RandomFloat( -1, 1 ) * m_flVariance;
-	vecShootDir.y += random->RandomFloat( -1, 1 ) * m_flVariance;
-	vecShootDir.z += random->RandomFloat( -1, 1 ) * m_flVariance;
+	vecShootDir.x += RandomFloat( -1, 1 ) * m_flVariance;
+	vecShootDir.y += RandomFloat( -1, 1 ) * m_flVariance;
+	vecShootDir.z += RandomFloat( -1, 1 ) * m_flVariance;
 
 	VectorNormalize( vecShootDir );
 
@@ -961,7 +961,7 @@ void CTestEffect::Think( void )
 		trace_t	tr;
 
 		Vector vecSrc = GetAbsOrigin();
-		Vector vecDir = Vector( random->RandomFloat( -1.0, 1.0 ), random->RandomFloat( -1.0, 1.0 ),random->RandomFloat( -1.0, 1.0 ) );
+		Vector vecDir = Vector( RandomFloat( -1.0, 1.0 ), RandomFloat( -1.0, 1.0 ),RandomFloat( -1.0, 1.0 ) );
 		VectorNormalize( vecDir );
 		UTIL_TraceLine( vecSrc, vecSrc + vecDir * 128, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
 
@@ -1135,7 +1135,7 @@ Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 
 		if ( player )
 		{
-			return (player->EyePosition()) + Vector( random->RandomFloat(-10,10), random->RandomFloat(-10,10), random->RandomFloat(-10,10) );
+			return (player->EyePosition()) + Vector( RandomFloat(-10,10), RandomFloat(-10,10), RandomFloat(-10,10) );
 		}
 	}
 
@@ -1349,7 +1349,7 @@ void CEnvBeverage::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	if ( m_nBeverageType == 6 )
 	{
 		// random
-		pCan->m_nSkin = random->RandomInt( 0, 5 );
+		pCan->m_nSkin = RandomInt( 0, 5 );
 	}
 	else
 	{
@@ -2150,7 +2150,7 @@ void CEnvGunfire::Activate( void )
 //-----------------------------------------------------------------------------
 void CEnvGunfire::StartShooting()
 {
-	m_iShotsRemaining = random->RandomInt( m_iMinBurstSize, m_iMaxBurstSize );
+	m_iShotsRemaining = RandomInt( m_iMinBurstSize, m_iMaxBurstSize );
 
 	SetThink( &CEnvGunfire::ShootThink );
 	SetNextThink( gpGlobals->curtime );
@@ -2235,7 +2235,7 @@ void CEnvGunfire::ShootThink()
 	if( m_iShotsRemaining == 0 )
 	{
 		StartShooting();
-		SetNextThink( gpGlobals->curtime + random->RandomFloat( m_flMinBurstDelay, m_flMaxBurstDelay ) );
+		SetNextThink( gpGlobals->curtime + RandomFloat( m_flMinBurstDelay, m_flMaxBurstDelay ) );
 	}
 }
 

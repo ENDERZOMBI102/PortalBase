@@ -555,8 +555,8 @@ Vector CNPC_Vortigaunt::BodyTarget( const Vector &posSrc, bool bNoisy )
 	if ( bNoisy )
 	{
 		// bell curve
-		float rand1 = random->RandomFloat( 0.0, 0.5 );
-		float rand2 = random->RandomFloat( 0.0, 0.5 );
+		float rand1 = RandomFloat( 0.0, 0.5 );
+		float rand2 = RandomFloat( 0.0, 0.5 );
 		result = low + delta * rand1 + delta * rand2;
 	}
 	else
@@ -922,7 +922,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 		}
 
 		// Stagger the next time we can attack
-		m_flNextAttack = gpGlobals->curtime + random->RandomFloat( 2.0f, 3.0f );
+		m_flNextAttack = gpGlobals->curtime + RandomFloat( 2.0f, 3.0f );
 		return;
 	}
 	
@@ -1228,7 +1228,7 @@ void CNPC_Vortigaunt::PainSound( const CTakeDamageInfo &info )
 	if ( gpGlobals->curtime < m_flPainTime )
 		return;
 	
-	m_flPainTime = gpGlobals->curtime + random->RandomFloat(0.5, 0.75);
+	m_flPainTime = gpGlobals->curtime + RandomFloat(0.5, 0.75);
 
 	Speak( VORT_PAIN );
 }
@@ -1729,7 +1729,7 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 				QAngle vecHandAngles;
 				GetAttachment( m_iRightHandAttachment, vecHandPos, vecHandAngles );
 				CVortigauntChargeToken::CreateChargeToken( vecHandPos, this, m_hHealTarget );
-				m_flNextHealTokenTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+				m_flNextHealTokenTime = gpGlobals->curtime + RandomFloat( 0.5f, 1.0f );
 				m_nNumTokensToSpawn--;
 
 				// If we're stopping, delay our animation a bit so it's not so robotic
@@ -1901,7 +1901,7 @@ void CNPC_Vortigaunt::ArmBeam( int beamType, int nHand )
 
 	for (int i = 0; i < 3; i++)
 	{
-		Vector vecAim = forward * random->RandomFloat( -1, 1 ) + right * side * random->RandomFloat( 0, 1 ) + up * random->RandomFloat( -1, 1 );
+		Vector vecAim = forward * RandomFloat( -1, 1 ) + right * side * RandomFloat( 0, 1 ) + up * RandomFloat( -1, 1 );
 		trace_t tr1;
 		AI_TraceLine ( vecSrc, vecSrc + vecAim * (10*12), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr1);
 		
@@ -2034,7 +2034,7 @@ void CNPC_Vortigaunt::CreateBeamBlast( const Vector &vecOrigin )
 	{
 		pBlastSprite->SetTransparency( kRenderTransAddFrameBlend, 255, 255, 255, 255, kRenderFxNone );
 		pBlastSprite->SetBrightness( 255 );
-		pBlastSprite->SetScale( random->RandomFloat( 1.0f, 1.5f ) );
+		pBlastSprite->SetScale( RandomFloat( 1.0f, 1.5f ) );
 		pBlastSprite->AnimateAndDie( 45.0f );
 		pBlastSprite->EmitSound( "NPC_Vortigaunt.Explode" );
 	}
@@ -3253,7 +3253,7 @@ void CVortigauntChargeToken::SeekTouch( CBaseEntity	*pOther )
 	// Charge the suit's armor
 	if ( pPlayer->ArmorValue() < sk_vortigaunt_armor_charge.GetInt() )
 	{
-		pPlayer->IncrementArmorValue( sk_vortigaunt_armor_charge_per_token.GetInt()+random->RandomInt( -1, 1 ), sk_vortigaunt_armor_charge.GetInt() );
+		pPlayer->IncrementArmorValue( sk_vortigaunt_armor_charge_per_token.GetInt()+RandomInt( -1, 1 ), sk_vortigaunt_armor_charge.GetInt() );
 	}
 
 	// Stay attached to the thing we hit as we fade away

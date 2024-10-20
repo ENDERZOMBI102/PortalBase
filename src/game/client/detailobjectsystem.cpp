@@ -828,7 +828,7 @@ void CDetailModel::InitShapedSprite( unsigned char shapeAngle, unsigned char sha
 		m_pAdvInfo->m_flSwayAmount = (float)swayAmount / 255.0f;
 		m_pAdvInfo->m_flShapeSize = (float)shapeSize / 255.0f;
 		m_pAdvInfo->m_vecCurrentAvoid = vec3_origin;
-		m_pAdvInfo->m_flSwayYaw = random->RandomFloat( 0, 180 );
+		m_pAdvInfo->m_flSwayYaw = RandomFloat( 0, 180 );
 	}
 
 	switch ( m_Type )

@@ -343,7 +343,7 @@ void CBaseHeadcrab::OnChangeActivity( Activity NewActivity )
 
 	if( fRandomize )
 	{
-		SetCycle( random->RandomFloat( 0.0, flRandomRange ) );
+		SetCycle( RandomFloat( 0.0, flRandomRange ) );
 	}
 }
 
@@ -745,7 +745,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 		case TASK_HEADCRAB_WAIT_FOR_BARNACLE_KILL:
 			if ( m_flNextFlinchTime < gpGlobals->curtime )
 			{
-				m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );
+				m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 1.0f, 2.0f );
 				CTakeDamageInfo info;
 				PainSound( info );
 			}
@@ -811,7 +811,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 			}
 
 			// Try again in a couple of seconds
-			m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+			m_flBurrowTime = gpGlobals->curtime + RandomFloat( 0.5f, 1.0f );
 
 			break;
 		}
@@ -1077,7 +1077,7 @@ void CBaseHeadcrab::PrescheduleThink( void )
 	//
 	// Make the crab coo a little bit in combat state.
 	//
-	if (( m_NPCState == NPC_STATE_COMBAT ) && ( random->RandomFloat( 0, 5 ) < 0.1 ))
+	if (( m_NPCState == NPC_STATE_COMBAT ) && ( RandomFloat( 0, 5 ) < 0.1 ))
 	{
 		IdleSound();
 	}
@@ -1194,7 +1194,7 @@ void CBaseHeadcrab::BeginClimbFromCanister()
 	else
 	{
 		// Choose a random direction (forward, left, or right)
-		m_nJumpFromCanisterDir = random->RandomInt( 0, 2 );
+		m_nJumpFromCanisterDir = RandomInt( 0, 2 );
 	}
 
 	Activity act;
@@ -1423,8 +1423,8 @@ void CBaseHeadcrab::StartTask( const Task_t *pTask )
 				GetVectors( &forward, NULL, &up );
 
 				m_vecCommittedJumpPos = GetAbsOrigin();
-				m_vecCommittedJumpPos += up * random->RandomFloat( 80, 150 );
-				m_vecCommittedJumpPos += forward * random->RandomFloat( 32, 80 );
+				m_vecCommittedJumpPos += up * RandomFloat( 80, 150 );
+				m_vecCommittedJumpPos += forward * RandomFloat( 32, 80 );
 
 				m_bCommittedToJump = true;
 
@@ -1465,8 +1465,8 @@ void CBaseHeadcrab::StartTask( const Task_t *pTask )
 				
 				while( vecJumpDir.x == 0 && vecJumpDir.y == 0 )
 				{
-					vecJumpDir.x = random->RandomInt( -1, 1 ); 
-					vecJumpDir.y = random->RandomInt( -1, 1 );
+					vecJumpDir.x = RandomInt( -1, 1 );
+					vecJumpDir.y = RandomInt( -1, 1 );
 				}
 
 				vecJumpDir.NormalizeInPlace();
@@ -1714,7 +1714,7 @@ int CBaseHeadcrab::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 
 	if( info.GetDamageType() & DMG_BLAST )
 	{
-		if( random->RandomInt( 0 , 1 ) == 0 )
+		if( RandomInt( 0 , 1 ) == 0 )
 		{
 			// Catch on fire randomly if damaged in a blast.
 			Ignite( 30 );
@@ -1928,7 +1928,7 @@ int CBaseHeadcrab::SelectSchedule( void )
 				}
 				else if ( SelectWeightedSequence( ACT_SMALL_FLINCH ) != -1 )
 				{
-					m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+					m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 1, 3 );
 					return SCHED_SMALL_FLINCH;
 				}
 			}
@@ -1971,7 +1971,7 @@ int CBaseHeadcrab::SelectSchedule( void )
 	int nSchedule = BaseClass::SelectSchedule();
 	if ( nSchedule == SCHED_SMALL_FLINCH )
 	{
-		 m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+		 m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 1, 3 );
 	}
 
 	return nSchedule;
@@ -2470,7 +2470,7 @@ void CHeadcrab::AlertSound( void )
 //-----------------------------------------------------------------------------
 void CHeadcrab::PainSound( const CTakeDamageInfo &info )
 {
-	if( IsOnFire() && random->RandomInt( 0, HEADCRAB_BURN_SOUND_FREQUENCY ) > 0 )
+	if( IsOnFire() && RandomInt( 0, HEADCRAB_BURN_SOUND_FREQUENCY ) > 0 )
 	{
 		// Don't squeak every think when burning.
 		return;
@@ -2588,7 +2588,7 @@ void CFastHeadcrab::AlertSound( void )
 //-----------------------------------------------------------------------------
 void CFastHeadcrab::PainSound( const CTakeDamageInfo &info )
 {
-	if( IsOnFire() && random->RandomInt( 0, HEADCRAB_BURN_SOUND_FREQUENCY ) > 0 )
+	if( IsOnFire() && RandomInt( 0, HEADCRAB_BURN_SOUND_FREQUENCY ) > 0 )
 	{
 		// Don't squeak every think when burning.
 		return;
@@ -2643,7 +2643,7 @@ void CFastHeadcrab::PrescheduleThink( void )
 				m_flPlaybackRate = HEADCRAB_RUN_MAXSPEED;
 				m_iRunMode = HEADCRAB_RUNMODE_FULLSPEED;
 
-				m_flSlowRunTime = gpGlobals->curtime + random->RandomFloat( 0.1, 1.0 );
+				m_flSlowRunTime = gpGlobals->curtime + RandomFloat( 0.1, 1.0 );
 			}
 			break;
 
@@ -2658,7 +2658,7 @@ void CFastHeadcrab::PrescheduleThink( void )
 				m_iRunMode = HEADCRAB_RUNMODE_PAUSE;
 				SetActivity( ACT_IDLE );
 				GetNavigator()->SetMovementActivity(ACT_IDLE);
-				m_flPauseTime = gpGlobals->curtime + random->RandomFloat( 0.2, 0.5 );
+				m_flPauseTime = gpGlobals->curtime + RandomFloat( 0.2, 0.5 );
 				m_flRealGroundSpeed = 0.0;
 			}
 			break;
@@ -2801,7 +2801,7 @@ void CFastHeadcrab::StartTask( const Task_t *pTask )
 			GetVectors( &vecForward, &vecRight, NULL );
 
 			fJumpIsLeft = false;
-			if( random->RandomInt( 0, 100 ) < 50 )
+			if( RandomInt( 0, 100 ) < 50 )
 			{
 				fJumpIsLeft = true;
 				vecRight.Negate();
@@ -3227,7 +3227,7 @@ int CBlackHeadcrab::SelectSchedule( void )
 		{
 			if ( ( gpGlobals->curtime >= m_flNextHopTime ) && SelectWeightedSequence( ACT_SMALL_FLINCH ) != -1 )
 			{
-				m_flNextHopTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+				m_flNextHopTime = gpGlobals->curtime + RandomFloat( 1, 3 );
 				return SCHED_SMALL_FLINCH;
 			}
 		}
@@ -3316,8 +3316,8 @@ void CBlackHeadcrab::Eject( const QAngle &vecAngles, float flVelocityScale, CBas
 
 	GetMotor()->SetIdealYaw( vecAngles.y );
 
-	SetAbsVelocity( flVelocityScale * random->RandomInt( 20, 50 ) * 
-		Vector( random->RandomFloat( -1.0, 1.0 ), random->RandomFloat( -1.0, 1.0 ), random->RandomFloat( 0.5, 1.0 ) ) );
+	SetAbsVelocity( flVelocityScale * RandomInt( 20, 50 ) *
+		Vector( RandomFloat( -1.0, 1.0 ), RandomFloat( -1.0, 1.0 ), RandomFloat( 0.5, 1.0 ) ) );
 
 	m_bMidJump = false;
 	SetTouch( &CBlackHeadcrab::EjectTouch );
@@ -3334,7 +3334,7 @@ void CBlackHeadcrab::EjectTouch( CBaseEntity *pOther )
 	if ( GetFlags() & FL_ONGROUND )
 	{
 		// Keep trying to take cover for at least a few seconds.
-		Panic( random->RandomFloat( 2, 8 ) );
+		Panic( RandomFloat( 2, 8 ) );
 	}
 }
 
@@ -3399,11 +3399,11 @@ void CBlackHeadcrab::JumpFlinch( const Vector *pvecDir )
 
 	if (pvecDir)
 	{
-		SetAbsVelocity( Vector( pvecDir->x * 4, pvecDir->y * 4, up.z ) * random->RandomFloat( 40, 80 ) );
+		SetAbsVelocity( Vector( pvecDir->x * 4, pvecDir->y * 4, up.z ) * RandomFloat( 40, 80 ) );
 	}
 	else
 	{
-		SetAbsVelocity( Vector( random->RandomFloat( -4, 4 ), random->RandomFloat( -4, 4 ), up.z ) * random->RandomFloat( 40, 80 ) );
+		SetAbsVelocity( Vector( RandomFloat( -4, 4 ), RandomFloat( -4, 4 ), up.z ) * RandomFloat( 40, 80 ) );
 	}
 }
 
@@ -3473,7 +3473,7 @@ void CBlackHeadcrab::HandleAnimEvent( animevent_t *pEvent )
 			JumpFlinch( NULL );
 		}
 
-		Panic( random->RandomFloat( 2, 5 ) );
+		Panic( RandomFloat( 2, 5 ) );
 
 		return;
 	}
@@ -3525,7 +3525,7 @@ void CBlackHeadcrab::AlertSound( void )
 //-----------------------------------------------------------------------------
 void CBlackHeadcrab::PainSound( const CTakeDamageInfo &info )
 {
-	if( IsOnFire() && random->RandomInt( 0, HEADCRAB_BURN_SOUND_FREQUENCY ) > 0 )
+	if( IsOnFire() && RandomInt( 0, HEADCRAB_BURN_SOUND_FREQUENCY ) > 0 )
 	{
 		// Don't squeak every think when burning.
 		return;

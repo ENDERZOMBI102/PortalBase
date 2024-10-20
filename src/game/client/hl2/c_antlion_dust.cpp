@@ -142,21 +142,21 @@ void C_TEAntlionDust::PostDataUpdate( DataUpdateType_t updateType )
 	for ( int i = 0; i < iParticleCount; i++ )
 	{
 		//Offset this dust puff's origin
-		offset[0] = random->RandomFloat( -DUST_RADIUS, DUST_RADIUS );
-		offset[1] = random->RandomFloat( -DUST_RADIUS, DUST_RADIUS );
-		offset[2] = random->RandomFloat(  -16, 8 );
+		offset[0] = RandomFloat( -DUST_RADIUS, DUST_RADIUS );
+		offset[1] = RandomFloat( -DUST_RADIUS, DUST_RADIUS );
+		offset[2] = RandomFloat(  -16, 8 );
 		
 		offset += m_vecOrigin;
 
 		particle.m_Pos = offset;
-		particle.m_flDieTime	= random->RandomFloat( 0.75f, 1.25f );
+		particle.m_flDieTime	= RandomFloat( 0.75f, 1.25f );
 		particle.m_flLifetime	= 0.0f;
 		
 		Vector	dir	= particle.m_Pos - m_vecOrigin;
-		particle.m_vecVelocity = dir * random->RandomFloat( 0.5f, 1.0f );
+		particle.m_vecVelocity = dir * RandomFloat( 0.5f, 1.0f );
 		dir.z = fabs(dir.z);
 
-		float	colorRamp = random->RandomFloat( 0.5f, 1.0f );
+		float	colorRamp = RandomFloat( 0.5f, 1.0f );
 		Vector	color = vecColor*colorRamp;
 
 		color[0] = clamp( color[0], 0.0f, 1.0f );
@@ -169,18 +169,18 @@ void C_TEAntlionDust::PostDataUpdate( DataUpdateType_t updateType )
 		particle.m_uchColor[1]	= color[1];
 		particle.m_uchColor[2]	= color[2];
 
-		particle.m_uchStartAlpha= random->RandomFloat( 64, 128 );
+		particle.m_uchStartAlpha= RandomFloat( 64, 128 );
 		particle.m_uchEndAlpha	= 0;
 
-		particle.m_uchStartSize	= random->RandomInt( 16, 32 );
+		particle.m_uchStartSize	= RandomInt( 16, 32 );
 		particle.m_uchEndSize	= particle.m_uchStartSize * 3;
-		particle.m_flRoll		= random->RandomInt( 0, 360 );
-		particle.m_flRollDelta	= random->RandomFloat( -0.2f, 0.2f );
+		particle.m_flRoll		= RandomInt( 0, 360 );
+		particle.m_flRollDelta	= RandomFloat( -0.2f, 0.2f );
 
 		// Though it appears there are two particle handle entries in g_Mat_DustPuff, in fact
 		// only the one present at index 0 actually draws. Trying to spawn a particle with
 		// the other material will give you no particle at all. Therefore while instead of this:
-		// AddSimpleParticle( &particle, g_Mat_DustPuff[random->RandomInt(0,1)  );
+		// AddSimpleParticle( &particle, g_Mat_DustPuff[RandomInt(0,1)  );
 		// we have to do this:
 		AddSimpleParticle( &particle, g_Mat_DustPuff[0] );
 	}

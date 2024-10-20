@@ -271,10 +271,10 @@ void CViewEffects::CalcShake( void )
 			// Compute random shake extents (the shake will settle down from this)
 			for (int i = 0; i < 3; i++ )
 			{
-				pShake->offset[i] = random->RandomFloat( -pShake->amplitude, pShake->amplitude );
+				pShake->offset[i] = RandomFloat( -pShake->amplitude, pShake->amplitude );
 			}
 
-			pShake->angle = random->RandomFloat( -pShake->amplitude*0.25, pShake->amplitude*0.25 );
+			pShake->angle = RandomFloat( -pShake->amplitude*0.25, pShake->amplitude*0.25 );
 		}
 
 		// Ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)

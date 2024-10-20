@@ -956,7 +956,7 @@ void CClient_Precipitation::CreateAshParticle()
 			m_iAshCount = 0;
 			}
 
-			int iRandom = random->RandomInt(0,2);
+			int iRandom = RandomInt(0,2);
 
 			if ( bEmberTime == true )
 			{
@@ -988,7 +988,7 @@ void CClient_Precipitation::CreateAshParticle()
 				pParticle->m_vecVelocity = Vector( RandomFloat( -20.0f, 20.0f ), RandomFloat( -20.0f, 20.0f ), RandomFloat( -10, -15 ) );
 			}
 
-			float color = random->RandomInt( 125, 225 );
+			float color = RandomInt( 125, 225 );
 			pParticle->m_uchColor[0] = color;
 			pParticle->m_uchColor[1] = color;
 			pParticle->m_uchColor[2] = color;
@@ -998,12 +998,12 @@ void CClient_Precipitation::CreateAshParticle()
 
 			pParticle->m_uchStartAlpha	= 255;
 
-			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-			pParticle->m_flRollDelta	= random->RandomFloat( -0.15f, 0.15f );
+			pParticle->m_flRoll			= RandomInt( 0, 360 );
+			pParticle->m_flRollDelta	= RandomFloat( -0.15f, 0.15f );
 
 			pParticle->m_iFlags			= SIMPLE_PARTICLE_FLAG_WINDBLOWN;
 
-			if ( random->RandomInt( 0, 10 ) <= 1 )
+			if ( RandomInt( 0, 10 ) <= 1 )
 			{
 				pParticle->m_iFlags |= ASH_PARTICLE_NOISE;
 			}
@@ -1020,10 +1020,10 @@ void CClient_Precipitation::CreateRainOrSnowParticle( Vector vSpawnPosition, Vec
 	VectorCopy( vVelocity, p->m_Velocity );
 	p->m_Pos = vSpawnPosition;
 
-	p->m_Velocity[ 0 ] += random->RandomFloat(-r_RainSideVel.GetInt(), r_RainSideVel.GetInt());
-	p->m_Velocity[ 1 ] += random->RandomFloat(-r_RainSideVel.GetInt(), r_RainSideVel.GetInt());
+	p->m_Velocity[ 0 ] += RandomFloat(-r_RainSideVel.GetInt(), r_RainSideVel.GetInt());
+	p->m_Velocity[ 1 ] += RandomFloat(-r_RainSideVel.GetInt(), r_RainSideVel.GetInt());
 
-	p->m_Mass = random->RandomFloat( 0.5, 1.5 );
+	p->m_Mass = RandomFloat( 0.5, 1.5 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1068,8 +1068,8 @@ void CClient_Precipitation::EmitParticles( float fTimeDelta )
 		for ( int i = 0 ; i < cParticles ; i++ )
 		{
 			Vector vParticlePos = org;
-			vParticlePos[ 0 ] += size[ 0 ] * random->RandomFloat(0, 1);
-			vParticlePos[ 1 ] += size[ 1 ] * random->RandomFloat(0, 1);
+			vParticlePos[ 0 ] += size[ 0 ] * RandomFloat(0, 1);
+			vParticlePos[ 1 ] += size[ 1 ] * RandomFloat(0, 1);
 
 			// Figure out where the particle should lie in Z by tracing a line from the player's height up to the 
 			// desired height and making sure it doesn't hit a wall.
@@ -1106,8 +1106,8 @@ void CClient_Precipitation::ComputeWindVector( )
 	QAngle windangle( 0, cl_winddir.GetFloat(), 0 );	// used to turn wind yaw direction into a vector
 
 	// Randomize the wind angle and speed slightly to get us a little variation
-	windangle[1] = windangle[1] + random->RandomFloat( -10, 10 );
-	float windspeed = cl_windspeed.GetFloat() * (1.0 + random->RandomFloat( -0.2, 0.2 ));
+	windangle[1] = windangle[1] + RandomFloat( -10, 10 );
+	float windspeed = cl_windspeed.GetFloat() * (1.0 + RandomFloat( -0.2, 0.2 ));
 
 	AngleVectors( windangle, &s_WindVector );
 	VectorScale( s_WindVector, windspeed, s_WindVector );
@@ -1415,9 +1415,9 @@ void C_Embers::SpawnEmber()
 	modelinfo->GetModelBounds( GetModel(), mins, maxs );
 
 	//Setup our spawn position
-	offset[0] = random->RandomFloat( mins[0], maxs[0] );
-	offset[1] = random->RandomFloat( mins[1], maxs[1] );
-	offset[2] = random->RandomFloat( mins[2], maxs[2] );
+	offset[0] = RandomFloat( mins[0], maxs[0] );
+	offset[1] = RandomFloat( mins[1], maxs[1] );
+	offset[2] = RandomFloat( mins[2], maxs[2] );
 
 	//Spawn the particle
 	SimpleParticle	*sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_hMaterial, offset );
@@ -1425,7 +1425,7 @@ void C_Embers::SpawnEmber()
 	if (sParticle == nullptr)
 		return;
 
-	float	cScale = random->RandomFloat( 0.75f, 1.0f );
+	float	cScale = RandomFloat( 0.75f, 1.0f );
 
 	//Set it up
 	sParticle->m_flLifetime = 0.0f;
@@ -1448,9 +1448,9 @@ void C_Embers::SpawnEmber()
 
 	sParticle->m_vecVelocity = velocity * m_nSpeed;
 
-	sParticle->m_vecVelocity[0]	+= random->RandomFloat( -(m_nSpeed/8), (m_nSpeed/8) );
-	sParticle->m_vecVelocity[1]	+= random->RandomFloat( -(m_nSpeed/8), (m_nSpeed/8) );
-	sParticle->m_vecVelocity[2]	+= random->RandomFloat( -(m_nSpeed/8), (m_nSpeed/8) );
+	sParticle->m_vecVelocity[0]	+= RandomFloat( -(m_nSpeed/8), (m_nSpeed/8) );
+	sParticle->m_vecVelocity[1]	+= RandomFloat( -(m_nSpeed/8), (m_nSpeed/8) );
+	sParticle->m_vecVelocity[2]	+= RandomFloat( -(m_nSpeed/8), (m_nSpeed/8) );
 
 	UpdateVisibility();
 }
@@ -2176,8 +2176,8 @@ void CSnowFallManager::CreateSnowFallParticle( const Vector &vecParticleSpawn, i
 	pParticle->m_uchStartAlpha	= r_SnowStartAlpha.GetInt();
 	pParticle->m_uchEndAlpha	= r_SnowEndAlpha.GetInt();
 
-	pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-	pParticle->m_flRollDelta	= random->RandomFloat( -0.15f, 0.15f );
+	pParticle->m_flRoll			= RandomInt( 0, 360 );
+	pParticle->m_flRollDelta	= RandomFloat( -0.15f, 0.15f );
 
 	pParticle->m_iFlags			= SIMPLE_PARTICLE_FLAG_WINDBLOWN;
 }

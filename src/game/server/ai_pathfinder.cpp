@@ -461,7 +461,7 @@ AI_Waypoint_t* CAI_Pathfinder::FindShortRandomPath(int startID, float minPathLen
 			// If no neighbors, try using a stale one
 			if (numNeighbors == 0)
 			{
-				neighborID = pStaleNeighbor[random->RandomInt(0,numStaleNeighbors-1)];
+				neighborID = pStaleNeighbor[RandomInt(0,numStaleNeighbors-1)];
 			}
 			else
 			{
@@ -488,12 +488,12 @@ AI_Waypoint_t* CAI_Pathfinder::FindShortRandomPath(int startID, float minPathLen
 		// Pick random neighbor 
 		else if (numNeighbors != 0)
 		{
-			neighborID = pNeighbor[random->RandomInt(0,numNeighbors-1)];
+			neighborID = pNeighbor[RandomInt(0,numNeighbors-1)];
 		}
 		// If no neighbors, try using a stale one
 		else
 		{
-			neighborID = pStaleNeighbor[random->RandomInt(0,numStaleNeighbors-1)];
+			neighborID = pStaleNeighbor[RandomInt(0,numStaleNeighbors-1)];
 		}
 
 		// BUGBUG: This routine is totally hosed!

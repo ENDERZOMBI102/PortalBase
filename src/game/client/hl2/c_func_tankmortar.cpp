@@ -81,9 +81,9 @@ void C_MortarShell::AddRisingParticles( float flPerc )
 	// Anime ground effects
 	while ( m_ParticleEvent.NextEvent( flCur ) )
 	{
-		offset.x = random->RandomFloat( -radius, radius );
-		offset.y = random->RandomFloat( -radius, radius );
-		offset.z = random->RandomFloat( -8.0f, 8.0f );
+		offset.x = RandomFloat( -radius, radius );
+		offset.y = RandomFloat( -radius, radius );
+		offset.z = RandomFloat( -8.0f, 8.0f );
 
 		offset += GetAbsOrigin();
 
@@ -94,9 +94,9 @@ void C_MortarShell::AddRisingParticles( float flPerc )
 
 		sParticle->m_vecVelocity = Vector( Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( 32.0f, 256.0f ) * Bias( val, 0.25f ) );
 		
-		sParticle->m_uchStartSize	= random->RandomFloat( 4, 8 ) * flPerc;
+		sParticle->m_uchStartSize	= RandomFloat( 4, 8 ) * flPerc;
 
-		sParticle->m_flDieTime = random->RandomFloat( 0.5f, 1.0f );
+		sParticle->m_flDieTime = RandomFloat( 0.5f, 1.0f );
 		
 		sParticle->m_flLifetime		= 0.0f;
 
@@ -130,9 +130,9 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 	// Anime ground effects
 	while ( m_ParticleEvent.NextEvent( flCur ) )
 	{
-		offset.x = random->RandomFloat( -radius, radius );
-		offset.y = random->RandomFloat( -radius, radius );
-		offset.z = random->RandomFloat( -8.0f, 8.0f );
+		offset.x = RandomFloat( -radius, radius );
+		offset.y = RandomFloat( -radius, radius );
+		offset.z = RandomFloat( -8.0f, 8.0f );
 
 		offset += GetAbsOrigin();
 
@@ -144,9 +144,9 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 		sParticle->m_vecVelocity = RandomVector( -1.0f, 1.0f ) + Vector( 0, 0, 1 );
 		sParticle->m_vecVelocity *= ( 750.0f * flPerc );
 		
-		sParticle->m_uchStartSize	= random->RandomFloat( 2, 4 ) * flPerc;
+		sParticle->m_uchStartSize	= RandomFloat( 2, 4 ) * flPerc;
 
-		sParticle->m_flDieTime = random->RandomFloat( 0.25f, 0.5f );
+		sParticle->m_flDieTime = RandomFloat( 0.25f, 0.5f );
 		
 		sParticle->m_flLifetime		= 0.0f;
 

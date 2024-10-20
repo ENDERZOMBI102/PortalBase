@@ -88,7 +88,7 @@ void CTEBreakModel::Test( const Vector& current_origin, const QAngle& current_an
 	m_angRotation = current_angles;
 	m_vecSize.Init( 16, 16, 16 );
 
-	m_vecVelocity.Init( random->RandomFloat( -10, 10 ), random->RandomFloat( -10, 10 ), random->RandomFloat( 0, 20 ) );
+	m_vecVelocity.Init( RandomFloat( -10, 10 ), RandomFloat( -10, 10 ), RandomFloat( 0, 20 ) );
 
 	m_nRandomization = 100;
 	m_nCount = 10;

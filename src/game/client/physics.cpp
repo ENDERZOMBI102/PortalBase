@@ -852,11 +852,11 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 	{
 		if ( bInSlime )
 		{
-			FX_GunshotSlimeSplash( centerPoint, normal, random->RandomFloat( 8, 10 ) );
+			FX_GunshotSlimeSplash( centerPoint, normal, RandomFloat( 8, 10 ) );
 		}
 		else
 		{
-			FX_GunshotSplash( centerPoint, normal, random->RandomFloat( 8, 10 ) );
+			FX_GunshotSplash( centerPoint, normal, RandomFloat( 8, 10 ) );
 		}
 	}
 	else if ( !bInSlime )
@@ -878,16 +878,16 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 		{
 			if ( bInSlime )
 			{
-				FX_GunshotSlimeSplash( centerPoint, normal, random->RandomFloat( 4, 6 ) );
+				FX_GunshotSlimeSplash( centerPoint, normal, RandomFloat( 4, 6 ) );
 			}
 			else
 			{
-				FX_GunshotSplash( centerPoint, normal, random->RandomFloat( 4, 6 ) );
+				FX_GunshotSplash( centerPoint, normal, RandomFloat( 4, 6 ) );
 			}
 		}
 		else if ( !bInSlime )
 		{
-			FX_WaterRipple( point, random->RandomFloat( 0.25f, 0.5f ), &color, luminosity, random->RandomFloat( 0.5f, 1.0f ) );
+			FX_WaterRipple( point, RandomFloat( 0.25f, 0.5f ), &color, luminosity, RandomFloat( 0.5f, 1.0f ) );
 		}
 	}
 }

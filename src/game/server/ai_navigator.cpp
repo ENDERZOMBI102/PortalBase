@@ -615,8 +615,8 @@ static bool SetWanderGoalByRandomVector(CAI_Navigator *pNav, float minRadius, fl
 {
 	while (--numTries >= 0)
 	{
-		float dist = random->RandomFloat( minRadius, maxRadius );
-		Vector dir = UTIL_YawToVector( random->RandomFloat( 0, 359.99 ) );
+		float dist = RandomFloat( minRadius, maxRadius );
+		Vector dir = UTIL_YawToVector( RandomFloat( 0, 359.99 ) );
 
 		if ( pNav->SetVectorGoal( dir, dist, minRadius ) )
 			return true;

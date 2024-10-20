@@ -483,7 +483,7 @@ string_t MakeButtonSound( int sound )
 void CBaseButton::ButtonSpark ( void )
 {
 	SetThink ( &CBaseButton::ButtonSpark );
-	SetNextThink( gpGlobals->curtime + 0.1 + random->RandomFloat ( 0, 1.5 ) );// spark again at random interval
+	SetNextThink( gpGlobals->curtime + 0.1 + RandomFloat ( 0, 1.5 ) );// spark again at random interval
 
 	DoSpark( this, WorldSpaceCenter(), 1, 1, true, vec3_origin );
 }

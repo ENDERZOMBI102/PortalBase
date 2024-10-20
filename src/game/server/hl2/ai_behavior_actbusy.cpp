@@ -788,7 +788,7 @@ void CAI_ActBusyBehavior::GatherConditions() {
 		}
 	}
 
-	if ( m_bAutoFireWeapon && random->RandomInt( 0, 5 ) <= 3 ) {
+	if ( m_bAutoFireWeapon && RandomInt( 0, 5 ) <= 3 ) {
 		CBaseCombatWeapon* pWeapon = GetOuter()->GetActiveWeapon();
 
 		if ( pWeapon ) {
@@ -1834,7 +1834,7 @@ void CAI_ActBusyBehavior::NotifyBusyEnding() {
 		if ( IsCombatActBusy() ) {
 			// Don't allow anyone to use this node for a bit. This is so the tactical position
 			// doesn't get re-occupied the moment I leave it.
-			GetHintNode()->DisableForSeconds( random->RandomFloat( 10, 15 ) );
+			GetHintNode()->DisableForSeconds( RandomFloat( 10, 15 ) );
 		}
 
 		SetHintNode( nullptr );

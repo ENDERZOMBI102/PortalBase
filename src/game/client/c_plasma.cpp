@@ -314,7 +314,7 @@ void C_Plasma::Start( void )
 	{
 		//Setup our offset angles
 		offset[0] = 0.0f;
-		offset[1] = random->RandomFloat( 0, 360 );
+		offset[1] = RandomFloat( 0, 360 );
 		offset[2] = 0.0f;
 	
   		AngleVectors( offset, &m_entFlames[i].m_vecMoveDir );
@@ -327,8 +327,8 @@ void C_Plasma::Start( void )
 		// Setup all the information for the client entity
 		m_entFlames[i].SetModelByIndex( nModelIndex );
 		m_entFlames[i].SetLocalOrigin( GetLocalOrigin() );
-		m_entFlames[i].m_flFrame			= random->RandomInt( 0.0f, maxFrames );
-		m_entFlames[i].m_flSpriteFramerate	= (float) random->RandomInt( 15, 20 );
+		m_entFlames[i].m_flFrame			= RandomInt( 0.0f, maxFrames );
+		m_entFlames[i].m_flSpriteFramerate	= (float) RandomInt( 15, 20 );
 		m_entFlames[i].SetScale( m_flStartScale );
 		m_entFlames[i].SetRenderMode( kRenderTransAddFrameBlend );
 		m_entFlames[i].m_nRenderFX			= kRenderFxNone;

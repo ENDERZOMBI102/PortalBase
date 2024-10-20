@@ -563,8 +563,8 @@ struct StriderMinigunAnimController_t
 
 	void Random( float minTarget, float maxTarget, float minRate, float maxRate )
 	{
-		target = random->RandomFloat( minTarget, maxTarget );
-		rate = random->RandomFloat( minRate, maxRate );
+		target = RandomFloat( minTarget, maxTarget );
+		rate = RandomFloat( minRate, maxRate );
 	}
 };
 

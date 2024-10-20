@@ -127,7 +127,7 @@ void CEffectsClient::Smoke( const Vector &vecOrigin, int modelIndex, float scale
 	CPVSFilter filter( vecOrigin );
 	if ( !SuppressTE( filter ) )
 	{
-		int iColor = random->RandomInt(20,35);
+		int iColor = RandomInt(20,35);
 		color32 color;
 		color.r = iColor;
 		color.g = iColor;

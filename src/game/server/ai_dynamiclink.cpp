@@ -610,7 +610,7 @@ void CAI_RadialLinkController::Activate()
 	SetThink( &CAI_RadialLinkController::PollMotionThink );
 
 	// Spread think times out.
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.0f, 1.0f) );
+	SetNextThink( gpGlobals->curtime + RandomFloat( 0.0f, 1.0f) );
 
 	if( GetParent() != NULL )
 	{

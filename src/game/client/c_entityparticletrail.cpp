@@ -114,9 +114,9 @@ void C_EntityParticleTrail::AddParticle( float flInitialDeltaTime, const Vector 
 {
 	// Select a random point somewhere in the hitboxes of the entity.
 	Vector vecLocalPosition, vecWorldPosition;
-	vecLocalPosition.x			= Lerp( random->RandomFloat( 0.0f, 1.0f ), vecMins.x, vecMaxs.x );
-	vecLocalPosition.y			= Lerp( random->RandomFloat( 0.0f, 1.0f ), vecMins.y, vecMaxs.y );
-	vecLocalPosition.z			= Lerp( random->RandomFloat( 0.0f, 1.0f ), vecMins.z, vecMaxs.z );
+	vecLocalPosition.x			= Lerp( RandomFloat( 0.0f, 1.0f ), vecMins.x, vecMaxs.x );
+	vecLocalPosition.y			= Lerp( RandomFloat( 0.0f, 1.0f ), vecMins.y, vecMaxs.y );
+	vecLocalPosition.z			= Lerp( RandomFloat( 0.0f, 1.0f ), vecMins.z, vecMaxs.z );
 	VectorTransform( vecLocalPosition, boxToWorld, vecWorldPosition );
 
 	// Don't emit the particle unless it's inside the model
@@ -190,7 +190,7 @@ void C_EntityParticleTrail::Update( float fTimeDelta )
 	//Add new particles
 	while ( m_teParticleSpawn.NextEvent( tempDelta ) )
 	{
-		int nHitbox = random->RandomInt( 0, set->numhitboxes - 1 );
+		int nHitbox = RandomInt( 0, set->numhitboxes - 1 );
 		mstudiobbox_t *pBox = set->pHitbox(nHitbox);
 
 		AddParticle( tempDelta, pBox->bbmin, pBox->bbmax, *hitboxbones[pBox->bone] );

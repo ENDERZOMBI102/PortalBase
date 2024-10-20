@@ -90,7 +90,7 @@ void CGenericNPC::TempGunEffect( void )
 
 	bool fSound = false;
 	
-	if( random->RandomInt( 0, 3 ) == 0 )
+	if( RandomInt( 0, 3 ) == 0 )
 	{
 		fSound = true;
 	}

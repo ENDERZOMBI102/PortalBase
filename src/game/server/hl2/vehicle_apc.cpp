@@ -364,10 +364,10 @@ void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
 	pChunk->SetAbsOrigin( vecExplosionPos );
 	pChunk->SetAbsAngles( vecSpawnAngles );
 
-	int nGib = random->RandomInt( 0, APC_MAX_CHUNKS - 1 );
+	int nGib = RandomInt( 0, APC_MAX_CHUNKS - 1 );
 	pChunk->Spawn( s_pChunkModelName[nGib] );
 	pChunk->SetOwnerEntity( this );
-	pChunk->m_lifeTime = random->RandomFloat( 6.0f, 8.0f );
+	pChunk->m_lifeTime = RandomFloat( 6.0f, 8.0f );
 	pChunk->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 	IPhysicsObject *pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
 	
@@ -378,12 +378,12 @@ void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
 		Vector vecVelocity;
 
 		QAngle angles;
-		angles.x = random->RandomFloat( -40, 0 );
-		angles.y = random->RandomFloat( 0, 360 );
+		angles.x = RandomFloat( -40, 0 );
+		angles.y = RandomFloat( 0, 360 );
 		angles.z = 0.0f;
 		AngleVectors( angles, &vecVelocity );
 		
-		vecVelocity *= random->RandomFloat( 300, 900 );
+		vecVelocity *= RandomFloat( 300, 900 );
 		vecVelocity += GetAbsVelocity();
 
 		AngularImpulse angImpulse;
@@ -431,15 +431,15 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 	for (int i = 0; i < 5; i++)
 	{
 		CollisionProp()->RandomPointInBounds( vecNormalizedMins, vecNormalizedMaxs, &vecAbsPoint );
-		te->Explosion( filter, random->RandomFloat( 0.0, 1.0 ),	&vecAbsPoint, 
-			g_sModelIndexFireball, random->RandomInt( 4, 10 ), 
-			random->RandomInt( 8, 15 ), 
+		te->Explosion( filter, RandomFloat( 0.0, 1.0 ),	&vecAbsPoint,
+			g_sModelIndexFireball, RandomInt( 4, 10 ),
+			RandomInt( 8, 15 ),
 			( i < 2 ) ? TE_EXPLFLAG_NODLIGHTS : TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOFIREBALLSMOKE | TE_EXPLFLAG_NODLIGHTS,
 			100, 0 );
 	}
 
 	// TODO: make the gibs spawn in sync with the delayed explosions
-	int nGibs = random->RandomInt( 1, 4 );
+	int nGibs = RandomInt( 1, 4 );
 	for ( int i = 0; i < nGibs; i++)
 	{
 		// Throw a flaming, smoking chunk.
@@ -452,10 +452,10 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 		pChunk->SetAbsOrigin( vecAbsPoint );
 		pChunk->SetAbsAngles( vecSpawnAngles );
 
-		int nGib = random->RandomInt( 0, APC_MAX_CHUNKS - 1 );
+		int nGib = RandomInt( 0, APC_MAX_CHUNKS - 1 );
 		pChunk->Spawn( s_pChunkModelName[nGib] );
 		pChunk->SetOwnerEntity( this );
-		pChunk->m_lifeTime = random->RandomFloat( 6.0f, 8.0f );
+		pChunk->m_lifeTime = RandomFloat( 6.0f, 8.0f );
 		pChunk->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 		IPhysicsObject *pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
 		
@@ -466,12 +466,12 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 			Vector vecVelocity;
 
 			QAngle angles;
-			angles.x = random->RandomFloat( -20, 20 );
-			angles.y = random->RandomFloat( 0, 360 );
+			angles.x = RandomFloat( -20, 20 );
+			angles.y = RandomFloat( 0, 360 );
 			angles.z = 0.0f;
 			AngleVectors( angles, &vecVelocity );
 			
-			vecVelocity *= random->RandomFloat( 300, 900 );
+			vecVelocity *= RandomFloat( 300, 900 );
 			vecVelocity += GetAbsVelocity();
 
 			AngularImpulse angImpulse;
@@ -886,7 +886,7 @@ void CPropAPC::CreateCorpse( )
 			VectorNormalize( vecVelocity );
 
 			// Apply a force that would make a 100kg mass travel 150 - 300 m/s
-			float flRandomVel = random->RandomFloat( 150, 300 );
+			float flRandomVel = RandomFloat( 150, 300 );
 			vecVelocity *= (100 * flRandomVel) / flMass;
 			vecVelocity.z += 100.0f;
 			AngularImpulse angImpulse = RandomAngularImpulse( -500, 500 );
@@ -936,14 +936,14 @@ void CPropAPC::FireDying( )
 	VectorNormalize( vecDir );
 
 	Vector vecVelocity;
-	VectorMultiply( vecDir, ROCKET_SPEED * random->RandomFloat( 0.75f, 1.25f ), vecVelocity );
+	VectorMultiply( vecDir, ROCKET_SPEED * RandomFloat( 0.75f, 1.25f ), vecVelocity );
 
 	QAngle angles;
 	VectorAngles( vecDir, angles );
 
 	CAPCMissile *pRocket = (CAPCMissile *) CAPCMissile::Create( vecRocketOrigin, angles, vecVelocity, this );
-	float flDeathTime = random->RandomFloat( 0.3f, 0.5f );
-	if ( random->RandomFloat( 0.0f, 1.0f ) < 0.3f )
+	float flDeathTime = RandomFloat( 0.3f, 0.5f );
+	if ( RandomFloat( 0.0f, 1.0f ) < 0.3f )
 	{
 		pRocket->ExplodeDelay( flDeathTime );
 	}
@@ -953,7 +953,7 @@ void CPropAPC::FireDying( )
 	}
 
 	// Make erratic firing
-	m_flRocketTime = gpGlobals->curtime + random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_TIME, DEATH_VOLLEY_MAX_FIRE_TIME );
+	m_flRocketTime = gpGlobals->curtime + RandomFloat( DEATH_VOLLEY_MIN_FIRE_TIME, DEATH_VOLLEY_MAX_FIRE_TIME );
 	if ( --m_iRocketSalvoLeft <= 0 )
 	{
 		CreateCorpse();
@@ -979,7 +979,7 @@ void CPropAPC::FireRocket( void )
 	{
 		// Reload the salvo
 		m_iRocketSalvoLeft = ROCKET_SALVO_SIZE;
-		m_flRocketTime = gpGlobals->curtime + random->RandomFloat( ROCKET_MIN_BURST_PAUSE_TIME, ROCKET_MAX_BURST_PAUSE_TIME );
+		m_flRocketTime = gpGlobals->curtime + RandomFloat( ROCKET_MIN_BURST_PAUSE_TIME, ROCKET_MAX_BURST_PAUSE_TIME );
 	}
 
 	Vector vecRocketOrigin;

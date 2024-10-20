@@ -65,8 +65,8 @@ inline const Vector& CShotManipulator::ApplySpread( const Vector& vecSpread, flo
 	float flatness = fabsf( shotBias ) * .5f;
 
 	do {
-		x = random->RandomFloat( -1, 1 ) * flatness + random->RandomFloat( -1, 1 ) * ( 1 - flatness );
-		y = random->RandomFloat( -1, 1 ) * flatness + random->RandomFloat( -1, 1 ) * ( 1 - flatness );
+		x = RandomFloat( -1, 1 ) * flatness + RandomFloat( -1, 1 ) * ( 1 - flatness );
+		y = RandomFloat( -1, 1 ) * flatness + RandomFloat( -1, 1 ) * ( 1 - flatness );
 		if ( shotBias < 0 ) {
 			x = ( x >= 0 ) ? 1.f - x : -1.f - x;
 			y = ( y >= 0 ) ? 1.f - y : -1.f - y;

@@ -595,7 +595,7 @@ void CRumbleEffects::StartEffect( unsigned char effectIndex, unsigned char rumbl
 
 	if( (rumbleFlags & RUMBLE_FLAG_RANDOM_AMPLITUDE) )
 	{
-		pChannel->scale = random->RandomFloat( 0.1f, 1.0f );
+		pChannel->scale = RandomFloat( 0.1f, 1.0f );
 	}
 }
 

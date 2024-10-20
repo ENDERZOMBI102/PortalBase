@@ -89,7 +89,7 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 	VectorMA( m_vecOrigin, 50.0, forward, m_vecOrigin.GetForModify() );
 	VectorMA( m_vecOrigin, -25.0, right, m_vecOrigin.GetForModify() );
 
-	m_vecDirection.Init( random->RandomInt( -100, 100 ), random->RandomInt( -100, 100 ), random->RandomInt( 0, 100 ) );
+	m_vecDirection.Init( RandomInt( -100, 100 ), RandomInt( -100, 100 ), RandomInt( 0, 100 ) );
 
 	CBroadcastRecipientFilter filter;
 	Create( filter, 0.0 );

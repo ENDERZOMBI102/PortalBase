@@ -1345,18 +1345,18 @@ void C_BasePlayer::CreateWaterEffects()
 			offset.z = ( m_flWaterSurfaceZ - 8.0f );
 		}
 
-		pParticle = (SimpleParticle *) m_pWaterEmitter->AddParticle( sizeof(SimpleParticle), g_Mat_Fleck_Cement[random->RandomInt(0,1)], offset );
+		pParticle = (SimpleParticle *) m_pWaterEmitter->AddParticle( sizeof(SimpleParticle), g_Mat_Fleck_Cement[RandomInt(0,1)], offset );
 
 		if (pParticle == nullptr)
 			continue;
 
 		pParticle->m_flLifetime	= 0.0f;
-		pParticle->m_flDieTime	= random->RandomFloat( 2.0f, 4.0f );
+		pParticle->m_flDieTime	= RandomFloat( 2.0f, 4.0f );
 
 		pParticle->m_vecVelocity = RandomVector( -2.0f, 2.0f );
 
 		//FIXME: We should tint these based on the water's fog value!
-		float color = random->RandomInt( 32, 128 );
+		float color = RandomInt( 32, 128 );
 		pParticle->m_uchColor[0] = color;
 		pParticle->m_uchColor[1] = color;
 		pParticle->m_uchColor[2] = color;
@@ -1367,8 +1367,8 @@ void C_BasePlayer::CreateWaterEffects()
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
 		
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -0.5f, 0.5f );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -0.5f, 0.5f );
 	}
 }
 

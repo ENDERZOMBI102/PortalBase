@@ -734,7 +734,7 @@ CBaseEntity *CBeam::RandomTargetname( const char *szName )
 	while ((pNewEntity = gEntList.FindEntityByName( pNewEntity, szName )) != NULL)
 	{
 		total++;
-		if (random->RandomInt(0,total-1) < 1)
+		if (RandomInt(0,total-1) < 1)
 			pEntity = pNewEntity;
 	}
 	return pEntity;

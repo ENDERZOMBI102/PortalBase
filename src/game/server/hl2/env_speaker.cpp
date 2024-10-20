@@ -88,7 +88,7 @@ void CSpeaker::Precache( void )
 	if ( !FBitSet (m_spawnflags, SF_SPEAKER_START_SILENT ) )
 	{
 		// set first announcement time for random n second
-		SetNextThink( gpGlobals->curtime + random->RandomFloat(5.0, 15.0) );
+		SetNextThink( gpGlobals->curtime + RandomFloat(5.0, 15.0) );
 	}
 
 	if ( !m_pInstancedResponseSystem && Q_strlen( STRING(m_iszRuleScriptFile) ) > 0 )
@@ -167,14 +167,14 @@ void CSpeaker::SpeakerThink( void )
 	{
 		float releaseTime = MAX( g_AIFriendliesTalkSemaphore.GetReleaseTime(), g_AIFoesTalkSemaphore.GetReleaseTime() );
 		// Add some slop (only up to one second)
-		releaseTime += random->RandomFloat( 0, 1 );
+		releaseTime += RandomFloat( 0, 1 );
 		SetNextThink( releaseTime );
 		return;
 	}
 	
 	DispatchResponse( m_iszConcept.ToCStr() );
 
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(m_delayMin, m_delayMax) );
+	SetNextThink( gpGlobals->curtime + RandomFloat(m_delayMin, m_delayMax) );
 
 	// time delay until it's ok to speak: used so that two NPCs don't talk at once
 	g_AIFriendliesTalkSemaphore.Acquire( 5, this );		

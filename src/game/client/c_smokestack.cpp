@@ -331,7 +331,7 @@ void C_SmokeStack::Update(float fTimeDelta)
 		float tempDelta = fTimeDelta;
 		while(m_ParticleSpawn.NextEvent(tempDelta))
 		{
-			int iRandomFrame = random->RandomInt( 0, m_iMaxFrames );
+			int iRandomFrame = RandomInt( 0, m_iMaxFrames );
 
 #ifndef HL2_EPISODIC
 			iRandomFrame = 0;
@@ -358,7 +358,7 @@ void C_SmokeStack::Update(float fTimeDelta)
 #ifdef HL2_EPISODIC
 				pParticle->m_flAngle = RandomFloat( 0, 360 );
 #endif
-				pParticle->m_flRollDelta = random->RandomFloat( -m_flRollSpeed, m_flRollSpeed );
+				pParticle->m_flRollDelta = RandomFloat( -m_flRollSpeed, m_flRollSpeed );
 				pParticle->m_flSortPos = pParticle->m_Pos.z;
 			}
 		}

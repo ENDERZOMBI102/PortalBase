@@ -998,7 +998,7 @@ void CBasePlayer::DamageEffect(float flDamage, int fDamageType)
 		// calls are just expensive ways of returning zero. This code has always been this
 		// way and has never had any value. clang complains about the conversion from a
 		// literal floating-point number to an integer.
-		//ViewPunch(QAngle(random->RandomInt(-0.1,0.1), random->RandomInt(-0.1,0.1), random->RandomInt(-0.1,0.1)));
+		//ViewPunch(QAngle(RandomInt(-0.1,0.1), RandomInt(-0.1,0.1), RandomInt(-0.1,0.1)));
 
 		// Burn sound 
 		EmitSound( "Player.PlasmaDamage" );
@@ -1382,7 +1382,7 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 			SetSuitUpdate("!HEV_HLTH2", false, SUIT_NEXT_IN_10MIN);	// health critical
 	
 		// give critical health warnings
-		if (!random->RandomInt(0,3) && flHealthPrev < 50)
+		if (!RandomInt(0,3) && flHealthPrev < 50)
 			SetSuitUpdate("!HEV_DMG7", false, SUIT_NEXT_IN_5MIN); //seek medical attention
 	}
 
@@ -1391,7 +1391,7 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		{
 			if (flHealthPrev < 50)
 			{
-				if (!random->RandomInt(0,3))
+				if (!RandomInt(0,3))
 					SetSuitUpdate("!HEV_DMG7", false, SUIT_NEXT_IN_5MIN); //seek medical attention
 			}
 			else
@@ -1439,8 +1439,8 @@ void CBasePlayer::OnDamagedByExplosion( const CTakeDamageInfo &info )
 		return;
 
 	int effect = shock ? 
-		random->RandomInt( 35, 37 ) : 
-		random->RandomInt( 32, 34 );
+		RandomInt( 35, 37 ) :
+		RandomInt( 32, 34 );
 
 	CSingleUserRecipientFilter user( this );
 	enginesound->SetPlayerDSP( user, effect, false );
@@ -2190,7 +2190,7 @@ void CBasePlayer::StartDeathCam( void )
 	if ( pSpot )
 	{
 		// at least one intermission spot in the world.
-		iRand = random->RandomInt( 0, 3 );
+		iRand = RandomInt( 0, 3 );
 
 		while ( iRand > 0 )
 		{
@@ -4177,7 +4177,7 @@ void CBasePlayer::UpdateGeigerCounter( void )
 	}
 
 	// reset counter and semaphore
-	if (!random->RandomInt(0,3))
+	if (!RandomInt(0,3))
 	{
 		m_flgeigerRange = 1000;
 	}
@@ -4326,7 +4326,7 @@ void CBasePlayer::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 	if (iNoRepeatTime)
 	{
 		if (iempty < 0)
-			iempty = random->RandomInt(0, CSUITNOREPEAT-1); // pick random slot to take over
+			iempty = RandomInt(0, CSUITNOREPEAT-1); // pick random slot to take over
 		m_rgiSuitNoRepeat[iempty] = isentence;
 		m_rgflSuitNoRepeatTime[iempty] = iNoRepeatTime + gpGlobals->curtime;
 	}
@@ -4818,7 +4818,7 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	{
 		pSpot = g_pLastSpawn;
 		// Randomize the start spot
-		for ( int i = random->RandomInt(1,5); i > 0; i-- )
+		for ( int i = RandomInt(1,5); i > 0; i-- )
 			pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_deathmatch" );
 		if ( !pSpot )  // skip over the null point
 			pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_deathmatch" );
@@ -6730,7 +6730,7 @@ Vector CBasePlayer::BodyTarget( const Vector &posSrc, bool bNoisy )
 	}
 	if (bNoisy)
 	{
-		return GetAbsOrigin() + (GetViewOffset() * random->RandomFloat( 0.7, 1.0 )); 
+		return GetAbsOrigin() + (GetViewOffset() * RandomFloat( 0.7, 1.0 ));
 	}
 	else
 	{

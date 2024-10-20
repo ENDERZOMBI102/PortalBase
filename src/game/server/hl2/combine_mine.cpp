@@ -323,8 +323,8 @@ void CBounceBomb::SetMineState( int iState )
 
 			Vector vecNudge;
 
-			vecNudge.x = random->RandomFloat( -1, 1 );
-			vecNudge.y = random->RandomFloat( -1, 1 );
+			vecNudge.x = RandomFloat( -1, 1 );
+			vecNudge.y = RandomFloat( -1, 1 );
 			vecNudge.z = 1.5;
 			vecNudge *= 350;
 
@@ -332,8 +332,8 @@ void CBounceBomb::SetMineState( int iState )
 			VPhysicsGetObject()->ApplyForceCenter( vecNudge );
 
 			float x, y;
-			x = 10 + random->RandomFloat( 0, 20 );
-			y = 10 + random->RandomFloat( 0, 20 );
+			x = 10 + RandomFloat( 0, 20 );
+			y = 10 + RandomFloat( 0, 20 );
 
 			VPhysicsGetObject()->ApplyTorqueCenter( AngularImpulse( x, y, 0 ) );
 
@@ -503,7 +503,7 @@ void CBounceBomb::BounceThink()
 		pPhysicsObject->Wake();
 		pPhysicsObject->ApplyForceCenter( up * force );
 
-		pPhysicsObject->ApplyTorqueCenter( AngularImpulse( random->RandomFloat( 5, 25 ), random->RandomFloat( 5, 25 ), 0 ) );
+		pPhysicsObject->ApplyTorqueCenter( AngularImpulse( RandomFloat( 5, 25 ), RandomFloat( 5, 25 ), 0 ) );
 		
 
 		if( m_hNearestNPC )
@@ -572,7 +572,7 @@ void CBounceBomb::CavernBounceThink()
 			pPhysicsObject->ApplyForceCenter( vecPredict * (pPhysicsObject->GetMass() * 0.65f) );
 		}
 
-		pPhysicsObject->ApplyTorqueCenter( AngularImpulse( random->RandomFloat( 15, 40 ), random->RandomFloat( 15, 40 ), random->RandomFloat( 30, 60 ) ) );
+		pPhysicsObject->ApplyTorqueCenter( AngularImpulse( RandomFloat( 15, 40 ), RandomFloat( 15, 40 ), RandomFloat( 30, 60 ) ) );
 		
 		EmitSound( "NPC_CombineMine.Hop" );
 
@@ -651,8 +651,8 @@ void CBounceBomb::SettleThink()
 				if( bHop )
 				{
 					Vector vecForce;
-					vecForce.x = random->RandomFloat( -1000, 1000 );
-					vecForce.y = random->RandomFloat( -1000, 1000 );
+					vecForce.x = RandomFloat( -1000, 1000 );
+					vecForce.y = RandomFloat( -1000, 1000 );
 					vecForce.z = 2500;
 
 					AngularImpulse torque( 160, 0, 160 );

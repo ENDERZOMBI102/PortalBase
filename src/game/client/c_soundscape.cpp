@@ -828,7 +828,7 @@ void C_SoundscapeSystem::TouchPlayLooping( KeyValues *pAmbient )
 
 Vector C_SoundscapeSystem::GenerateRandomSoundPosition()
 {
-	float angle = random->RandomFloat( -180, 180 );
+	float angle = RandomFloat( -180, 180 );
 	float sinAngle, cosAngle;
 	SinCos( angle, &sinAngle, &cosAngle );
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
@@ -1243,7 +1243,7 @@ void C_SoundscapeSystem::PlayRandomSound( randomsound_t &sound )
 {
 	Assert( sound.waveCount > 0 );
 
-	int waveId = random->RandomInt( 0, sound.waveCount-1 );
+	int waveId = RandomInt( 0, sound.waveCount-1 );
 	KeyValues *pWaves = sound.pWaves;
 	while ( waveId > 0 && pWaves )
 	{

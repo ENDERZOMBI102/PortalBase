@@ -253,7 +253,7 @@ void CTimerEntity::ResetTimer( void )
 
 	if ( m_iUseRandomTime )
 	{
-		m_flRefireTime = random->RandomFloat( m_flLowerRandomBound, m_flUpperRandomBound );
+		m_flRefireTime = RandomFloat( m_flLowerRandomBound, m_flUpperRandomBound );
 	}
 
 	SetNextThink( gpGlobals->curtime + m_flRefireTime );
@@ -1827,7 +1827,7 @@ void CLogicCase::InputPickRandom( inputdata_t &inputdata )
 	//
 	if ( nNumCases > 0 )
 	{
-		int nRandom = random->RandomInt(0, nNumCases - 1);
+		int nRandom = RandomInt(0, nNumCases - 1);
 		int nCase = (unsigned char)uchCaseMap[nRandom];
 
 		Assert(nCase < MAX_LOGIC_CASES);
@@ -1883,7 +1883,7 @@ void CLogicCase::InputPickRandomShuffle( inputdata_t &inputdata )
 	//
 	if ( nCaseCount > 0 )
 	{
-		int nRandom = random->RandomInt( 0, nCaseCount - 1 );
+		int nRandom = RandomInt( 0, nCaseCount - 1 );
 
 		int nCase = m_uchShuffleCaseMap[nRandom];
 		Assert(nCase < MAX_LOGIC_CASES);

@@ -1733,7 +1733,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 
 #endif
 	// Add recoil
-	QAngle	recoil = QAngle( random->RandomFloat( 1.0f, 2.0f ), random->RandomFloat( -1.0f, 1.0f ), 0 );
+	QAngle	recoil = QAngle( RandomFloat( 1.0f, 2.0f ), RandomFloat( -1.0f, 1.0f ), 0 );
 	pOwner->ViewPunch( recoil );
 
 	//Explosion effect
@@ -2606,15 +2606,15 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 		// Turn on the glow sprites
 		for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_GLOW_SPRITES); i++ )
 		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 24, 32 ) );
+			m_Parameters[i].GetScale().SetAbsolute( RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
+			m_Parameters[i].GetAlpha().SetAbsolute( RandomInt( 24, 32 ) );
 		}
 
 		// Turn on the glow sprites
 		for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_ENDCAP_SPRITES); i++ )
 		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 3, 5 ) );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 200, 255 ) );
+			m_Parameters[i].GetScale().SetAbsolute( RandomFloat( 3, 5 ) );
+			m_Parameters[i].GetAlpha().SetAbsolute( RandomInt( 200, 255 ) );
 		}
 
 		if ( m_EffectState != EFFECT_HOLDING )
@@ -2631,15 +2631,15 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 		// Turn on the glow sprites
 		for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_GLOW_SPRITES); i++ )
 		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 24, 32 ) );
+			m_Parameters[i].GetScale().SetAbsolute( RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
+			m_Parameters[i].GetAlpha().SetAbsolute( RandomInt( 24, 32 ) );
 		}
 
 		// Turn on the glow sprites
 		for ( i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_ENDCAP_SPRITES); i++ )
 		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 3, 5 ) );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 200, 255 ) );
+			m_Parameters[i].GetScale().SetAbsolute( RandomFloat( 3, 5 ) );
+			m_Parameters[i].GetAlpha().SetAbsolute( RandomInt( 200, 255 ) );
 		}
 		
 		if ( m_EffectState != EFFECT_HOLDING )

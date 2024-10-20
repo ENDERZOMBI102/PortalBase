@@ -81,7 +81,7 @@ void CRagdollBoogie::Spawn()
 
 	if ( HasSpawnFlags( SF_RAGDOLL_BOOGIE_ELECTRICAL ) )
 	{
-		SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
+		SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->curtime + RandomFloat( 0.1f, 0.3f ), s_pZapContext );
 	}
 }
 
@@ -123,7 +123,7 @@ void CRagdollBoogie::ZapThink()
 	EmitSound( "RagdollBoogie.Zap" );
 #endif
 
-	SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
+	SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->curtime + RandomFloat( 0.1f, 0.3f ), s_pZapContext );
 }
 
 
@@ -241,7 +241,7 @@ void CRagdollBoogie::BoogieThink( void )
 
 		if ( dt < 0 )
 		{
-			SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1, 0.2f ) );
+			SetNextThink( gpGlobals->curtime + RandomFloat( 0.1, 0.2f ) );
 			return;
 		}
 
@@ -262,5 +262,5 @@ void CRagdollBoogie::BoogieThink( void )
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1, 0.2f ) );
+	SetNextThink( gpGlobals->curtime + RandomFloat( 0.1, 0.2f ) );
 }

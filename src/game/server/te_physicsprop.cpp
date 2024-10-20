@@ -83,7 +83,7 @@ void CTEPhysicsProp::Test( const Vector& current_origin, const QAngle& current_a
 	m_vecOrigin = current_origin;
 	m_angRotation = current_angles;
 	
-	m_vecVelocity.Init( random->RandomFloat( -10, 10 ), random->RandomFloat( -10, 10 ), random->RandomFloat( 0, 20 ) );
+	m_vecVelocity.Init( RandomFloat( -10, 10 ), RandomFloat( -10, 10 ), RandomFloat( 0, 20 ) );
 	m_nFlags = 0;
 	m_nEffects = 0;
 	

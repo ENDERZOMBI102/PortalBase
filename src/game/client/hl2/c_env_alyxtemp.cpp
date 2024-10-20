@@ -138,13 +138,13 @@ void C_AlyxEmpEffect::UpdateIdle( float percentage )
 	{
 		for ( int i = 0; i < numParticles; i++ )
 		{
-			dist = random->RandomFloat( 4.0f * EMP_SCALE * percentage, 64.0f * EMP_SCALE * percentage );
+			dist = RandomFloat( 4.0f * EMP_SCALE * percentage, 64.0f * EMP_SCALE * percentage );
 
 			offset = forward * dist;
 
 			dist = RemapValClamped( dist, 4.0f * EMP_SCALE * percentage, 64.0f * EMP_SCALE * percentage, 6.0f, 1.0f );
-			offset += right * random->RandomFloat( -4.0f * EMP_SCALE * dist, 4.0f * EMP_SCALE * dist );
-			offset += up * random->RandomFloat( -4.0f * EMP_SCALE * dist, 4.0f * EMP_SCALE * dist );
+			offset += right * RandomFloat( -4.0f * EMP_SCALE * dist, 4.0f * EMP_SCALE * dist );
+			offset += up * RandomFloat( -4.0f * EMP_SCALE * dist, 4.0f * EMP_SCALE * dist );
 
 			offset += GetAbsOrigin();
 
@@ -168,7 +168,7 @@ void C_AlyxEmpEffect::UpdateIdle( float percentage )
 			sParticle->m_uchStartAlpha	= alpha;
 			sParticle->m_uchEndAlpha	= 0;
 
-			sParticle->m_uchStartSize	= random->RandomFloat( 1, 2 );
+			sParticle->m_uchStartSize	= RandomFloat( 1, 2 );
 			sParticle->m_uchEndSize		= 0;
 		}
 	}
@@ -241,13 +241,13 @@ void C_AlyxEmpEffect::UpdateCharging( float percentage )
 
 	for ( i = 0; i < numParticles; i++ )
 	{
-		dist = random->RandomFloat( 4.0f * percentage, 64.0f * percentage );
+		dist = RandomFloat( 4.0f * percentage, 64.0f * percentage );
 
 		offset = forward * dist;
 
 		dist = RemapValClamped( dist, 4.0f * percentage, 64.0f * percentage, 6.0f, 1.0f );
-		offset += right * random->RandomFloat( -4.0f * dist, 4.0f * dist );
-		offset += up * random->RandomFloat( -4.0f * dist, 4.0f * dist );
+		offset += right * RandomFloat( -4.0f * dist, 4.0f * dist );
+		offset += up * RandomFloat( -4.0f * dist, 4.0f * dist );
 
 		offset += GetAbsOrigin();
 
@@ -271,7 +271,7 @@ void C_AlyxEmpEffect::UpdateCharging( float percentage )
 		sParticle->m_uchStartAlpha	= alpha;
 		sParticle->m_uchEndAlpha	= 0;
 
-		sParticle->m_uchStartSize	= random->RandomFloat( 1, 2 );
+		sParticle->m_uchStartSize	= RandomFloat( 1, 2 );
 		sParticle->m_uchEndSize		= 0;
 	}
 
@@ -389,13 +389,13 @@ void C_AlyxEmpEffect::UpdateDischarging( void )
 
 	for ( i = 0; i < 4; i++ )
 	{
-		dist = random->RandomFloat( 4.0f, 64.0f );
+		dist = RandomFloat( 4.0f, 64.0f );
 
 		offset = forward * dist;
 
 		dist = RemapValClamped( dist, 4.0f, 64.0f, 6.0f, 1.0f );
-		offset += right * random->RandomFloat( -2.0f * dist, 2.0f * dist );
-		offset += up * random->RandomFloat( -2.0f * dist, 2.0f * dist );
+		offset += right * RandomFloat( -2.0f * dist, 2.0f * dist );
+		offset += up * RandomFloat( -2.0f * dist, 2.0f * dist );
 
 		offset += GetAbsOrigin();
 

@@ -106,7 +106,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 		data.m_vOrigin = centerPoint;
 		data.m_vNormal = normal;
 		VectorAngles( normal, data.m_vAngles );
-		data.m_flScale = random->RandomFloat( 8, 10 );
+		data.m_flScale = RandomFloat( 8, 10 );
 
 		DispatchEffect( "watersplash", data );
 		
@@ -123,7 +123,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 			data.m_vOrigin = point;
 			data.m_vNormal = normal;
 			VectorAngles( normal, data.m_vAngles );
-			data.m_flScale = random->RandomFloat( 4, 6 );
+			data.m_flScale = RandomFloat( 4, 6 );
 
 			DispatchEffect( "watersplash", data );
 		}
@@ -172,7 +172,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 	data.m_vOrigin = centerPoint;
 	data.m_vNormal = normal;
 	VectorAngles( normal, data.m_vAngles );
-	data.m_flScale = size + random->RandomFloat( 0, 2 );
+	data.m_flScale = size + RandomFloat( 0, 2 );
 	if ( pEntity->GetWaterType() & CONTENTS_SLIME )
 	{
 		data.m_fFlags |= FX_WATER_IN_SLIME;
@@ -189,7 +189,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 
 	if ( radius > 500.0f )
 	{
-		int splashes = random->RandomInt( 1, 4 );
+		int splashes = RandomInt( 1, 4 );
 
 		for ( int i = 0; i < splashes; i++ )
 		{
@@ -202,7 +202,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 			data.m_vOrigin = point;
 			data.m_vNormal = normal;
 			VectorAngles( normal, data.m_vAngles );
-			data.m_flScale = size + random->RandomFloat( -3, 1 );
+			data.m_flScale = size + RandomFloat( -3, 1 );
  			if ( pEntity->GetWaterType() & CONTENTS_SLIME )
 			{
 				data.m_fFlags |= FX_WATER_IN_SLIME;
@@ -225,12 +225,12 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 		point = RandomVector( -8.0f, 8.0f );
 		point[2] = 0.0f;
 
-		point += centerPoint + axes[0] * random->RandomFloat( -1, 1 ) + axes[1] * random->RandomFloat( -1, 1 );
+		point += centerPoint + axes[0] * RandomFloat( -1, 1 ) + axes[1] * RandomFloat( -1, 1 );
 
 		data.m_vOrigin = point;
 		data.m_vNormal = normal;
 		VectorAngles( normal, data.m_vAngles );
-		data.m_flScale = size + random->RandomFloat( -2, 4 );
+		data.m_flScale = size + RandomFloat( -2, 4 );
 
 		DispatchEffect( "watersplash", data );
 	}

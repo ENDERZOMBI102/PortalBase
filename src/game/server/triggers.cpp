@@ -684,7 +684,7 @@ void CTriggerHurt::Spawn( void )
 	if (m_bitsDamageInflict & DMG_RADIATION)
 	{
 		SetThink ( &CTriggerHurtShim::RadiationThinkShim );
-		SetNextThink( gpGlobals->curtime + random->RandomFloat(0.0, 0.5) );
+		SetNextThink( gpGlobals->curtime + RandomFloat(0.0, 0.5) );
 	}
 }
 
@@ -3988,8 +3988,8 @@ void CTriggerWind::WindThink( void )
 		m_bSwitch = false;
 
 		// Set new target direction and speed
-		m_nSpeedTarget = m_nSpeedBase + random->RandomInt( -m_nSpeedNoise, m_nSpeedNoise );
-		m_nDirTarget = UTIL_AngleMod( m_nDirBase + random->RandomInt(-m_nDirNoise, m_nDirNoise) );
+		m_nSpeedTarget = m_nSpeedBase + RandomInt( -m_nSpeedNoise, m_nSpeedNoise );
+		m_nDirTarget = UTIL_AngleMod( m_nDirBase + RandomInt(-m_nDirNoise, m_nDirNoise) );
 	}
 	else
 	{
@@ -4011,7 +4011,7 @@ void CTriggerWind::WindThink( void )
 		if (bDone)
 		{
 			m_nSpeedCurrent = m_nSpeedTarget;
-			SetContextThink( &CTriggerWind::WindThink, m_nHoldBase + random->RandomFloat(-m_nHoldNoise,m_nHoldNoise), WIND_THINK_CONTEXT );
+			SetContextThink( &CTriggerWind::WindThink, m_nHoldBase + RandomFloat(-m_nHoldNoise,m_nHoldNoise), WIND_THINK_CONTEXT );
 			m_bSwitch = true;
 		}
 	}

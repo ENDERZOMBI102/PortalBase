@@ -145,7 +145,7 @@ void CGrenadeHomer::SetSpin(float flSpinMagnitude, float flSpinSpeed)
 {
 	m_flSpinMagnitude	= flSpinMagnitude;
 	m_flSpinSpeed		= flSpinSpeed;
-	m_flSpinOffset		= random->RandomInt(-m_flSpinSpeed,m_flSpinSpeed);
+	m_flSpinOffset		= RandomInt(-m_flSpinSpeed,m_flSpinSpeed);
 }
 
 //------------------------------------------------------------------------------
@@ -394,7 +394,7 @@ void CGrenadeHomer::Detonate(void)
 		m_flDamage );
 
 //	int magnitude = 1.0;
-//	int	colorRamp = random->RandomInt( 128, 255 );
+//	int	colorRamp = RandomInt( 128, 255 );
 
 
 	if ( m_nRocketTrailType == HOMER_SMOKE_TRAIL_ALIEN )

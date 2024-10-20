@@ -176,11 +176,11 @@ void CHLMachineGun::DoMachineGunKick( CBasePlayer *pPlayer, float dampEasy, floa
 	vecScratch.z = KICK_MIN_Z + ( maxVerticleKickAngle * kickPerc ) / 8;
 
 	//Wibble left and right
-	if ( random->RandomInt( -1, 1 ) >= 0 )
+	if ( RandomInt( -1, 1 ) >= 0 )
 		vecScratch.y *= -1;
 
 	//Wobble up and down
-	if ( random->RandomInt( -1, 1 ) >= 0 )
+	if ( RandomInt( -1, 1 ) >= 0 )
 		vecScratch.z *= -1;
 
 	//If we're in easy, dampen the effect a bit

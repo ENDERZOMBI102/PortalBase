@@ -148,7 +148,7 @@ void CEnvWindShared::UpdateWindSound( float flTotalWindSpeed )
 {
 	if (!g_pEffects->IsServer())
 	{
-		float flDuration = random->RandomFloat( 1.0f, 2.0f );
+		float flDuration = RandomFloat( 1.0f, 2.0f );
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 
 		// FIXME: Tweak with these numbers

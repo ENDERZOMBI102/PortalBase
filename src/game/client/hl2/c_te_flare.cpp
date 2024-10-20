@@ -131,8 +131,8 @@ void C_Flare::RestoreResources( void )
 		if ( m_pParticle[0] != NULL )
 		{
 			m_pParticle[0]->m_uchColor[0] = m_pParticle[0]->m_uchColor[1] = m_pParticle[0]->m_uchColor[2] = 0;
-			m_pParticle[0]->m_flRoll		= random->RandomInt( 0, 360 );
-			m_pParticle[0]->m_flRollDelta	= random->RandomFloat( 1.0f, 4.0f );
+			m_pParticle[0]->m_flRoll		= RandomInt( 0, 360 );
+			m_pParticle[0]->m_flRollDelta	= RandomFloat( 1.0f, 4.0f );
 			m_pParticle[0]->m_flLifetime	= 0.0f;
 			m_pParticle[0]->m_flDieTime		= 10.0f;
 		}
@@ -149,8 +149,8 @@ void C_Flare::RestoreResources( void )
 		if ( m_pParticle[1] != NULL )
 		{
 			m_pParticle[1]->m_uchColor[0] = m_pParticle[1]->m_uchColor[1] = m_pParticle[1]->m_uchColor[2] = 0;
-			m_pParticle[1]->m_flRoll		= random->RandomInt( 0, 360 );
-			m_pParticle[1]->m_flRollDelta	= random->RandomFloat( 1.0f, 4.0f );
+			m_pParticle[1]->m_flRoll		= RandomInt( 0, 360 );
+			m_pParticle[1]->m_flRollDelta	= RandomFloat( 1.0f, 4.0f );
 			m_pParticle[1]->m_flLifetime	= 0.0f;
 			m_pParticle[1]->m_flDieTime		= 10.0f;
 		}
@@ -260,8 +260,8 @@ void C_Flare::Update( float timeDelta )
 			dl->color.r = 255;
 			dl->die		= gpGlobals->curtime + 0.1f;
 
-			dl->radius	= baseScale * random->RandomFloat( 110.0f, 128.0f );
-			dl->color.g = dl->color.b = random->RandomInt( 32, 64 );
+			dl->radius	= baseScale * RandomFloat( 110.0f, 128.0f );
+			dl->color.g = dl->color.b = RandomInt( 32, 64 );
 		}
 		else
 		{
@@ -282,15 +282,15 @@ void C_Flare::Update( float timeDelta )
 				dl->color.r = 255;
 				dl->die		= gpGlobals->curtime + 0.1f;
 
-				dl->radius	= baseScale * random->RandomFloat( 245.0f, 256.0f );
-				dl->color.g = dl->color.b = random->RandomInt( 95, 128 );
+				dl->radius	= baseScale * RandomFloat( 245.0f, 256.0f );
+				dl->color.g = dl->color.b = RandomInt( 95, 128 );
 		
 				dlight_t *el= effects->CL_AllocElight( index );
 
 				el->origin	= effect_origin;
 				el->color.r = 255;
-				el->color.g = dl->color.b = random->RandomInt( 95, 128 );
-				el->radius	= baseScale * random->RandomFloat( 260.0f, 290.0f );
+				el->color.g = dl->color.b = RandomInt( 95, 128 );
+				el->radius	= baseScale * RandomFloat( 260.0f, 290.0f );
 				el->die		= gpGlobals->curtime + 0.1f;
 			}
 		}
@@ -322,7 +322,7 @@ void C_Flare::Update( float timeDelta )
 			sParticle->m_flLifetime		= 0.0f;
 			sParticle->m_flDieTime		= 1.0f;
 			
-			sParticle->m_vecVelocity	= Vector( random->RandomFloat( -16.0f, 16.0f ), random->RandomFloat( -16.0f, 16.0f ), random->RandomFloat( 8.0f, 16.0f ) + 32.0f );
+			sParticle->m_vecVelocity	= Vector( RandomFloat( -16.0f, 16.0f ), RandomFloat( -16.0f, 16.0f ), RandomFloat( 8.0f, 16.0f ) + 32.0f );
 
 			if ( m_bPropFlare )
 			{
@@ -337,12 +337,12 @@ void C_Flare::Update( float timeDelta )
 				sParticle->m_uchColor[2]	= 48;
 			}
 
-			sParticle->m_uchStartAlpha	= random->RandomInt( 64, 90 );
+			sParticle->m_uchStartAlpha	= RandomInt( 64, 90 );
 			sParticle->m_uchEndAlpha	= 0;
-			sParticle->m_uchStartSize	= random->RandomInt( 2, 4 );
+			sParticle->m_uchStartSize	= RandomInt( 2, 4 );
 			sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 8.0f;
-			sParticle->m_flRoll			= random->RandomInt( 0, 2*M_PI );
-			sParticle->m_flRollDelta	= random->RandomFloat( -(M_PI/6.0f), M_PI/6.0f );
+			sParticle->m_flRoll			= RandomInt( 0, 2*M_PI );
+			sParticle->m_flRollDelta	= RandomFloat( -(M_PI/6.0f), M_PI/6.0f );
 		}
 	}
 
@@ -367,20 +367,20 @@ void C_Flare::Update( float timeDelta )
 		
 		m_pParticle[0]->m_vecVelocity.Init();
 
-		fColor = random->RandomInt( 100.0f, 128.0f ) * visible;
+		fColor = RandomInt( 100.0f, 128.0f ) * visible;
 
 		m_pParticle[0]->m_uchColor[0]	= fColor;
 		m_pParticle[0]->m_uchColor[1]	= fColor;
 		m_pParticle[0]->m_uchColor[2]	= fColor;
 		m_pParticle[0]->m_uchStartAlpha	= fColor;
 		m_pParticle[0]->m_uchEndAlpha	= fColor;
-		m_pParticle[0]->m_uchStartSize	= baseScale * (float) random->RandomInt( 32, 48 );
+		m_pParticle[0]->m_uchStartSize	= baseScale * (float) RandomInt( 32, 48 );
 		m_pParticle[0]->m_uchEndSize	= m_pParticle[0]->m_uchStartSize;
 		m_pParticle[0]->m_flRollDelta	= 0.0f;
 		
-		if ( random->RandomInt( 0, 4 ) == 3 )
+		if ( RandomInt( 0, 4 ) == 3 )
 		{
-			m_pParticle[0]->m_flRoll	+= random->RandomInt( 2, 8 );
+			m_pParticle[0]->m_flRoll	+= RandomInt( 2, 8 );
 		}
 	}
 
@@ -407,8 +407,8 @@ void C_Flare::Update( float timeDelta )
 		m_pParticle[1]->m_uchColor[2]	= fColor;
 		m_pParticle[1]->m_uchStartAlpha	= fColor;
 		m_pParticle[1]->m_uchEndAlpha	= fColor;
-		m_pParticle[1]->m_uchStartSize	= baseScale * (float) random->RandomInt( 2, 4 );
+		m_pParticle[1]->m_uchStartSize	= baseScale * (float) RandomInt( 2, 4 );
 		m_pParticle[1]->m_uchEndSize	= m_pParticle[0]->m_uchStartSize;
-		m_pParticle[1]->m_flRoll		= random->RandomInt( 0, 360 );
+		m_pParticle[1]->m_flRoll		= RandomInt( 0, 360 );
 	}
 }

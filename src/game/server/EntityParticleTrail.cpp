@@ -95,7 +95,7 @@ void CEntityParticleTrail::Spawn()
 
 	if ( HasSpawnFlags( SF_RAGDOLL_BOOGIE_ELECTRICAL ) )
 	{
-		SetContextThink( ZapThink, gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
+		SetContextThink( ZapThink, gpGlobals->curtime + RandomFloat( 0.1f, 0.3f ), s_pZapContext );
 	}
 	*/
 }

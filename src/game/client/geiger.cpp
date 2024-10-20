@@ -183,9 +183,9 @@ void CHudGeiger::Paint()
 		flvol = 0.5;		//Msg ( "range < 50\n");
 	}
 
-	flvol = (flvol * (random->RandomInt(0,127)) / 255) + 0.25;
+	flvol = (flvol * (RandomInt(0,127)) / 255) + 0.25;
 
-	if ( random->RandomInt(0,127) < pct )
+	if ( RandomInt(0,127) < pct )
 	{
 		char sz[256];
 		if ( highsound )

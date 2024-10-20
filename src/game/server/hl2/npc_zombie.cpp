@@ -290,7 +290,7 @@ void CZombie::Spawn( void )
 
 	BaseClass::Spawn();
 
-	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
+	m_flNextMoanSound = gpGlobals->curtime + RandomFloat( 1.0, 4.0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -304,11 +304,11 @@ void CZombie::PrescheduleThink( void )
 			// Classic guy idles instead of moans.
 			IdleSound();
 
-  			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.0, 5.0 );
+  			m_flNextMoanSound = gpGlobals->curtime + RandomFloat( 2.0, 5.0 );
   		}
   		else
  		{
-  			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 2.0 );
+  			m_flNextMoanSound = gpGlobals->curtime + RandomFloat( 1.0, 2.0 );
   		}
   	}
 
@@ -403,7 +403,7 @@ void CZombie::AlertSound( void )
 	EmitSound( "Zombie.Alert" );
 
 	// Don't let a moan sound cut off the alert sound.
-	m_flNextMoanSound += random->RandomFloat( 2.0, 4.0 );
+	m_flNextMoanSound += RandomFloat( 2.0, 4.0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -419,7 +419,7 @@ const char *CZombie::GetMoanSound( int nSound )
 //-----------------------------------------------------------------------------
 void CZombie::IdleSound( void )
 {
-	if( GetState() == NPC_STATE_IDLE && random->RandomFloat( 0, 1 ) == 0 )
+	if( GetState() == NPC_STATE_IDLE && RandomFloat( 0, 1 ) == 0 )
 	{
 		// Moan infrequently in IDLE state.
 		return;
@@ -596,7 +596,7 @@ int CZombie::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFail
 
 	if ( failedSchedule != SCHED_ZOMBIE_CHARGE_ENEMY && 
 		 IsPathTaskFailure( taskFailCode ) &&
-		 random->RandomInt( 1, 100 ) < 50 )
+		 RandomInt( 1, 100 ) < 50 )
 	{
 		return SCHED_ZOMBIE_CHARGE_ENEMY;
 	}
@@ -656,7 +656,7 @@ void CZombie::StartTask( const Task_t *pTask )
 	{
 	case TASK_ZOMBIE_EXPRESS_ANGER:
 		{
-			if ( random->RandomInt( 1, 4 ) == 2 )
+			if ( RandomInt( 1, 4 ) == 2 )
 			{
 				SetIdealActivity( (Activity)ACT_ZOMBIE_TANTRUM );
 			}
@@ -772,7 +772,7 @@ bool CZombie::OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, CBaseDoor *pDoor,
 
 Activity CZombie::SelectDoorBash()
 {
-	if ( random->RandomInt( 1, 3 ) == 1 )
+	if ( RandomInt( 1, 3 ) == 1 )
 		return ACT_MELEE_ATTACK1;
 	return (Activity)ACT_ZOMBIE_WALLPOUND;
 }
@@ -811,7 +811,7 @@ void CZombie::Extinguish()
 	{
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pMoanSound, 0, 2.0 );
 		ENVELOPE_CONTROLLER.SoundChangePitch( m_pMoanSound, 100, 2.0 );
-		m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.0, 4.0 );
+		m_flNextMoanSound = gpGlobals->curtime + RandomFloat( 2.0, 4.0 );
 	}
 
 	BaseClass::Extinguish();

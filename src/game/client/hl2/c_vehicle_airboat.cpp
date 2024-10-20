@@ -552,7 +552,7 @@ void C_PropAirboat::UpdateWake( void )
 		TrailPoint_t *pNewPoint = GetTrailPoint( m_nStepCount );
 		pNewPoint->m_vecScreenPos = screenPos + Vector( 0, 0, 2 );
 		pNewPoint->m_flDieTime	= gpGlobals->curtime + WAKE_LIFETIME;
-		pNewPoint->m_flWidthVariance = random->RandomFloat( -16, 16 );
+		pNewPoint->m_flWidthVariance = RandomFloat( -16, 16 );
 		
 		if ( pLast )
 		{
@@ -620,7 +620,7 @@ void C_PropAirboat::DrawPontoonSplash( Vector origin, Vector direction, float sp
 
 	while( m_SplashTime.NextEvent( tempDelta ) )
 	{
-		if ( random->RandomInt( 0, 1 ) )
+		if ( RandomInt( 0, 1 ) )
 		{
 			hMaterial = ParticleMgr()->GetPMaterial( "effects/splash1" );
 		}
@@ -646,22 +646,22 @@ void C_PropAirboat::DrawPontoonSplash( Vector origin, Vector direction, float sp
 		
 		VectorNormalize( pParticle->m_vecVelocity );
 
-		pParticle->m_vecVelocity *= speed + random->RandomFloat( -128.0f, 128.0f );
+		pParticle->m_vecVelocity *= speed + RandomFloat( -128.0f, 128.0f );
 		
-		colorRamp = random->RandomFloat( 0.75f, 1.25f );
+		colorRamp = RandomFloat( 0.75f, 1.25f );
 
 		pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
 		
-		pParticle->m_uchStartSize	= random->RandomFloat( 8, 16 ) * flScale;
+		pParticle->m_uchStartSize	= RandomFloat( 8, 16 ) * flScale;
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 2;
 		
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
 		
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -4.0f, 4.0f );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -4.0f, 4.0f );
 	}
 }
 
@@ -689,8 +689,8 @@ void C_PropAirboat::DrawPontoonWake( Vector	startPos, Vector wakeDir, float wake
 	for ( int i = 0; i < WAKE_STEPS; i++ )
 	{
 		origin = startPos + ( wakeStep * i );
-		origin[0] += random->RandomFloat( -4.0f, 4.0f );
-		origin[1] += random->RandomFloat( -4.0f, 4.0f );
+		origin[0] += RandomFloat( -4.0f, 4.0f );
+		origin[1] += RandomFloat( -4.0f, 4.0f );
 		origin[2] = m_nExactWaterLevel + 2.0f;
 
 		float scaleRange = RemapVal( i, 0, WAKE_STEPS-1, 32, 64 );
@@ -700,7 +700,7 @@ void C_PropAirboat::DrawPontoonWake( Vector	startPos, Vector wakeDir, float wake
 		float color[4] = { 1.0f, 1.0f, 1.0f, alpha };
 		
 		// Needs to be time based so it'll freeze when the game is frozen
-		float yaw = random->RandomFloat( 0, 360 );
+		float yaw = RandomFloat( 0, 360 );
 
 		Vector rRight = ( Vector(1,0,0) * cos( DEG2RAD( yaw ) ) ) - ( Vector(0,1,0) * sin( DEG2RAD( yaw ) ) );
 		Vector rUp = ( Vector(1,0,0) * cos( DEG2RAD( yaw+90.0f ) ) ) - ( Vector(0,1,0) * sin( DEG2RAD( yaw+90.0f ) ) );

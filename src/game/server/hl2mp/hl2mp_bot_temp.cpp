@@ -179,7 +179,7 @@ static void RunPlayerMove( CHL2MP_Player *fakeclient, const QAngle& viewangles, 
 		cmd.upmove = upmove;
 		cmd.buttons = buttons;
 		cmd.impulse = impulse;
-		cmd.random_seed = random->RandomInt( 0, 0x7fffffff );
+		cmd.random_seed = RandomInt( 0, 0x7fffffff );
 	}
 
 	if( bot_crouch.GetInt() )
@@ -236,7 +236,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 				forwardmove = 600 * ( botdata->backwards ? -1 : 1 );
 				if ( botdata->sidemove != 0.0f )
 				{
-					forwardmove *= random->RandomFloat( 0.1, 1.0f );
+					forwardmove *= RandomFloat( 0.1, 1.0f );
 				}
 			}
 			else
@@ -291,7 +291,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 					angle.y += 360;
 
 				botdata->nextturntime = gpGlobals->curtime + 2.0;
-				botdata->lastturntoright = random->RandomInt( 0, 1 ) == 0 ? true : false;
+				botdata->lastturntoright = RandomInt( 0, 1 ) == 0 ? true : false;
 
 				botdata->forwardAngle = angle;
 				botdata->lastAngles = angle;
@@ -303,9 +303,9 @@ void Bot_Think( CHL2MP_Player *pBot )
 			{
 				botdata->nextstrafetime = gpGlobals->curtime + 1.0f;
 
-				if ( random->RandomInt( 0, 5 ) == 0 )
+				if ( RandomInt( 0, 5 ) == 0 )
 				{
-					botdata->sidemove = -600.0f + 1200.0f * random->RandomFloat( 0, 2 );
+					botdata->sidemove = -600.0f + 1200.0f * RandomFloat( 0, 2 );
 				}
 				else
 				{
@@ -313,7 +313,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 				}
 				sidemove = botdata->sidemove;
 
-				if ( random->RandomInt( 0, 20 ) == 0 )
+				if ( RandomInt( 0, 20 ) == 0 )
 				{
 					botdata->backwards = true;
 				}
@@ -382,10 +382,10 @@ void Bot_Think( CHL2MP_Player *pBot )
 		if ( !pBot->IsAlive() )
 		{
 			// Try hitting my buttons occasionally
-			if ( random->RandomInt( 0, 100 ) > 80 )
+			if ( RandomInt( 0, 100 ) > 80 )
 			{
 				// Respawn the bot
-				if ( random->RandomInt( 0, 1 ) == 0 )
+				if ( RandomInt( 0, 1 ) == 0 )
 				{
 					buttons |= IN_JUMP;
 				}

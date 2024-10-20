@@ -864,7 +864,7 @@ void CPropAirboat::DoImpactEffect( trace_t &tr, int nDamageType )
 		return;
 
 	// Randomly drop out
-	if ( random->RandomInt( 0, 5 ) )
+	if ( RandomInt( 0, 5 ) )
 		return;
 
 	m_flLastImpactEffectTime = gpGlobals->curtime;
@@ -1463,13 +1463,13 @@ void CPropAirboat::UpdateWaterSound( CSoundEnvelopeController &controller, float
 			{
 				// Fade in the water stopped sound over 2 seconds.
 				controller.SoundChangeVolume(m_pWaterStoppedSound, 1.0, 2.0);
-				m_flWaterStoppedPitchTime = gpGlobals->curtime + random->RandomFloat(1.0, 3.0);
+				m_flWaterStoppedPitchTime = gpGlobals->curtime + RandomFloat(1.0, 3.0);
 			}
 			else if (gpGlobals->curtime > m_flWaterStoppedPitchTime)
 			{
-				controller.SoundChangeVolume(m_pWaterStoppedSound, random->RandomFloat(0.2, 1.0), random->RandomFloat(1.0, 3.0));
-				controller.SoundChangePitch(m_pWaterStoppedSound, random->RandomFloat(90, 110), random->RandomFloat(1.0, 3.0));
-				m_flWaterStoppedPitchTime = gpGlobals->curtime + random->RandomFloat(2.0, 4.0);
+				controller.SoundChangeVolume(m_pWaterStoppedSound, RandomFloat(0.2, 1.0), RandomFloat(1.0, 3.0));
+				controller.SoundChangePitch(m_pWaterStoppedSound, RandomFloat(90, 110), RandomFloat(1.0, 3.0));
+				m_flWaterStoppedPitchTime = gpGlobals->curtime + RandomFloat(2.0, 4.0);
 			}
 		}
 		else
@@ -1691,7 +1691,7 @@ void CPropAirboat::FireGun( )
 				vecPerp *= -1.0f;
 			}
 
-			vecPerp *= random->RandomFloat( 15, 25 );
+			vecPerp *= RandomFloat( 15, 25 );
 			vecVelocity += vecPerp;
 			pEnt->SetAbsVelocity( vecVelocity );
 //			pEnt->DisableGuiding();
@@ -2012,7 +2012,7 @@ void CPropAirboat::CreateSplash( int nSplashType )
 			vecSplashDir = ( vecForward + vecUp ) * 0.5f;
 			VectorNormalize( vecSplashDir );
 			data.m_vNormal = vecSplashDir;
-			data.m_flScale = 10.0f + random->RandomFloat( 0, 10.0f * 0.25 );
+			data.m_flScale = 10.0f + RandomFloat( 0, 10.0f * 0.25 );
 			//DispatchEffect( "waterripple", data );
 			DispatchEffect( "watersplash", data );
 		}
@@ -2022,7 +2022,7 @@ void CPropAirboat::CreateSplash( int nSplashType )
 			Vector vecSplashDir;
 			vecSplashDir = vecUp;
 			data.m_vNormal = vecSplashDir;
-			data.m_flScale = AIRBOAT_SPLASH_RIPPLE_SIZE + random->RandomFloat( 0, AIRBOAT_SPLASH_RIPPLE_SIZE * 0.25 );
+			data.m_flScale = AIRBOAT_SPLASH_RIPPLE_SIZE + RandomFloat( 0, AIRBOAT_SPLASH_RIPPLE_SIZE * 0.25 );
 			DispatchEffect( "waterripple", data );
 			*/
 		}

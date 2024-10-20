@@ -154,17 +154,17 @@ void FX_PlayerTracer( Vector& start, Vector& end )
 		return;
 
 	//Randomly place the tracer along this line, with a random length
-	VectorMA( start, TRACER_BASE_OFFSET + random->RandomFloat( -24.0f, 64.0f ), shotDir, dStart );
-	VectorMA( dStart, ( length * random->RandomFloat( 0.1f, 0.6f ) ), shotDir, dEnd );
+	VectorMA( start, TRACER_BASE_OFFSET + RandomFloat( -24.0f, 64.0f ), shotDir, dStart );
+	VectorMA( dStart, ( length * RandomFloat( 0.1f, 0.6f ) ), shotDir, dEnd );
 
 	//Create the line
 	CFXStaticLine	*t;
 	const char		*materialName;
 
-	//materialName = ( random->RandomInt( 0, 1 ) ) ? "effects/tracer_middle" : "effects/tracer_middle2";
+	//materialName = ( RandomInt( 0, 1 ) ) ? "effects/tracer_middle" : "effects/tracer_middle2";
 	materialName = "effects/spark";
 
-	t = new CFXStaticLine( "Tracer", dStart, dEnd, random->RandomFloat( 0.5f, 0.75f ), 0.01f, materialName, 0 );
+	t = new CFXStaticLine( "Tracer", dStart, dEnd, RandomFloat( 0.5f, 0.75f ), 0.01f, materialName, 0 );
 	assert( t );
 
 	//Throw it into the list
@@ -285,7 +285,7 @@ void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType )
 	// Could use different timers for the different types.
 
 	// Don't play another bullet whiz for this client until this time has run out
-	g_BulletWhiz.m_nextWhizTime = gpGlobals->curtime + random->RandomFloat( flMinWhizTime, flMaxWhizTime );
+	g_BulletWhiz.m_nextWhizTime = gpGlobals->curtime + RandomFloat( flMinWhizTime, flMaxWhizTime );
 }
 
 
@@ -302,11 +302,11 @@ void FX_Tracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 	// Don't make short tracers.
 	if ( dist >= 256 )
 	{
-		float length = random->RandomFloat( 64.0f, 128.0f );
+		float length = RandomFloat( 64.0f, 128.0f );
 		float life = ( dist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
 		
 		//Add it
-		FX_AddDiscreetLine( start, dir, velocity, length, dist, random->RandomFloat( 0.75f, 0.9f ), life, "effects/spark" );
+		FX_AddDiscreetLine( start, dir, velocity, length, dist, RandomFloat( 0.75f, 0.9f ), life, "effects/spark" );
 	}
 
 	if( makeWhiz )

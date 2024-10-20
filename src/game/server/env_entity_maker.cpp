@@ -220,9 +220,9 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 			}
 			AngleVectors( angSpawnDir, &vForward, &vRight, &vUp );
 			Vector vecShootDir = vForward;
-			vecShootDir += vRight * random->RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
-			vecShootDir += vForward * random->RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
-			vecShootDir += vUp * random->RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
+			vecShootDir += vRight * RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
+			vecShootDir += vForward * RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
+			vecShootDir += vUp * RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
 			VectorNormalize( vecShootDir );
 			vecShootDir *= m_flPostSpawnSpeed;
 

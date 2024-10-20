@@ -1010,8 +1010,8 @@ void CPhysExplosion::Explode( CBaseEntity *pActivator, CBaseEntity *pCaller )
 							//Disorient the player
 							QAngle vecDeltaAngles;
 
-							vecDeltaAngles.x = random->RandomInt( -30, 30 );
-							vecDeltaAngles.y = random->RandomInt( -30, 30 );
+							vecDeltaAngles.x = RandomInt( -30, 30 );
+							vecDeltaAngles.y = RandomInt( -30, 30 );
 							vecDeltaAngles.z = 0.0f;
 
 							CBasePlayer *pPlayer = ToBasePlayer( pEntity );

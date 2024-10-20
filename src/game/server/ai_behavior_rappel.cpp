@@ -76,8 +76,8 @@ void CRopeAnchor::FallThink()
 
 	Vector vecVelocity = GetAbsVelocity();
 
-	vecVelocity.x = random->RandomFloat( -30.0f, 30.0f );
-	vecVelocity.y = random->RandomFloat( -30.0f, 30.0f );
+	vecVelocity.x = RandomFloat( -30.0f, 30.0f );
+	vecVelocity.y = RandomFloat( -30.0f, 30.0f );
 
 	SetAbsVelocity( vecVelocity );
 

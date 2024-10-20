@@ -346,7 +346,7 @@ void CFlare::FlareThink( void )
 	else
 	{
 		//Shoot sparks
-		if ( random->RandomInt( 0, 8 ) == 1 )
+		if ( RandomInt( 0, 8 ) == 1 )
 		{
 			g_pEffects->Sparks( GetAbsOrigin() );
 		}

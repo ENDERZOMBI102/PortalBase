@@ -201,7 +201,7 @@ void C_RotorWashEmitter::ClientThink( void )
 	// If we're above water, make ripples
 	if ( tr.contents & (CONTENTS_WATER|CONTENTS_SLIME) )
 	{
-		float flScale = random->RandomFloat( 7.5f, 8.5f );
+		float flScale = RandomFloat( 7.5f, 8.5f );
 
 		Vector	color = Vector( 0.8f, 0.8f, 0.75f );
 		Vector startPos = tr.endpos + Vector(0,0,8);
@@ -218,8 +218,8 @@ void C_RotorWashEmitter::ClientThink( void )
 						0.75f * heightScale, 
 						0.0f,
 						0.75f,
-						random->RandomFloat( 0, 360 ),
-						random->RandomFloat( -2.0f, 2.0f ),
+						RandomFloat( 0, 360 ),
+						RandomFloat( -2.0f, 2.0f ),
 						vecDustColor, 
 						0.2f,  
 						"effects/splashwake3",
@@ -228,7 +228,7 @@ void C_RotorWashEmitter::ClientThink( void )
 	}
 
 	int		numRingSprites = 32;
-	float	yaw = random->RandomFloat( 0, 2*M_PI ); // Randomly placed on the unit circle
+	float	yaw = RandomFloat( 0, 2*M_PI ); // Randomly placed on the unit circle
 	float	yawIncr = (2*M_PI) / numRingSprites;
 	Vector	vecForward;
 	Vector	offset;
@@ -251,14 +251,14 @@ void C_RotorWashEmitter::ClientThink( void )
 		offset += tr.endpos + RandomVector( -4.0f, 4.0f );
 
 
-		pParticle = (SimpleParticle *) m_pSimple->AddParticle( sizeof(SimpleParticle), hMaterial[random->RandomInt(0,1)], offset );
+		pParticle = (SimpleParticle *) m_pSimple->AddParticle( sizeof(SimpleParticle), hMaterial[RandomInt(0,1)], offset );
 
 		if ( pParticle != NULL )
 		{
 			pParticle->m_flLifetime = 0.0f;
-			pParticle->m_flDieTime	= random->RandomFloat( 0.25f, 1.0f );
+			pParticle->m_flDieTime	= RandomFloat( 0.25f, 1.0f );
 
-			pParticle->m_vecVelocity = vecForward * random->RandomFloat( 1000, 1500 );
+			pParticle->m_vecVelocity = vecForward * RandomFloat( 1000, 1500 );
 		
 			#if __EXPLOSION_DEBUG
 			debugoverlay->AddLineOverlay( m_vecOrigin, m_vecOrigin + pParticle->m_vecVelocity, 255, 0, 0, false, 3 );
@@ -266,23 +266,23 @@ void C_RotorWashEmitter::ClientThink( void )
 
 			if ( tr.contents & CONTENTS_SLIME )
 			{
-				vecDustColor.x = random->RandomFloat( 0.4f, 0.6f );
-				vecDustColor.y = random->RandomFloat( 0.3f, 0.5f );
-				vecDustColor.z = random->RandomFloat( 0.1f, 0.2f );
+				vecDustColor.x = RandomFloat( 0.4f, 0.6f );
+				vecDustColor.y = RandomFloat( 0.3f, 0.5f );
+				vecDustColor.z = RandomFloat( 0.1f, 0.2f );
 			}
 
 			pParticle->m_uchColor[0] = vecDustColor.x * 255.0f;
 			pParticle->m_uchColor[1] = vecDustColor.y * 255.0f;
 			pParticle->m_uchColor[2] = vecDustColor.z * 255.0f;
 
-			pParticle->m_uchStartSize	= random->RandomInt( 16, 64 );
+			pParticle->m_uchStartSize	= RandomInt( 16, 64 );
 			pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 4;
 
-			pParticle->m_uchStartAlpha	= random->RandomFloat( 16, 32 ) * heightScale;
+			pParticle->m_uchStartAlpha	= RandomFloat( 16, 32 ) * heightScale;
 			pParticle->m_uchEndAlpha	= 0;
 			
-			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-			pParticle->m_flRollDelta	= random->RandomFloat( -16.0f, 16.0f );
+			pParticle->m_flRoll			= RandomInt( 0, 360 );
+			pParticle->m_flRollDelta	= RandomFloat( -16.0f, 16.0f );
 		}
 	}
 }

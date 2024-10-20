@@ -137,7 +137,7 @@ int CDecalEmitterSystem::GetDecalIndexForName( char const *decalname )
 
 		// Always assume very first slot will match
 		totalweight += item->weight;
-		if ( !totalweight || random->RandomFloat(0,totalweight) < item->weight )
+		if ( !totalweight || RandomFloat(0,totalweight) < item->weight )
 		{
 			slot = idx;
 		}

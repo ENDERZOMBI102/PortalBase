@@ -103,8 +103,8 @@ void FX_WaterRipple( const Vector &origin, float scale, Vector *pColor, float fl
 					flAlpha,	// start alpha
 					0.0f,		// end alpha
 					0.25f,
-					random->RandomFloat( 0, 360 ),
-					random->RandomFloat( -16.0f, 16.0f ),
+					RandomFloat( 0, 360 ),
+					RandomFloat( -16.0f, 16.0f ),
 					color, 
 					flLifetime, 
 					"effects/splashwake1", 
@@ -161,8 +161,8 @@ void FX_GunshotSplash( const Vector &origin, const Vector &normal, float scale )
 	for ( int i = 0; i < 16; i++ )
 	{
 		offset = origin;
-		offset[0] += random->RandomFloat( -8.0f, 8.0f ) * flScale;
-		offset[1] += random->RandomFloat( -8.0f, 8.0f ) * flScale;
+		offset[0] += RandomFloat( -8.0f, 8.0f ) * flScale;
+		offset[1] += RandomFloat( -8.0f, 8.0f ) * flScale;
 
 		tParticle = (TrailParticle *) sparkEmitter->AddParticle( sizeof(TrailParticle), hMaterial, offset );
 
@@ -170,17 +170,17 @@ void FX_GunshotSplash( const Vector &origin, const Vector &normal, float scale )
 			break;
 
 		tParticle->m_flLifetime	= 0.0f;
-		tParticle->m_flDieTime	= random->RandomFloat( 0.25f, 0.5f );
+		tParticle->m_flDieTime	= RandomFloat( 0.25f, 0.5f );
 
 		offDir = normal + RandomVector( -0.8f, 0.8f );
 
-		tParticle->m_vecVelocity = offDir * random->RandomFloat( SPLASH_MIN_SPEED * flScale * 3.0f, SPLASH_MAX_SPEED * flScale * 3.0f );
-		tParticle->m_vecVelocity[2] += random->RandomFloat( 32.0f, 64.0f ) * flScale;
+		tParticle->m_vecVelocity = offDir * RandomFloat( SPLASH_MIN_SPEED * flScale * 3.0f, SPLASH_MAX_SPEED * flScale * 3.0f );
+		tParticle->m_vecVelocity[2] += RandomFloat( 32.0f, 64.0f ) * flScale;
 
-		tParticle->m_flWidth		= random->RandomFloat( 1.0f, 3.0f );
-		tParticle->m_flLength		= random->RandomFloat( 0.025f, 0.05f );
+		tParticle->m_flWidth		= RandomFloat( 1.0f, 3.0f );
+		tParticle->m_flLength		= RandomFloat( 0.025f, 0.05f );
 
-		colorRamp = random->RandomFloat( 0.75f, 1.25f );
+		colorRamp = RandomFloat( 0.75f, 1.25f );
 
 		tParticle->m_color.r = MIN( 1.0f, color[0] * colorRamp ) * 255;
 		tParticle->m_color.g = MIN( 1.0f, color[1] * colorRamp ) * 255;
@@ -209,13 +209,13 @@ void FX_GunshotSplash( const Vector &origin, const Vector &normal, float scale )
 		pParticle->m_flDieTime	= 2.0f;	//NOTENOTE: We use a clip plane to realistically control our lifespan
 
 		pParticle->m_vecVelocity.Random( -0.2f, 0.2f );
-		pParticle->m_vecVelocity += ( normal * random->RandomFloat( 4.0f, 6.0f ) );
+		pParticle->m_vecVelocity += ( normal * RandomFloat( 4.0f, 6.0f ) );
 		
 		VectorNormalize( pParticle->m_vecVelocity );
 
 		pParticle->m_vecVelocity *= 50 * flScale * (8-i);
 		
-		colorRamp = random->RandomFloat( 0.75f, 1.25f );
+		colorRamp = RandomFloat( 0.75f, 1.25f );
 
 		pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
@@ -227,8 +227,8 @@ void FX_GunshotSplash( const Vector &origin, const Vector &normal, float scale )
 		pParticle->m_uchStartAlpha	= RemapValClamped( i, 7, 0, 255, 32 ) * luminosity;
 		pParticle->m_uchEndAlpha	= 0;
 		
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -4.0f, 4.0f );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -4.0f, 4.0f );
 	}
 
 	// Do a ripple
@@ -295,8 +295,8 @@ void FX_GunshotSlimeSplash( const Vector &origin, const Vector &normal, float sc
 	for ( int i = 0; i < 24; i++ )
 	{
 		offset = origin;
-		offset[0] += random->RandomFloat( -16.0f, 16.0f ) * flScale;
-		offset[1] += random->RandomFloat( -16.0f, 16.0f ) * flScale;
+		offset[0] += RandomFloat( -16.0f, 16.0f ) * flScale;
+		offset[1] += RandomFloat( -16.0f, 16.0f ) * flScale;
 
 		tParticle = (TrailParticle *) sparkEmitter->AddParticle( sizeof(TrailParticle), hMaterial, offset );
 
@@ -304,17 +304,17 @@ void FX_GunshotSlimeSplash( const Vector &origin, const Vector &normal, float sc
 			break;
 
 		tParticle->m_flLifetime	= 0.0f;
-		tParticle->m_flDieTime	= random->RandomFloat( 0.25f, 0.5f );
+		tParticle->m_flDieTime	= RandomFloat( 0.25f, 0.5f );
 
 		offDir = normal + RandomVector( -0.6f, 0.6f );
 
-		tParticle->m_vecVelocity = offDir * random->RandomFloat( SPLASH_MIN_SPEED * flScale * 3.0f, SPLASH_MAX_SPEED * flScale * 3.0f );
-		tParticle->m_vecVelocity[2] += random->RandomFloat( 32.0f, 64.0f ) * flScale;
+		tParticle->m_vecVelocity = offDir * RandomFloat( SPLASH_MIN_SPEED * flScale * 3.0f, SPLASH_MAX_SPEED * flScale * 3.0f );
+		tParticle->m_vecVelocity[2] += RandomFloat( 32.0f, 64.0f ) * flScale;
    
-		tParticle->m_flWidth		= random->RandomFloat( 3.0f, 6.0f ) * flScale;
-		tParticle->m_flLength		= random->RandomFloat( 0.025f, 0.05f ) * flScale;
+		tParticle->m_flWidth		= RandomFloat( 3.0f, 6.0f ) * flScale;
+		tParticle->m_flLength		= RandomFloat( 0.025f, 0.05f ) * flScale;
 
-		colorRamp = random->RandomFloat( 0.75f, 1.25f );
+		colorRamp = RandomFloat( 0.75f, 1.25f );
 
 		tParticle->m_color.r = MIN( 1.0f, color.x * colorRamp ) * 255;
 		tParticle->m_color.g = MIN( 1.0f, color.y * colorRamp ) * 255;
@@ -331,7 +331,7 @@ void FX_GunshotSlimeSplash( const Vector &origin, const Vector &normal, float sc
 	SimpleParticle	*pParticle;
 
 	// Tint
-	colorRamp = random->RandomFloat( 0.75f, 1.0f );
+	colorRamp = RandomFloat( 0.75f, 1.0f );
 	color = Vector( 1.0f, 0.8f, 0.0f ) * color * colorRamp;
 
 	//Main gout
@@ -346,13 +346,13 @@ void FX_GunshotSlimeSplash( const Vector &origin, const Vector &normal, float sc
 		pParticle->m_flDieTime	= 2.0f;	//NOTENOTE: We use a clip plane to realistically control our lifespan
 
 		pParticle->m_vecVelocity.Random( -0.2f, 0.2f );
-		pParticle->m_vecVelocity += ( normal * random->RandomFloat( 4.0f, 6.0f ) );
+		pParticle->m_vecVelocity += ( normal * RandomFloat( 4.0f, 6.0f ) );
 		
 		VectorNormalize( pParticle->m_vecVelocity );
 
 		pParticle->m_vecVelocity *= 50 * flScale * (8-i);
 		
-		colorRamp = random->RandomFloat( 0.75f, 1.25f );
+		colorRamp = RandomFloat( 0.75f, 1.25f );
 
 		pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
@@ -364,8 +364,8 @@ void FX_GunshotSlimeSplash( const Vector &origin, const Vector &normal, float sc
 		pParticle->m_uchStartAlpha	= RemapValClamped( i, 7, 0, 255, 32 ) * luminosity;
 		pParticle->m_uchEndAlpha	= 0;
 		
-		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		pParticle->m_flRollDelta	= random->RandomFloat( -4.0f, 4.0f );
+		pParticle->m_flRoll			= RandomInt( 0, 360 );
+		pParticle->m_flRollDelta	= RandomFloat( -4.0f, 4.0f );
 	}
 	
 #else

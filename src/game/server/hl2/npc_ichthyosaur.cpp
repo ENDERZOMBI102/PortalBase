@@ -1073,8 +1073,8 @@ void CNPC_Ichthyosaur::Bite( void )
 				//Disorient the player
 				QAngle angles = pPlayer->GetLocalAngles();
 
-				angles.x += random->RandomInt( 60, 25 );
-				angles.y += random->RandomInt( 60, 25 );
+				angles.x += RandomInt( 60, 25 );
+				angles.y += RandomInt( 60, 25 );
 				angles.z = 0.0f;
 
 				pPlayer->SetLocalAngles( angles );
@@ -1088,10 +1088,10 @@ void CNPC_Ichthyosaur::Bite( void )
 			pHurt->TakeDamage( info );
 		}
 
-		m_flNextBiteTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f );
+		m_flNextBiteTime = gpGlobals->curtime + RandomFloat( 2.0f, 4.0f );
 
 		//Bubbles!
-		UTIL_Bubbles( pHurt->GetAbsOrigin()+Vector(-32.0f,-32.0f,-32.0f), pHurt->GetAbsOrigin()+Vector(32.0f,32.0f,0.0f), random->RandomInt( 16, 32 ) );
+		UTIL_Bubbles( pHurt->GetAbsOrigin()+Vector(-32.0f,-32.0f,-32.0f), pHurt->GetAbsOrigin()+Vector(32.0f,32.0f,0.0f), RandomInt( 16, 32 ) );
 		
 		// Play a random attack hit sound
 		EmitSound( "NPC_Ichthyosaur.Bite" );
@@ -1139,15 +1139,15 @@ void CNPC_Ichthyosaur::PrescheduleThink( void )
 	
 	//Ambient sounds
 	/*
-	if ( random->RandomInt( 0, 20 ) == 10 )
+	if ( RandomInt( 0, 20 ) == 10 )
 	{
-		if ( random->RandomInt( 0, 1 ) )
+		if ( RandomInt( 0, 1 ) )
 		{
-			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pSwimSound, random->RandomFloat( 0.0f, 0.5f ), 1.0f );
+			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pSwimSound, RandomFloat( 0.0f, 0.5f ), 1.0f );
 		}
 		else
 		{
-			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pVoiceSound, random->RandomFloat( 0.0f, 0.5f ), 1.0f );
+			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pVoiceSound, RandomFloat( 0.0f, 0.5f ), 1.0f );
 		}
 	}
 	*/
@@ -1155,17 +1155,17 @@ void CNPC_Ichthyosaur::PrescheduleThink( void )
 	//Pings
 	if ( m_flNextPingTime < gpGlobals->curtime )
 	{
-		m_flNextPingTime = gpGlobals->curtime + random->RandomFloat( 3.0f, 8.0f );
+		m_flNextPingTime = gpGlobals->curtime + RandomFloat( 3.0f, 8.0f );
 	}
 	
 	//Growls
 	if ( ( m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT ) && ( m_flNextGrowlTime < gpGlobals->curtime ) )
 	{
-		m_flNextGrowlTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 6.0f );
+		m_flNextGrowlTime = gpGlobals->curtime + RandomFloat( 2.0f, 6.0f );
 	}
 
 	//Randomly emit bubbles
-	if ( random->RandomInt( 0, 10 ) == 0 )
+	if ( RandomInt( 0, 10 ) == 0 )
 	{
 		UTIL_Bubbles( GetAbsOrigin()+(GetHullMins()*0.5f), GetAbsOrigin()+(GetHullMaxs()*0.5f), 1 );
 	}

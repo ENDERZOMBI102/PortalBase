@@ -1211,7 +1211,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 			float newRate = GetPlaybackRate();
 			float percent = pTask->flTaskData / 100.0f;
 
-			newRate += ( newRate * random->RandomFloat(-percent, percent) );
+			newRate += ( newRate * RandomFloat(-percent, percent) );
 
 			SetPlaybackRate(newRate);
 
@@ -2659,14 +2659,14 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		{
 			Remember(bits_MEMORY_FLINCHED);
 			SetIdealActivity( GetFlinchActivity( false, false ) );
-			m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+			m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 3, 5 );
 			break;
 		}
 	case TASK_BIG_FLINCH:
 		{
 			Remember(bits_MEMORY_FLINCHED);
 			SetIdealActivity( GetFlinchActivity( true, false ) );
-			m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+			m_flNextFlinchTime = gpGlobals->curtime + RandomFloat( 3, 5 );
 			break;
 		}
 	case TASK_DIE:
@@ -4631,7 +4631,7 @@ void CAI_BaseNPC::PlayFlinchGesture()
 
 	Activity iFlinchActivity = ACT_INVALID;
 
-	float flNextFlinch = random->RandomFloat( 0.5f, 1.0f );
+	float flNextFlinch = RandomFloat( 0.5f, 1.0f );
 
 	// If I haven't flinched for a while, play the big flinch gesture
 	if ( !HasMemory(bits_MEMORY_FLINCHED) )

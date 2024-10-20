@@ -136,7 +136,7 @@ void CPlasmaSpray::RenderParticles( CParticleRenderIterator *pIterator )
 	const SimpleParticle *pParticle = (const SimpleParticle *)pIterator->GetFirst();
 	while ( pParticle )
 	{
-		float scale = random->RandomFloat( 0.02, 0.08 );
+		float scale = RandomFloat( 0.02, 0.08 );
 
 		// NOTE: We need to do everything in screen space
 		Vector  delta;
@@ -151,7 +151,7 @@ void CPlasmaSpray::RenderParticles( CParticleRenderIterator *pIterator )
 		delta[2] *= scale;
 
 		// See c_tracer.* for this method
-		Tracer_Draw( pIterator->GetParticleDraw(), start, delta, random->RandomInt( 2, 8 ), 0 );
+		Tracer_Draw( pIterator->GetParticleDraw(), start, delta, RandomInt( 2, 8 ), 0 );
 
 		pParticle = (const SimpleParticle *)pIterator->GetNext( sortKey );
 	}
@@ -247,14 +247,14 @@ void C_PlasmaBeamNode::ClientThink(void)
 		SimpleParticle	*sParticle;
 
 		//Make a new particle
-		if ( random->RandomInt( 0, 2 ) == 0 )
+		if ( RandomInt( 0, 2 ) == 0 )
 		{
-			float ranx = random->RandomFloat( -28.0f, 28.0f );
-			float rany = random->RandomFloat( -28.0f, 28.0f );
-			float ranz = random->RandomFloat( -28.0f, 28.0f );
+			float ranx = RandomFloat( -28.0f, 28.0f );
+			float rany = RandomFloat( -28.0f, 28.0f );
+			float ranz = RandomFloat( -28.0f, 28.0f );
 
 			Vector vNewPos	=  GetAbsOrigin();
-			Vector vAdd		=  Vector(GetAbsAngles().x,GetAbsAngles().y,GetAbsAngles().z)*random->RandomFloat(-60,120);
+			Vector vAdd		=  Vector(GetAbsAngles().x,GetAbsAngles().y,GetAbsAngles().z)*RandomFloat(-60,120);
 			vNewPos			+= vAdd;
 
 			sParticle = (SimpleParticle *) m_pFirePlasmaSpray->AddParticle( sizeof(SimpleParticle), handle, vNewPos );

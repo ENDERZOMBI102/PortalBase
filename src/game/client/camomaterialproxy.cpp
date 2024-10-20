@@ -556,9 +556,9 @@ void CCamoMaterialProxy::GenerateRandomPointsInNormalizedCube( void )
 	int i;
 	for( i = 0; i < m_CamoPatternNumColors; i++ )
 	{
-		m_pointsInNormalizedBox[i][0] = random->RandomFloat( m_SubBoundingBoxMin[0], m_SubBoundingBoxMax[0] );
-		m_pointsInNormalizedBox[i][1] = random->RandomFloat( m_SubBoundingBoxMin[1], m_SubBoundingBoxMax[1] );
-		m_pointsInNormalizedBox[i][2] = random->RandomFloat( m_SubBoundingBoxMin[2], m_SubBoundingBoxMax[2] );
+		m_pointsInNormalizedBox[i][0] = RandomFloat( m_SubBoundingBoxMin[0], m_SubBoundingBoxMax[0] );
+		m_pointsInNormalizedBox[i][1] = RandomFloat( m_SubBoundingBoxMin[1], m_SubBoundingBoxMax[1] );
+		m_pointsInNormalizedBox[i][2] = RandomFloat( m_SubBoundingBoxMin[2], m_SubBoundingBoxMax[2] );
 	}
 }
 

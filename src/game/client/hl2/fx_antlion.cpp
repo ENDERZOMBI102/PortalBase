@@ -124,7 +124,7 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 {
 	Vector	offset;
 
-	int numGibs = random->RandomInt( 1, NUM_ANTLION_GIBS_UNIQUE );
+	int numGibs = RandomInt( 1, NUM_ANTLION_GIBS_UNIQUE );
 
 	// Spawn all the unique gibs
 	for ( int i = 0; i < numGibs; i++ )
@@ -134,7 +134,7 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 		C_AntlionGib::CreateClientsideGib( pszAntlionGibs_Unique[i], offset, ( direction + RandomVector( -0.8f, 0.8f ) ) * ( 150 * scale ), RandomAngularImpulse( -32, 32 ), 2.0f);
 	}
 
-	numGibs = random->RandomInt( 1, NUM_ANTLION_GIBS_MEDIUM );
+	numGibs = RandomInt( 1, NUM_ANTLION_GIBS_MEDIUM );
 
 	// Spawn all the medium gibs
 	for ( int i = 0; i < numGibs; i++ )
@@ -144,7 +144,7 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 		C_AntlionGib::CreateClientsideGib( pszAntlionGibs_Medium[i], offset, ( direction + RandomVector( -0.8f, 0.8f ) ) * ( 250 * scale ), RandomAngularImpulse( -200, 200 ), 1.0f );
 	}
 
-	numGibs = random->RandomInt( 1, NUM_ANTLION_GIBS_SMALL );
+	numGibs = RandomInt( 1, NUM_ANTLION_GIBS_SMALL );
 
 	// Spawn all the small gibs
 	for ( int i = 0; i < NUM_ANTLION_GIBS_SMALL; i++ )
@@ -170,9 +170,9 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 			return;
 
 		sParticle->m_flLifetime		= 0.0f;
-		sParticle->m_flDieTime		= random->RandomFloat( 0.5f, 0.75f );
+		sParticle->m_flDieTime		= RandomFloat( 0.5f, 0.75f );
 
-		float	speed = random->RandomFloat( 16.0f, 64.0f );
+		float	speed = RandomFloat( 16.0f, 64.0f );
 
 		sParticle->m_vecVelocity	= vDir * -speed;
 		sParticle->m_vecVelocity[2] += 16.0f;
@@ -182,10 +182,10 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 		sParticle->m_uchColor[2]	= 32;
 		sParticle->m_uchStartAlpha	= 255;
 		sParticle->m_uchEndAlpha	= 0;
-		sParticle->m_uchStartSize	= random->RandomInt( 16, 32 );
+		sParticle->m_uchStartSize	= RandomInt( 16, 32 );
 		sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 2;
-		sParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		sParticle->m_flRollDelta	= random->RandomFloat( -1.0f, 1.0f );
+		sParticle->m_flRoll			= RandomInt( 0, 360 );
+		sParticle->m_flRollDelta	= RandomFloat( -1.0f, 1.0f );
 	}
 
 	for ( int i = 0; i < 4; i++ )
@@ -198,9 +198,9 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 		}
 
 		sParticle->m_flLifetime		= 0.0f;
-		sParticle->m_flDieTime		= random->RandomFloat( 0.5f, 0.75f );
+		sParticle->m_flDieTime		= RandomFloat( 0.5f, 0.75f );
 
-		float	speed = random->RandomFloat( 16.0f, 64.0f );
+		float	speed = RandomFloat( 16.0f, 64.0f );
 
 		sParticle->m_vecVelocity	= vDir * -speed;
 		sParticle->m_vecVelocity[2] += 16.0f;
@@ -208,12 +208,12 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 		sParticle->m_uchColor[0]	= 255;
 		sParticle->m_uchColor[1]	= 200;
 		sParticle->m_uchColor[2]	= 32;
-		sParticle->m_uchStartAlpha	= random->RandomInt( 64, 128 );
+		sParticle->m_uchStartAlpha	= RandomInt( 64, 128 );
 		sParticle->m_uchEndAlpha	= 0;
-		sParticle->m_uchStartSize	= random->RandomInt( 16, 32 );
+		sParticle->m_uchStartSize	= RandomInt( 16, 32 );
 		sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 2;
-		sParticle->m_flRoll			= random->RandomInt( 0, 360 );
-		sParticle->m_flRollDelta	= random->RandomFloat( -1.0f, 1.0f );
+		sParticle->m_flRoll			= RandomInt( 0, 360 );
+		sParticle->m_flRollDelta	= RandomFloat( -1.0f, 1.0f );
 	}
 }
 
