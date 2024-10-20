@@ -6,10 +6,11 @@
 //
 //=============================================================================
 #pragma once
-#include <algorithm>
-#include <climits>
 #include "tier0/dbg.h"
 #include "tier0/platform.h"
+#include <algorithm>
+#include <climits>
+#include <cerrno>
 
 
 #if IsWindows() && IsPC()
@@ -1653,6 +1654,12 @@ public:
 	inline CThreadMutex::~CThreadMutex() {
 		pthread_mutex_destroy( &m_Mutex );
 	}
+
+	//---------------------------------------------------------
+
+	inline bool CThreadMutex::TryLock() {
+    	return pthread_mutex_trylock( &m_Mutex ) != EBUSY;
+    }
 
 	//---------------------------------------------------------
 
