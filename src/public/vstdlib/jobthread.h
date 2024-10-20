@@ -154,11 +154,11 @@ public:
 	//-----------------------------------------------------
 	// Offer the current thread to the pool
 	//-----------------------------------------------------
-	virtual int YieldWait( CThreadEvent * *pEvents, int nEvents, bool bWaitAll = true, unsigned timeout = TT_INFINITE ) = 0;
+	virtual int YieldWait( CThreadEvent** pEvents, int nEvents, bool bWaitAll = true, unsigned timeout = TT_INFINITE ) = 0;
 	virtual int YieldWait( CJob**, int nJobs, bool bWaitAll = true, unsigned timeout = TT_INFINITE ) = 0;
 	virtual void Yield( unsigned timeout ) = 0;
 
-	bool YieldWait( CThreadEvent & event, unsigned timeout = TT_INFINITE );
+	bool YieldWait( CThreadEvent& event, unsigned timeout = TT_INFINITE );
 	bool YieldWait( CJob*, unsigned timeout = TT_INFINITE );
 
 	//-----------------------------------------------------
@@ -171,22 +171,24 @@ public:
 	//  and execute or execute pFunctor right after completing current job and
 	//  before looking for another job.
 	//-----------------------------------------------------
-	virtual void ExecuteHighPriorityFunctor( CFunctor * pFunctor ) = 0;
+	virtual void ExecuteHighPriorityFunctor( CFunctor* pFunctor ) = 0;
 
 	//-----------------------------------------------------
 	// Add an function object to the queue (master thread)
 	//-----------------------------------------------------
-	virtual void AddFunctor( CFunctor * pFunctor, CJob** ppJob = nullptr, const char* pszDescription = nullptr, unsigned flags = 0 ) { AddFunctorInternal( RetAddRef( pFunctor ), ppJob, pszDescription, flags ); }
+	virtual void AddFunctor( CFunctor* pFunctor, CJob** ppJob = nullptr, const char* pszDescription = nullptr, unsigned flags = 0 ) { AddFunctorInternal( RetAddRef( pFunctor ), ppJob, pszDescription, flags ); }
 
 	//-----------------------------------------------------
 	// Change the priority of an active job
 	//-----------------------------------------------------
-	virtual void ChangePriority( CJob * p, JobPriority_t priority ) = 0;
+	virtual void ChangePriority( CJob* p, JobPriority_t priority ) = 0;
 
 	//-----------------------------------------------------
 	// Bulk job manipulation (blocking)
 	//-----------------------------------------------------
-	int ExecuteAll( JobFilter_t pfnFilter = nullptr ) { return ExecuteToPriority( JP_LOW, pfnFilter ); }
+	int ExecuteAll( const JobFilter_t pfnFilter = nullptr ) {
+		return ExecuteToPriority( JP_LOW, pfnFilter );
+	}
 	virtual int ExecuteToPriority( JobPriority_t toPriority, JobFilter_t pfnFilter = nullptr ) = 0;
 	virtual int AbortAll() = 0;
 
@@ -207,14 +209,14 @@ public:
 
 	// region CALL-IMPL
 #define DEFINE_NONMEMBER_ADD_CALL( N )                                                                                   \
-	template<typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                       \
-	CJob* AddCall( FUNCTION_RETTYPE ( *pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                       \
+	CJob* AddCall( FUNCTION_RETTYPE ( *pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                      \
 		if ( !NumIdleThreads() ) {                                                                                       \
 			pJob = GetDummyJob();                                                                                        \
-			FunctorDirectCall( pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N );                                                  \
+			FunctorDirectCall( pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N );                                                  \
 		} else {                                                                                                         \
-			AddFunctorInternal( CreateFunctor( pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob );                         \
+			AddFunctorInternal( CreateFunctor( pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob );                         \
 		}                                                                                                                \
                                                                                                                          \
 		return pJob;                                                                                                     \
@@ -223,14 +225,14 @@ public:
 	//-------------------------------------
 
 #define DEFINE_MEMBER_ADD_CALL( N )                                                                                                                            \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>              \
-	CJob* AddCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>              \
+	CJob* AddCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                            \
 		if ( !NumIdleThreads() ) {                                                                                                                             \
 			pJob = GetDummyJob();                                                                                                                              \
-			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N );                                                                               \
+			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N );                                                                               \
 		} else {                                                                                                                                               \
-			AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob );                                                      \
+			AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob );                                                      \
 		}                                                                                                                                                      \
                                                                                                                                                                \
 		return pJob;                                                                                                                                           \
@@ -239,14 +241,14 @@ public:
 	//-------------------------------------
 
 #define DEFINE_CONST_MEMBER_ADD_CALL( N )                                                                                                                            \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                    \
-	CJob* AddCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) const FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                    \
+	CJob* AddCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) const FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                                  \
 		if ( !NumIdleThreads() ) {                                                                                                                                   \
 			pJob = GetDummyJob();                                                                                                                                    \
-			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                     \
+			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                     \
 		} else {                                                                                                                                                     \
-			AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob );                                                            \
+			AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob );                                                            \
 		}                                                                                                                                                            \
                                                                                                                                                                      \
 		return pJob;                                                                                                                                                 \
@@ -255,14 +257,14 @@ public:
 	//-------------------------------------
 
 #define DEFINE_REF_COUNTING_MEMBER_ADD_CALL( N )                                                                                                                  \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                 \
-	CJob* AddRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                 \
+	CJob* AddRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                               \
 		if ( !NumIdleThreads() ) {                                                                                                                                \
 			pJob = GetDummyJob();                                                                                                                                 \
-			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                  \
+			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                  \
 		} else {                                                                                                                                                  \
-			AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob );                                              \
+			AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob );                                              \
 		}                                                                                                                                                         \
                                                                                                                                                                   \
 		return pJob;                                                                                                                                              \
@@ -271,14 +273,14 @@ public:
 	//-------------------------------------
 
 #define DEFINE_REF_COUNTING_CONST_MEMBER_ADD_CALL( N )                                                                                                                  \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                       \
-	CJob* AddRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) const FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                       \
+	CJob* AddRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) const FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                                     \
 		if ( !NumIdleThreads() ) {                                                                                                                                      \
 			pJob = GetDummyJob();                                                                                                                                       \
-			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                        \
+			FunctorDirectCall( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                        \
 		} else {                                                                                                                                                        \
-			AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob );                                                    \
+			AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob );                                                    \
 		}                                                                                                                                                               \
                                                                                                                                                                         \
 		return pJob;                                                                                                                                                    \
@@ -287,50 +289,50 @@ public:
 	//-----------------------------------------------------------------------------
 
 #define DEFINE_NONMEMBER_QUEUE_CALL( N )                                                                                   \
-	template<typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                         \
-	CJob* QueueCall( FUNCTION_RETTYPE ( *pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                         \
+	CJob* QueueCall( FUNCTION_RETTYPE ( *pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                        \
-		AddFunctorInternal( CreateFunctor( pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob, nullptr, JF_QUEUE );               \
+		AddFunctorInternal( CreateFunctor( pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob, nullptr, JF_QUEUE );               \
 		return pJob;                                                                                                       \
 	}
 
 	//-------------------------------------
 
 #define DEFINE_MEMBER_QUEUE_CALL( N )                                                                                                                            \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                \
-	CJob* QueueCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                \
+	CJob* QueueCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                              \
-		AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob, nullptr, JF_QUEUE );                                            \
+		AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob, nullptr, JF_QUEUE );                                            \
 		return pJob;                                                                                                                                             \
 	}
 
 	//-------------------------------------
 
 #define DEFINE_CONST_MEMBER_QUEUE_CALL( N )                                                                                                                            \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                      \
-	CJob* QueueCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) const FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                      \
+	CJob* QueueCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) const FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                                    \
-		AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob, nullptr, JF_QUEUE );                                                  \
+		AddFunctorInternal( CreateFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob, nullptr, JF_QUEUE );                                                  \
 		return pJob;                                                                                                                                                   \
 	}
 
 	//-------------------------------------
 
 #define DEFINE_REF_COUNTING_MEMBER_QUEUE_CALL( N )                                                                                                                  \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                   \
-	CJob* QueueRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                   \
+	CJob* QueueRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                                 \
-		AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob, nullptr, JF_QUEUE );                                    \
+		AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob, nullptr, JF_QUEUE );                                    \
 		return pJob;                                                                                                                                                \
 	}
 
 	//-------------------------------------
 
 #define DEFINE_REF_COUNTING_CONST_MEMBER_QUEUE_CALL( N )                                                                                                                  \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N>                         \
-	CJob* QueueRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) const FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N>                         \
+	CJob* QueueRefCall( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_## N ) const FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		CJob* pJob;                                                                                                                                                       \
-		AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_##N ), &pJob, nullptr, JF_QUEUE );                                          \
+		AddFunctorInternal( CreateRefCountingFunctor( pObject, pfnProxied FUNC_FUNCTOR_CALL_ARGS_## N ), &pJob, nullptr, JF_QUEUE );                                          \
                                                                                                                                                                           \
 		return pJob;                                                                                                                                                      \
 	}
@@ -396,10 +398,10 @@ DECLARE_POINTER_HANDLE( ThreadPoolData_t );
 
 class CJob : public CRefCounted1<IRefCounted, CRefCountServiceMT> {
 public:
-	CJob( JobPriority_t priority = JP_NORMAL )
+	explicit CJob( JobPriority_t pPriority = JP_NORMAL )
 		: m_status( JOB_STATUS_UNSERVICED ),
 		  m_ThreadPoolData( JOB_NO_DATA ),
-		  m_priority( priority ),
+		  m_priority( pPriority ),
 		  m_flags( 0 ),
 		  m_pThreadPool( nullptr ),
 		  m_CompleteEvent( true ),
@@ -410,52 +412,93 @@ public:
 	//-----------------------------------------------------
 	// Priority (not thread safe)
 	//-----------------------------------------------------
-	void SetPriority( JobPriority_t priority ) { m_priority = priority; }
-	JobPriority_t GetPriority() const { return m_priority; }
+	void SetPriority( const JobPriority_t pPriority ) {
+		m_priority = pPriority;
+	}
+	[[nodiscard]]
+	JobPriority_t GetPriority() const {
+		return m_priority;
+	}
 
 	//-----------------------------------------------------
 
-	void SetFlags( unsigned flags ) { m_flags = flags; }
-	unsigned GetFlags() const { return m_flags; }
+	void SetFlags( const unsigned pFlags ) {
+		m_flags = pFlags;
+	}
+	[[nodiscard]]
+	unsigned GetFlags() const {
+		return m_flags;
+	}
 
 	//-----------------------------------------------------
 
-	void SetServiceThread( int iServicingThread ) { m_iServicingThread = (char) iServicingThread; }
-	int GetServiceThread() const { return m_iServicingThread; }
-	void ClearServiceThread() { m_iServicingThread = -1; }
+	void SetServiceThread( const int pServicingThread ) {
+		m_iServicingThread = static_cast<char>( pServicingThread );
+	}
+	[[nodiscard]]
+	int GetServiceThread() const {
+		return m_iServicingThread;
+	}
+	void ClearServiceThread() {
+		m_iServicingThread = -1;
+	}
 
 	//-----------------------------------------------------
 	// Fast queries
 	//-----------------------------------------------------
-	bool Executed() const { return ( m_status == JOB_OK ); }
-	bool CanExecute() const { return ( m_status == JOB_STATUS_PENDING || m_status == JOB_STATUS_UNSERVICED ); }
-	bool IsFinished() const { return ( m_status != JOB_STATUS_PENDING && m_status != JOB_STATUS_INPROGRESS && m_status != JOB_STATUS_UNSERVICED ); }
-	JobStatus_t GetStatus() const { return m_status; }
+	[[nodiscard]]
+	bool Executed() const {
+		return m_status == JOB_OK;
+	}
+	[[nodiscard]]
+	bool CanExecute() const {
+		return m_status == JOB_STATUS_PENDING or m_status == JOB_STATUS_UNSERVICED;
+	}
+	[[nodiscard]]
+	bool IsFinished() const {
+		return m_status != JOB_STATUS_PENDING and m_status != JOB_STATUS_INPROGRESS and m_status != JOB_STATUS_UNSERVICED;
+	}
+	[[nodiscard]]
+	JobStatus_t GetStatus() const {
+		return m_status;
+	}
 
 	/// Slam the status to a particular value.  This is named "slam" instead of "set,"
 	/// to warn you that it should only be used in unusual situations.  Otherwise, the
 	/// job manager really should manage the status for you, and you should not manhandle it.
-	void SlamStatus( JobStatus_t s ) { m_status = s; }
+	void SlamStatus( const JobStatus_t pStatus ) {
+		m_status = pStatus;
+	}
 
 	//-----------------------------------------------------
 	// Try to acquire ownership (to satisfy). If you take the lock, you must either execute or abort.
 	//-----------------------------------------------------
-	bool TryLock() { return m_mutex.TryLock(); }
-	void Lock() { m_mutex.Lock(); }
-	void Unlock() { m_mutex.Unlock(); }
+	bool TryLock() {
+		return m_mutex.TryLock();
+	}
+	void Lock() {
+		m_mutex.Lock();
+	}
+	void Unlock() {
+		m_mutex.Unlock();
+	}
 
 	//-----------------------------------------------------
 	// Thread event support (safe for nullptr this to simplify code )
 	//-----------------------------------------------------
-	bool WaitForFinish( uint32 dwTimeout = TT_INFINITE ) {
-		if ( !this ) return true;
-		return ( !IsFinished() ) ? g_pThreadPool->YieldWait( this, dwTimeout ) : true;
+	bool WaitForFinish( uint32 pTimeout = TT_INFINITE ) {
+		if (! this ) {
+			return true;
+		}
+		return !IsFinished() ? g_pThreadPool->YieldWait( this, pTimeout ) : true;
 	}
-	bool WaitForFinishAndRelease( uint32 dwTimeout = TT_INFINITE ) {
-		if ( !this ) return true;
-		bool bResult = WaitForFinish( dwTimeout );
+	bool WaitForFinishAndRelease( const uint32 pTimeout = TT_INFINITE ) {
+		if (! this ) {
+			return true;
+		}
+		const bool result = WaitForFinish( pTimeout );
 		Release();
-		return bResult;
+		return result;
 	}
 	CThreadEvent* AccessEvent() { return &m_CompleteEvent; }
 
@@ -465,12 +508,12 @@ public:
 	JobStatus_t Execute();
 	JobStatus_t TryExecute();
 	JobStatus_t ExecuteAndRelease() {
-		JobStatus_t status = Execute();
+		const JobStatus_t status = Execute();
 		Release();
 		return status;
 	}
 	JobStatus_t TryExecuteAndRelease() {
-		JobStatus_t status = TryExecute();
+		const JobStatus_t status = TryExecute();
 		Release();
 		return status;
 	}
@@ -480,7 +523,9 @@ public:
 	//-----------------------------------------------------
 	JobStatus_t Abort( bool bDiscard = true );
 
-	virtual char const* Describe() { return m_szDescription[ 0 ] ? m_szDescription : "Job"; }
+	virtual char const* Describe() {
+		return m_szDescription[ 0 ] ? m_szDescription : "Job";
+	}
 	virtual void SetDescription( const char* pszDescription ) {
 		if ( pszDescription ) {
 			Q_strncpy( m_szDescription, pszDescription, sizeof( m_szDescription ) );
@@ -498,11 +543,11 @@ private:
 	CThreadMutex m_mutex;
 	unsigned char m_flags;
 	char m_iServicingThread;
-	short m_reserved;
+	int16 m_reserved;
 	ThreadPoolData_t m_ThreadPoolData;
 	IThreadPool* m_pThreadPool;
 	CThreadEvent m_CompleteEvent;
-	char m_szDescription[ 32 ];
+	char m_szDescription[32];
 
 private:
 	//-----------------------------------------------------
@@ -510,7 +555,9 @@ private:
 	void operator=( const CJob& fromRequest );
 
 	virtual JobStatus_t DoExecute() = 0;
-	virtual JobStatus_t DoAbort( bool bDiscard ) { return JOB_STATUS_ABORTED; }
+	virtual JobStatus_t DoAbort( bool bDiscard ) {
+		return JOB_STATUS_ABORTED;
+	}
 	virtual void DoCleanup() {}
 };
 
@@ -518,27 +565,25 @@ private:
 
 class CFunctorJob : public CJob {
 public:
-	CFunctorJob( CFunctor* pFunctor, const char* pszDescription = nullptr )
+	explicit CFunctorJob( CFunctor* pFunctor, const char* pszDescription = nullptr )
 		: m_pFunctor( pFunctor ) {
 		if ( pszDescription ) {
 			Q_strncpy( m_szDescription, pszDescription, sizeof( m_szDescription ) );
-		} else {
-			m_szDescription[ 0 ] = 0;
 		}
 	}
 
-	virtual JobStatus_t DoExecute() {
+	JobStatus_t DoExecute() override {
 		( *m_pFunctor )();
 		return JOB_OK;
 	}
 
-	const char* Describe() {
+	const char* Describe() override {
 		return m_szDescription;
 	}
 
 private:
 	CRefPtr<CFunctor> m_pFunctor;
-	char m_szDescription[ 16 ];
+	char m_szDescription[16] { };
 };
 
 //-----------------------------------------------------------------------------
@@ -547,7 +592,7 @@ private:
 
 class CJobSet {
 public:
-	CJobSet( CJob* pJob = nullptr ) {
+	explicit CJobSet( CJob* pJob = nullptr ) {
 		if ( pJob ) {
 			m_jobs.AddToTail( pJob );
 		}
@@ -573,49 +618,49 @@ public:
 		m_jobs.FindAndRemove( pJob );
 	}
 
-	void Execute( bool bRelease = true ) {
+	void Execute( const bool pRelease = true ) {
 		for ( int i = 0; i < m_jobs.Count(); i++ ) {
 			m_jobs[ i ]->Execute();
-			if ( bRelease ) {
+			if ( pRelease ) {
 				m_jobs[ i ]->Release();
 			}
 		}
 
-		if ( bRelease ) {
+		if ( pRelease ) {
 			m_jobs.RemoveAll();
 		}
 	}
 
-	void Abort( bool bRelease = true ) {
+	void Abort( const bool pRelease = true ) {
 		for ( int i = 0; i < m_jobs.Count(); i++ ) {
 			m_jobs[ i ]->Abort();
-			if ( bRelease ) {
+			if ( pRelease ) {
 				m_jobs[ i ]->Release();
 			}
 		}
 
-		if ( bRelease ) {
+		if ( pRelease ) {
 			m_jobs.RemoveAll();
 		}
 	}
 
-	void WaitForFinish( bool bRelease = true ) {
+	void WaitForFinish( const bool pRelease = true ) {
 		for ( int i = 0; i < m_jobs.Count(); i++ ) {
 			m_jobs[ i ]->WaitForFinish();
-			if ( bRelease ) {
+			if ( pRelease ) {
 				m_jobs[ i ]->Release();
 			}
 		}
 
-		if ( bRelease ) {
+		if ( pRelease ) {
 			m_jobs.RemoveAll();
 		}
 	}
 
-	void WaitForFinish( IThreadPool* pPool, bool bRelease = true ) {
+	void WaitForFinish( IThreadPool* pPool, const bool pRelease = true ) {
 		pPool->YieldWait( m_jobs.Base(), m_jobs.Count() );
 
-		if ( bRelease ) {
+		if ( pRelease ) {
 			for ( int i = 0; i < m_jobs.Count(); i++ ) {
 				m_jobs[ i ]->Release();
 			}
@@ -637,9 +682,9 @@ private:
 
 #define BeginExecuteParallel() \
 	do {                       \
-	CJobSet jobSet
+		CJobSet jobSet
 #define EndExecuteParallel()               \
-	jobSet.WaitForFinish( g_pThreadPool ); \
+		jobSet.WaitForFinish( g_pThreadPool ); \
 	}                                      \
 	while ( 0 )
 
@@ -659,8 +704,8 @@ private:
 #endif
 
 #define DEFINE_NON_MEMBER_ITER_RANGE_PARALLEL( N )                                                                                                                                                   \
-	template<typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N, typename ITERTYPE1, typename ITERTYPE2>                                  \
-	void IterRangeParallel( FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( ITERTYPE1, ITERTYPE2 FUNC_ADDL_TEMPLATE_FUNC_PARAMS_##N ), ITERTYPE1 from, ITERTYPE2 to FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N, typename ITERTYPE1, typename ITERTYPE2>                                  \
+	void IterRangeParallel( FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( ITERTYPE1, ITERTYPE2 FUNC_ADDL_TEMPLATE_FUNC_PARAMS_## N ), ITERTYPE1 from, ITERTYPE2 to FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		const int MAX_THREADS = 16;                                                                                                                                                                  \
 		int nIdle = g_pThreadPool->NumIdleThreads();                                                                                                                                                 \
 		ITERTYPE1 range = to - from;                                                                                                                                                                 \
@@ -669,17 +714,17 @@ private:
 			nThreads = MAX_THREADS;                                                                                                                                                                  \
 		}                                                                                                                                                                                            \
 		if ( nThreads < 2 ) {                                                                                                                                                                        \
-			FunctorDirectCall( pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                                                    \
+			FunctorDirectCall( pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                                                    \
 		} else {                                                                                                                                                                                     \
 			ITERTYPE1 nIncrement = range / nThreads;                                                                                                                                                 \
                                                                                                                                                                                                      \
 			CJobSet jobSet;                                                                                                                                                                          \
 			while ( --nThreads ) {                                                                                                                                                                   \
 				ITERTYPE2 thisTo = from + nIncrement;                                                                                                                                                \
-				jobSet += g_pThreadPool->AddCall( pfnProxied, from, thisTo FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                             \
+				jobSet += g_pThreadPool->AddCall( pfnProxied, from, thisTo FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                             \
 				from = thisTo;                                                                                                                                                                       \
 			}                                                                                                                                                                                        \
-			FunctorDirectCall( pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                                                    \
+			FunctorDirectCall( pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                                                    \
 			jobSet.WaitForFinish( g_pThreadPool );                                                                                                                                                   \
 		}                                                                                                                                                                                            \
 	}
@@ -687,8 +732,8 @@ private:
 FUNC_GENERATE_ALL( DEFINE_NON_MEMBER_ITER_RANGE_PARALLEL );
 
 #define DEFINE_MEMBER_ITER_RANGE_PARALLEL( N )                                                                                                                                                                             \
-	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N, typename ITERTYPE1, typename ITERTYPE2>                                  \
-	void IterRangeParallel( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( ITERTYPE1, ITERTYPE2 FUNC_ADDL_TEMPLATE_FUNC_PARAMS_##N ), ITERTYPE1 from, ITERTYPE2 to FUNC_ARG_FORMAL_PARAMS_##N ) { \
+	template<typename OBJECT_TYPE, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_## N FUNC_TEMPLATE_ARG_PARAMS_## N, typename ITERTYPE1, typename ITERTYPE2>                                  \
+	void IterRangeParallel( OBJECT_TYPE* pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( ITERTYPE1, ITERTYPE2 FUNC_ADDL_TEMPLATE_FUNC_PARAMS_## N ), ITERTYPE1 from, ITERTYPE2 to FUNC_ARG_FORMAL_PARAMS_## N ) { \
 		const int MAX_THREADS = 16;                                                                                                                                                                                        \
 		int nIdle = g_pThreadPool->NumIdleThreads();                                                                                                                                                                       \
 		ITERTYPE1 range = to - from;                                                                                                                                                                                       \
@@ -697,17 +742,17 @@ FUNC_GENERATE_ALL( DEFINE_NON_MEMBER_ITER_RANGE_PARALLEL );
 			nThreads = MAX_THREADS;                                                                                                                                                                                        \
 		}                                                                                                                                                                                                                  \
 		if ( nThreads < 2 ) {                                                                                                                                                                                              \
-			FunctorDirectCall( pObject, pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                                                                 \
+			FunctorDirectCall( pObject, pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                                                                 \
 		} else {                                                                                                                                                                                                           \
 			ITERTYPE1 nIncrement = range / nThreads;                                                                                                                                                                       \
                                                                                                                                                                                                                            \
 			CJobSet jobSet;                                                                                                                                                                                                \
 			while ( --nThreads ) {                                                                                                                                                                                         \
 				ITERTYPE2 thisTo = from + nIncrement;                                                                                                                                                                      \
-				jobSet += g_pThreadPool->AddCall( pObject, pfnProxied, from, thisTo FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                                          \
+				jobSet += g_pThreadPool->AddCall( pObject, pfnProxied, from, thisTo FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                                          \
 				from = thisTo;                                                                                                                                                                                             \
 			}                                                                                                                                                                                                              \
-			FunctorDirectCall( pObject, pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_##N );                                                                                                                                 \
+			FunctorDirectCall( pObject, pfnProxied, from, to FUNC_FUNCTOR_CALL_ARGS_## N );                                                                                                                                 \
 			jobSet.WaitForFinish( g_pThreadPool );                                                                                                                                                                         \
 		}                                                                                                                                                                                                                  \
 	}
@@ -722,9 +767,9 @@ template<typename T>
 class CJobItemProcessor {
 public:
 	typedef T ItemType_t;
-	void Begin() {}
+	void Begin() { }
 	// void Process( ItemType_t & ) {}
-	void End() {}
+	void End() { }
 };
 
 template<typename T>
@@ -738,17 +783,23 @@ public:
 
 	//CFuncJobItemProcessor(OBJECT_TYPE_PTR pObject, void (FUNCTION_CLASS::*pfnProcess)( ITEM_TYPE & ), void (*pfnBegin)() = nullptr, void (*pfnEnd)() = nullptr );
 	void Begin() {
-		if ( m_pfnBegin ) ( *m_pfnBegin )();
+		if ( m_pfnBegin ) {
+			(*m_pfnBegin)();
+		}
 	}
-	void Process( T& item ) { ( *m_pfnProcess )( item ); }
+	void Process( T& item ) {
+		(*m_pfnProcess)( item );
+	}
 	void End() {
-		if ( m_pfnEnd ) ( *m_pfnEnd )();
+		if ( m_pfnEnd ) {
+			(*m_pfnEnd)();
+		}
 	}
 
 protected:
-	void ( *m_pfnProcess )( T& );
-	void ( *m_pfnBegin )();
-	void ( *m_pfnEnd )();
+	void (*m_pfnProcess)( T& );
+	void (*m_pfnBegin)();
+	void (*m_pfnEnd)();
 };
 
 template<typename T, class OBJECT_TYPE, class FUNCTION_CLASS = OBJECT_TYPE>
@@ -762,18 +813,24 @@ public:
 	}
 
 	void Begin() {
-		if ( m_pfnBegin ) ( ( *m_pObject ).*m_pfnBegin )();
+		if ( m_pfnBegin ) {
+			(*m_pObject.*m_pfnBegin)();
+		}
 	}
-	void Process( T& item ) { ( ( *m_pObject ).*m_pfnProcess )( item ); }
+	void Process( T& item ) {
+		(*m_pObject.*m_pfnProcess)( item );
+	}
 	void End() {
-		if ( m_pfnEnd ) ( ( *m_pObject ).*m_pfnEnd )();
+		if ( m_pfnEnd ) {
+			(*m_pObject.*m_pfnEnd)();
+		}
 	}
 
 protected:
 	OBJECT_TYPE* m_pObject;
-	void ( FUNCTION_CLASS::*m_pfnProcess )( T& );
-	void ( FUNCTION_CLASS::*m_pfnBegin )();
-	void ( FUNCTION_CLASS::*m_pfnEnd )();
+	void (FUNCTION_CLASS::*m_pfnProcess)( T& );
+	void (FUNCTION_CLASS::*m_pfnBegin)();
+	void (FUNCTION_CLASS::*m_pfnEnd)();
 };
 
 template<typename ITEM_TYPE, class ITEM_PROCESSOR_TYPE>
@@ -787,8 +844,9 @@ public:
 	void Run( ITEM_TYPE* pItems, unsigned nItems, int nMaxParallel = INT_MAX, IThreadPool* pThreadPool = nullptr ) {
 		tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "Run %s %d", m_szDescription, nItems );
 
-		if ( nItems == 0 )
+		if ( nItems == 0 ) {
 			return;
+		}
 
 		if ( !pThreadPool ) {
 			pThreadPool = g_pThreadPool;
@@ -815,11 +873,11 @@ public:
 		}
 
 		if ( nJobs > 1 ) {
-			CJob** jobs = (CJob**) stackalloc( nJobs * sizeof( CJob** ) );
+			auto jobs = static_cast<CJob**>( stackalloc( nJobs * sizeof( CJob** ) ) );
 			int i = nJobs;
 
 			while ( i-- ) {
-				jobs[ i ] = pThreadPool->QueueCall( this, &CParallelProcessor<ITEM_TYPE, ITEM_PROCESSOR_TYPE>::DoExecute );
+				jobs[ i ] = pThreadPool->QueueCall( this, &CParallelProcessor::DoExecute );
 				jobs[ i ]->SetDescription( m_szDescription );
 			}
 
@@ -1012,8 +1070,7 @@ private:
 
 		static_cast<Derived*>( this )->OnBegin();
 
-		while ( static_cast<Derived*>( this )->OnProcess() )
-			continue;
+		while ( static_cast<Derived*>( this )->OnProcess() ) { }
 
 		static_cast<Derived*>( this )->OnEnd();
 
@@ -1030,8 +1087,8 @@ private:
 //-----------------------------------------------------------------------------
 
 inline unsigned FunctorExecuteThread( void* pParam ) {
-	CFunctor* pFunctor = (CFunctor*) pParam;
-	( *pFunctor )();
+	auto pFunctor = static_cast<CFunctor*>( pParam );
+	(*pFunctor)();
 	pFunctor->Release();
 	return 0;
 }
@@ -1184,8 +1241,9 @@ inline JobStatus_t CJob::Abort( bool bDiscard ) {
 			tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "CJob::DoAbort" );
 
 			result = m_status = DoAbort( bDiscard );
-			if ( bDiscard )
+			if ( bDiscard ) {
 				DoCleanup();
+			}
 			m_CompleteEvent.Set();
 		} break;
 

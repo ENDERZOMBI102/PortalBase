@@ -9,21 +9,16 @@
 #include "jobthread.hpp"
 
 // FIXME: This file is not completely thread-safe, please make it
-CThreadPool::CThreadPool() {
-	m_Queue.SetLessFunc( []( CJob* const &pA, CJob* const &pB ) -> bool {
-		return pA->GetPriority() < pB->GetPriority();
-	});
-};
+CThreadPool::CThreadPool() = default;
 CThreadPool::~CThreadPool() = default;
 
 bool CThreadPool::Start( const ThreadPoolStartParams_t& startParams ) {
 	m_Threads.EnsureCapacity( startParams.nThreads );
-	m_IdleEvents.EnsureCount( startParams.nThreads );
 
 	for ( auto i{0}; i < startParams.nThreads; i += 1 ) {
 		m_Threads.AddToTail();
 		m_Threads[i] = CreateSimpleThread( PoolThreadFunc, this, startParams.nStackSize );
-		m_IdleEvents[i].Wait();
+		while ( m_IdleCount == i ) { }  // wait for thread to start
 	}
 
 	if ( startParams.fDistribute == ThreeState_t::TRS_TRUE ) {
@@ -59,10 +54,7 @@ int CThreadPool::NumIdleThreads() {
 }
 
 int CThreadPool::SuspendExecution() {
-	if ( !ThreadInMainThread() ) {
-		Assert( 0 );
-		return 0;
-	}
+	AssertFatalMsg( not ThreadInMainThread(), "Tried to suspend threadpool execution outside of main thread" );
 
 	// If not already suspended
 	if ( m_State != State::SUSPENDED ) {
@@ -80,10 +72,7 @@ int CThreadPool::SuspendExecution() {
 	return 1;
 }
 int CThreadPool::ResumeExecution() {
-	if ( !ThreadInMainThread() ) {
-		Assert( 0 );
-		return 0;
-	}
+	AssertFatalMsg( not ThreadInMainThread(), "Tried to resume threadpool execution outside of main thread" );
 
 	AssertMsg( m_State != State::SUSPENDED, "Attempted resume when not suspended" );
 
@@ -116,16 +105,35 @@ void CThreadPool::AddJob( CJob* pJob ) {
 		return;
 	}
 
+	// wait for a worker to be available (? is this needed ?)
+	// while ( m_IdleCount == 0 ) { }
+
 	// add the job to the queue and update its status
 	m_Mutex.Lock();
 		pJob->AddRef();
-		m_Queue.Insert( pJob );
+		m_Queue.AddToTail( pJob );
+
+		uint32 idx{ m_Queue.Tail() };
+		const int32 priority{ pJob->GetPriority() };
+
+		while ( idx != CUtlLinkedList<CJob*>::InvalidIndex() && priority > m_Queue[idx]->GetPriority() ) {
+			idx = m_Queue.Previous( idx );
+		}
+
+		if ( idx != CUtlLinkedList<CJob*>::InvalidIndex() ) {
+			m_Queue.InsertAfter( idx, pJob );
+		} else {
+			m_Queue.AddToHead( pJob );
+		}
+
 		pJob->m_pThreadPool = this;
 		pJob->m_status = JOB_STATUS_PENDING;
 	m_Mutex.Unlock();
 
 	// tell our workers that we have a job
+	m_JobAccepted.Reset();
 	m_JobAvailable.Set();
+	m_JobAccepted.Wait();
 }
 
 void CThreadPool::ExecuteHighPriorityFunctor( CFunctor* pFunctor ) {
@@ -141,25 +149,25 @@ int CThreadPool::ExecuteToPriority( JobPriority_t toPriority, JobFilter_t pfnFil
 	return {};
 }
 int CThreadPool::AbortAll() {
-	int nExecuted = 0;
-	if ( CThread::GetCurrentCThread() != this ) {
+	if ( CThread::GetCurrentCThread() != m_CoordinatorThread ) {
 		SuspendExecution();
 	}
 
-	if ( m_Queue.Count() ) {
-		CJob* pJob = NULL;
 
-		while ( ( pJob = GetJob() ) != NULL ) {
-			pJob->Abort();
-			pJob->Release();
+	// abort them all
+	m_Mutex.Lock();
+		for ( const auto job : m_Queue ) {
+			job->Abort();
+			job->Release();
 		}
-	}
+		m_Queue.RemoveAll();
+	m_Mutex.Unlock();
 
-	if ( CThread::GetCurrentCThread() != this ) {
+	if ( CThread::GetCurrentCThread() != m_CoordinatorThread ) {
 		ResumeExecution();
 	}
 
-	return nExecuted;
+	return 0;
 }
 
 void CThreadPool::AddFunctorInternal( CFunctor* pFunctor, CJob** ppJob, const char* pszDescription, unsigned flags ) {
@@ -181,57 +189,40 @@ bool CThreadPool::Start( const ThreadPoolStartParams_t& startParams, const char*
 }
 
 unsigned CThreadPool::PoolThreadFunc( void* pParam ) {
-	/*CThreadPool* pOwner = (CThreadPool*) pParam;
-	int iThread = pOwner->m_Threads.Count() - 1;
-	pOwner->m_IdleEvents[ iThread ].Set();
+	const auto pOwner = static_cast<CThreadPool*>( pParam );
+	pOwner->m_IdleCount += 1;
 
-	HANDLE waitHandles[] =
-		{
-			pOwner->m_JobAvailable,
-			pOwner->m_Exit };
+	while ( true ) {
+		// handle incoming jobs
+		if ( pOwner->m_JobAvailable.Check() ) {
+			pOwner->m_IdleCount -= 1;
 
-	DWORD waitResult;
-
-	while ( ( waitResult = WaitForMultipleObjects( ARRAYSIZE( waitHandles ), waitHandles, false, INFINITE ) ) != WAIT_FAILED ) {
-		switch ( waitResult - WAIT_OBJECT_0 ) {
-			case 0: {
-				pOwner->m_IdleEvents[ iThread ].Reset();
-				CJob* pJob = pOwner->m_pPendingJob;
-				pOwner->m_pPendingJob = NULL;
-				pOwner->m_JobAccepted.Set();
-
-				pJob->TryExecute();
-				pJob->Release();
-
-				pOwner->m_IdleEvents[ iThread ].Set();
-				break;
+			// accept the job
+			const auto head{ pOwner->m_Queue.Head() };
+			CJob* job = pOwner->m_Queue.Element( head );
+			if ( job == nullptr ) {
+				// job got sniped from our hands, go back idling
+				pOwner->m_IdleCount += 1;
+				continue;
 			}
+			pOwner->m_Queue.Remove( head );
+			pOwner->m_JobAccepted.Set();
 
-			case 1: {
-				return 0;
-			}
+			// run the job
+			job->TryExecute();
+			job->Release();
+
+			pOwner->m_IdleCount += 1;
 		}
-	}*/
-
-	AssertUnreachable();
-	return 1;
+		// handle exit command
+		if ( pOwner->m_Exit.Check() ) {
+			return 0;
+		}
+	}
 }
 
 
 /*
-inline void CThreadPool::WaitPut() {
-	if ( m_bUseSemaphore )
-		m_PutSemaphore.Wait();
-}
-
-inline void CThreadPool::ReleasePut() {
-#if IsWindows()
-	if ( m_bUseSemaphore )
-		m_PutSemaphore.Release();
-#endif
-}
-
-
 bool CThreadPool::RemoveJob( CJob* pJob ) {
 	if ( !pJob ) {
 		return false;
@@ -239,13 +230,13 @@ bool CThreadPool::RemoveJob( CJob* pJob ) {
 
 	AUTO_LOCK( m_mutex );
 
-	if ( !m_queue.IsValidIndex( pJob->m_queueID ) ) {
+	if ( !m_Queue.IsValidIndex( pJob->m_QueueID ) ) {
 		return false;
 	}
 
 	// Take the job out
-	m_queue.Remove( pJob->m_queueID );
-	pJob->m_queueID = m_queue.InvalidIndex();
+	m_Queue.Remove( pJob->m_QueueID );
+	pJob->m_QueueID = m_Queue.InvalidIndex();
 	pJob->m_pFulfiller = NULL;
 	pJob->Release();
 
@@ -253,7 +244,7 @@ bool CThreadPool::RemoveJob( CJob* pJob ) {
 	ReleasePut();
 
 	// If we're transitioning to empty...
-	if ( m_queue.Count() == 0 ) {
+	if ( m_Queue.Count() == 0 ) {
 		// Block the worker until there's something to do...
 		m_JobSignal.Reset();
 	}
@@ -268,7 +259,7 @@ int CThreadPool::ExecuteToPriority( JobPriority_t iToPriority ) {
 		SuspendExecution();
 	}
 
-	if ( m_queue.Count() ) {
+	if ( m_Queue.Count() ) {
 		CJob* pJob = NULL;
 
 		while ( ( pJob = GetJob() ) != NULL ) {
@@ -299,10 +290,10 @@ int CThreadPool::ExecuteToPriority( JobPriority_t iToPriority ) {
 CJob* CThreadPool::GetJob() {
 	CJob* pReturn = NULL;
 	m_mutex.Lock();
-	unsigned i = m_queue.Head();
+	unsigned i = m_Queue.Head();
 
-	if ( i != m_queue.InvalidIndex() ) {
-		pReturn = m_queue[ i ];
+	if ( i != m_Queue.InvalidIndex() ) {
+		pReturn = m_Queue[ i ];
 		pReturn->AddRef();
 		RemoveJob( pReturn );
 	}
@@ -479,6 +470,11 @@ JobStatus_t CJob::Abort( bool bDiscard ) {
 	return result;
 }
 */
+
+IThreadPool* CreateThreadPool();
+void DestroyThreadPool( IThreadPool* pPool );
+void RunThreadPoolTests();
+
 
 namespace {
 	CThreadPool s_ThreadPool{};

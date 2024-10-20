@@ -5,17 +5,16 @@
 #include "tier0/dbg.h"
 #include "tier1/utlvector.h"
 #include "utlpriorityqueue.h"
-#include "utlqueue.h"
 #include "vstdlib/jobthread.h"
 
 
-class CThreadPool : public IThreadPool {
+class CThreadPool : public CRefCounted1<IThreadPool> {
 public:
 	CThreadPool();
 	~CThreadPool() override;
-
+public:  // IThreadPool
 	// Thread functions
-	bool Start( const ThreadPoolStartParams_t& startParams = ThreadPoolStartParams_t() ) override;
+	bool Start( const ThreadPoolStartParams_t& startParams = ThreadPoolStartParams_t{} ) override;
 	bool Stop( int timeout = TT_INFINITE ) override;
 
 	// Functions for any thread
@@ -53,8 +52,7 @@ public:
 	int AbortAll() override;
 
 	//-----------------------------------------------------
-	void Reserved1() override {}
-
+	void Reserved1() override { }
 private:
 	void AddFunctorInternal( CFunctor*, CJob** = nullptr, const char* pszDescription = nullptr, unsigned flags = 0 ) override;
 
@@ -62,16 +60,12 @@ private:
 	friend class CJob;
 
 	CJob* GetDummyJob() override;
-
 public:
 	void Distribute( bool bDistribute = true, int* pAffinityTable = nullptr ) override;
 
 	bool Start( const ThreadPoolStartParams_t& startParams, const char* pszNameOverride ) override;
-
-	// og
 private:
-	static unsigned PoolThreadFunc( void* pParam );
-
+	static uint32 PoolThreadFunc( void* pParam );
 private:
 	enum State {
 		EXECUTING,
@@ -79,13 +73,19 @@ private:
 	};
 	CInterlockedIntT<State> m_State;
 
+	CThread* m_CoordinatorThread{ nullptr };
 	CThreadEvent m_JobAvailable;
 	CThreadEvent m_JobAccepted;
 	CThreadEvent m_Exit{ true };
 	CInterlockedInt m_IdleCount;
 
-	CUtlPriorityQueue<CJob*> m_Queue{};
+	CUtlLinkedList<CJob*> m_Queue{};
+	// mutex for adding/removing items to/from the queue
 	CThreadFastMutex m_Mutex{};
 	CUtlVector<ThreadHandle_t> m_Threads{};
-	CUtlVector<CThreadManualEvent> m_IdleEvents{};
 };
+
+// JOB_INTERFACE IThreadPool* CreateThreadPool();
+// JOB_INTERFACE void DestroyThreadPool( IThreadPool* pPool );
+// JOB_INTERFACE void RunThreadPoolTests();
+// JOB_INTERFACE IThreadPool* g_pThreadPool;
