@@ -979,14 +979,16 @@ function( target_use_server_base target EXCLUDE_SOURCES )
 		PRIVATE
 			$<${IS_WINDOWS}:winmm>
 
-			"${LIBPUBLIC}/choreoobjects${CMAKE_STATIC_LIBRARY_SUFFIX}"
-			"${LIBPUBLIC}/particles${CMAKE_STATIC_LIBRARY_SUFFIX}"
-			"${LIBPUBLIC}/dmxloader${CMAKE_STATIC_LIBRARY_SUFFIX}"
-			${ASRC_tier02}
+			choreoobjects
+			particles
+			dmxloader
+			tier0
+#			${ASRC_tier02}
 			mathlib
 			tier1
 			tier2
-			${ASRC_vstdlib2}
+			vstdlib
+#			${ASRC_vstdlib2}
 			tier3
 			steam_api
 	)
