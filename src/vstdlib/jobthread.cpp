@@ -8,7 +8,7 @@
 #endif
 #include "jobthread.hpp"
 
-// FIXME: This file is not completely thread-safe, please make it
+// FIXME: This file might not be completely thread-safe, do a check
 CThreadPool::CThreadPool() = default;
 CThreadPool::~CThreadPool() = default;
 
