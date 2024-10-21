@@ -6,9 +6,22 @@
 #include "buttonentry.hpp"
 #include "icommandline.h"
 
-InitReturnVal_t CInputSystem::Init() {
-	const int res{ SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) };
+ConVar joy_gamecontroller_config{ "joy_gamecontroller_config", "", FCVAR_ARCHIVE, "Game controller mapping (passed to SDL with SDL_HINT_GAMECONTROLLERCONFIG), can also be configured in Steam Big Picture mode." };
 
+InitReturnVal_t CInputSystem::Init() {
+	// ensure we respect the `joy_gamecontroller_config` convar
+	joy_gamecontroller_config.InstallChangeCallback( []( IConVar*, const char*, float ) -> void {
+		const auto cfg{ joy_gamecontroller_config.GetString() };
+
+		if ( cfg and cfg[0] != '\0' ) {
+			DevMsg( "Passing joy_gamecontroller_config to SDL ('%s').\n", cfg );
+			SDL_SetHint( "SDL_GAMECONTROLLERCONFIG", cfg );
+		} else {
+			DevMsg( "Reset SDL hint as joy_gamecontroller_config is empty.\n" );
+			SDL_ResetHint( "SDL_GAMECONTROLLERCONFIG" );
+		}
+	});
+	const int res{ SDL_InitSubSystem( SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) };
 	if ( res != 0 ) {
 		Error( "[AuroraSource|InputSystem] Failed to initialize SDL (%s)", SDL_GetError() );
 		return InitReturnVal_t::INIT_FAILED;
@@ -17,8 +30,8 @@ InitReturnVal_t CInputSystem::Init() {
 	// SDL_AddEventWatch(  ); may be useful???
 	// init controller if any
 	int32 joyNum;
-	auto joys{ SDL_GetJoysticks( &joyNum ) };
-	if ( joyNum != 0 ) {
+	const auto* joys{ SDL_GetJoysticks( &joyNum ) };
+	if ( joyNum != 0 ) [[unlikely]] {
 		for ( int i = 0; i != joyNum; i += 1 ) {
 			if ( not SDL_IsGamepad( joys[i] ) ) {
 				Warning( "Joystick is not recognized by the game controller system. You can configure the controller in Steam Big Picture mode.\n" );
