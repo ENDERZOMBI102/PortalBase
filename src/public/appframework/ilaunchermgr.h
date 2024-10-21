@@ -138,5 +138,4 @@
 		uint m_nMouseClickCount;
 		int m_MouseButton;// which of the CocoaMouseButton_t buttons this is for from above
 	};
-
-#endif// defined( USE_SDL )
+#endif

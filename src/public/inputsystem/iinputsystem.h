@@ -35,33 +35,42 @@ public:
 	virtual void PollInputState() = 0;
 
 	// Gets the time of the last polling in ms
-	virtual int GetPollTick() const = 0;
+	[[nodiscard]]
+    virtual int GetPollTick() const = 0;
 
 	// Is a button down? "Buttons" are binary-state input devices (mouse buttons, keyboard keys)
-	virtual bool IsButtonDown( ButtonCode_t pCode ) const = 0;
+	[[nodiscard]]
+    virtual bool IsButtonDown( ButtonCode_t pCode ) const = 0;
 
 	// Returns the tick at which the button was pressed and released
-	virtual int GetButtonPressedTick( ButtonCode_t pCode ) const = 0;
-	virtual int GetButtonReleasedTick( ButtonCode_t pCode ) const = 0;
+	[[nodiscard]]
+    virtual int GetButtonPressedTick( ButtonCode_t pCode ) const = 0;
+	[[nodiscard]]
+    virtual int GetButtonReleasedTick( ButtonCode_t pCode ) const = 0;
 
 	// Gets the value of an analog input device this frame
 	// Includes joysticks, mousewheel, mouse
-	virtual int GetAnalogValue( AnalogCode_t pCode ) const = 0;
+	[[nodiscard]]
+    virtual int GetAnalogValue( AnalogCode_t pCode ) const = 0;
 
 	// Gets the change in a particular analog input device this frame
 	// Includes joysticks, mousewheel, mouse
-	virtual int GetAnalogDelta( AnalogCode_t pCode ) const = 0;
+	[[nodiscard]]
+    virtual int GetAnalogDelta( AnalogCode_t pCode ) const = 0;
 
 	// Returns the input events since the last poll
-	virtual int GetEventCount() const = 0;
-	virtual const InputEvent_t* GetEventData() const = 0;
+	[[nodiscard]]
+    virtual int GetEventCount() const = 0;
+	[[nodiscard]]
+    virtual const InputEvent_t* GetEventData() const = 0;
 
 	// Posts a user-defined event into the event queue; this is expected
 	// to be called in overridden wndprocs connected to the root panel.
 	virtual void PostUserEvent( const InputEvent_t& event ) = 0;
 
 	// Returns the number of joysticks
-	virtual int GetJoystickCount() const = 0;
+	[[nodiscard]]
+    virtual int GetJoystickCount() const = 0;
 
 	// Enable/disable joystick, it has perf costs
 	virtual void EnableJoystickInput( int nJoystick, bool bEnable ) = 0;
@@ -83,28 +92,37 @@ public:
 	virtual void SetPrimaryUserId( int userId ) = 0;
 
 	// Convert back + forth between ButtonCode/AnalogCode + strings
-	virtual const char* ButtonCodeToString( ButtonCode_t code ) const = 0;
-	virtual const char* AnalogCodeToString( AnalogCode_t code ) const = 0;
-	virtual ButtonCode_t StringToButtonCode( const char* pString ) const = 0;
-	virtual AnalogCode_t StringToAnalogCode( const char* pString ) const = 0;
+	[[nodiscard]]
+    virtual const char* ButtonCodeToString( ButtonCode_t code ) const = 0;
+	[[nodiscard]]
+    virtual const char* AnalogCodeToString( AnalogCode_t code ) const = 0;
+	[[nodiscard]]
+    virtual ButtonCode_t StringToButtonCode( const char* pString ) const = 0;
+	[[nodiscard]]
+    virtual AnalogCode_t StringToAnalogCode( const char* pString ) const = 0;
 
 	// Sleeps until input happens. Pass a negative number to sleep infinitely
 	virtual void SleepUntilInput( int nMaxSleepTimeMS = -1 ) = 0;
 
 	// Convert back + forth between virtual codes + button codes
 	// FIXME: This is a temporary piece of code
-	virtual ButtonCode_t VirtualKeyToButtonCode( int nVirtualKey ) const = 0;
-	virtual int ButtonCodeToVirtualKey( ButtonCode_t code ) const = 0;
-	virtual ButtonCode_t ScanCodeToButtonCode( int lParam ) const = 0;
+	[[nodiscard]]
+    virtual ButtonCode_t VirtualKeyToButtonCode( int nVirtualKey ) const = 0;
+	[[nodiscard]]
+    virtual int ButtonCodeToVirtualKey( ButtonCode_t code ) const = 0;
+	[[nodiscard]]
+    virtual ButtonCode_t ScanCodeToButtonCode( int lParam ) const = 0;
 
 	// How many times have we called PollInputState?
-	virtual int GetPollCount() const = 0;
+	[[nodiscard]]
+    virtual int GetPollCount() const = 0;
 
 	// Sets the cursor position
 	virtual void SetCursorPosition( int x, int y ) = 0;
 
 	// NVNT get address to haptics interface
-	virtual void* GetHapticsInterfaceAddress() const = 0;
+	[[nodiscard]]
+    virtual void* GetHapticsInterfaceAddress() const = 0;
 
 	virtual void SetNovintPure( bool pPure ) = 0;
 

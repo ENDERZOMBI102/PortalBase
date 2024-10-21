@@ -6,6 +6,8 @@
 #include "tier1/tier1.h"
 #include "utlqueue.h"
 
+#include <SDL_joystick.h>
+
 
 class CInputSystem : public CTier1AppSystem<IInputSystem> {
 	using BaseClass = CTier1AppSystem<IInputSystem>;
@@ -79,8 +81,9 @@ private:
 	class CMessagePumpThread : public CThread {
 		int Run() override;
 	};
-	struct JoystickState {
-
+	struct GamepadState {
+		bool rumbling{};
+		SDL_Joystick* handle{};
 	};
 	struct ButtonState {
 		bool pressed{ false };
@@ -97,7 +100,8 @@ private:
 
 	int32 m_MouseAccX{};
 	int32 m_MouseAccY{};
-	JoystickState m_Joysticks[4] { };
+	int32 m_PrimaryPadUserId{};
+	GamepadState m_Gamepads[4] { };
 	ButtonState m_Buttons[ButtonCode_t::BUTTON_CODE_COUNT] { };
 
 	CUtlQueue<InputEvent_t> m_EventQueue{};

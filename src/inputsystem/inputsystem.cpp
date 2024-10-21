@@ -7,11 +7,32 @@
 #include "icommandline.h"
 
 InitReturnVal_t CInputSystem::Init() {
-	int res{ SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) };
+	const int res{ SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) };
 
 	if ( res != 0 ) {
 		Error( "[AuroraSource|InputSystem] Failed to initialize SDL (%s)", SDL_GetError() );
 		return InitReturnVal_t::INIT_FAILED;
+	}
+
+	// SDL_AddEventWatch(  ); may be useful???
+	// init controller if any
+	int32 joyNum;
+	auto joys{ SDL_GetJoysticks( &joyNum ) };
+	if ( joyNum != 0 ) {
+		for ( int i = 0; i != joyNum; i += 1 ) {
+			if ( not SDL_IsGamepad( joys[i] ) ) {
+				Warning( "Joystick is not recognized by the game controller system. You can configure the controller in Steam Big Picture mode.\n" );
+				continue;
+			}
+			const auto pad{ SDL_OpenGamepad( joys[i] ) };
+			if ( pad == nullptr ) {
+				Warning( "Failed to open controller %d: %s", i, SDL_GetError() );
+				continue;
+			}
+			// TODO: Finish this
+		}
+	} else {
+		Msg( "Did not detect any valid joysticks.\n" );
 	}
 
 	return BaseClass::Init();
@@ -158,11 +179,27 @@ void CInputSystem::SampleDevices() {
 }
 
 void CInputSystem::SetRumble( float fLeftMotor, float fRightMotor, int userId ) {
-	AssertMsg( false, "TODO: `CInputSystem::SetRumble( %f, %f, %d )` not implemented", fLeftMotor, fRightMotor, userId );
+	for ( auto& stick : m_Gamepads ) {
+		if ( stick.handle != nullptr and SDL_GetJoystickPlayerIndex( stick.handle ) == userId ) {
+			const int32 res = SDL_RumbleJoystick(
+				stick.handle,
+				static_cast<uint16>( fLeftMotor * SDL_MAX_UINT16 ),
+				static_cast<uint16>( fRightMotor * SDL_MAX_UINT16 ),
+				-1
+			);
+			stick.rumbling = res == 0;
+		}
+	}
 }
 
 void CInputSystem::StopRumble() {
-	AssertMsg( false, "TODO: `CInputSystem::StopRumble()` not implemented" );
+	for ( auto& stick : m_Gamepads ) {
+		if ( stick.rumbling ) {  // only valid joysticks may have this set to `true`
+			AssertMsg( stick.handle, "Invalid SDL_Joystick handle in rumbling joystick!!" );
+			SDL_RumbleJoystick( stick.handle, 0, 0, 0 );
+			stick.rumbling = false;
+		}
+	}
 }
 
 void CInputSystem::ResetInputState() {
@@ -175,7 +212,7 @@ void CInputSystem::ResetInputState() {
 }
 
 void CInputSystem::SetPrimaryUserId( int userId ) {
-	AssertMsg( false, "TODO: `CInputSystem::SetPrimaryUserId( %d )` not implemented", userId );
+	m_PrimaryPadUserId = userId;
 }
 
 const char* CInputSystem::ButtonCodeToString( const ButtonCode_t pCode ) const {
@@ -229,7 +266,7 @@ int CInputSystem::GetPollCount() const {
 	return m_PoolCount;
 }
 
-void CInputSystem::SetCursorPosition( int x, int y ) {
+void CInputSystem::SetCursorPosition( const int x, const int y ) {
 	// FIXME: This doesn't sound good
 	if ( SDL_WarpMouseGlobal( x, y ) < 0 ) {
 		DevWarning( "[AuroraSource|InputSystem] Failed to warp mouse pointer: %s", SDL_GetError() );
@@ -259,9 +296,7 @@ void CInputSystem::SetConsoleTextMode( const bool pConsoleTextMode ) {
 	m_ConsoleTextMode = pConsoleTextMode;
 }
 
-namespace {
-	CInputSystem s_InputSystem{};
-}
+namespace { CInputSystem s_InputSystem{}; }
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CInputSystem, IInputSystem, INPUTSYSTEM_INTERFACE_VERSION, s_InputSystem )
 
 int CInputSystem::CMessagePumpThread::Run() {
