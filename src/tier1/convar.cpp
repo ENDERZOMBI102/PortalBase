@@ -16,6 +16,7 @@
 #include "tier1/strtools.h"
 #include "tier1/tier1.h"
 #include "tier1/utlbuffer.h"
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 
@@ -50,8 +51,9 @@ static CDefaultAccessor s_DefaultAccessor;
 // Called by the framework to register ConCommandBases with the ICVar
 //-----------------------------------------------------------------------------
 void ConVar_Register( int nCVarFlag, IConCommandBaseAccessor* pAccessor ) {
-	if ( !g_pCVar || s_bRegistered )
+	if ( s_bRegistered or not g_pCVar ) {
 		return;
+	}
 
 	Assert( s_nDLLIdentifier < 0 );
 	s_bRegistered = true;
@@ -74,8 +76,9 @@ void ConVar_Register( int nCVarFlag, IConCommandBaseAccessor* pAccessor ) {
 }
 
 void ConVar_Unregister() {
-	if ( !g_pCVar || !s_bRegistered )
+	if ( not g_pCVar or not s_bRegistered ) {
 		return;
+	}
 
 	Assert( s_nDLLIdentifier >= 0 );
 	g_pCVar->UnregisterConCommands( s_nDLLIdentifier );
@@ -145,7 +148,7 @@ void ConCommandBase::CreateBase( const char* pName, const char* pHelpString /*= 
 		m_nFlags &= ~FCVAR_DEVELOPMENTONLY;
 	#endif
 
-	if ( !( m_nFlags & FCVAR_UNREGISTERED ) ) {
+	if ( not (m_nFlags & FCVAR_UNREGISTERED) ) {
 		m_pNext = s_pConCommandBases;
 		s_pConCommandBases = this;
 	} else {
@@ -276,7 +279,7 @@ static bool s_bBuiltBreakSet = false;
 // Tokenizer class
 //-----------------------------------------------------------------------------
 CCommand::CCommand() {
-	if ( !s_bBuiltBreakSet ) {
+	if ( not s_bBuiltBreakSet ) {
 		s_bBuiltBreakSet = true;
 		CharacterSetBuild( &s_BreakSet, "{}()':" );
 	}
@@ -287,7 +290,7 @@ CCommand::CCommand() {
 CCommand::CCommand( int nArgC, const char** ppArgV ) {
 	Assert( nArgC > 0 );
 
-	if ( !s_bBuiltBreakSet ) {
+	if ( not s_bBuiltBreakSet ) {
 		s_bBuiltBreakSet = true;
 		CharacterSetBuild( &s_BreakSet, "{}()':" );
 	}
@@ -334,11 +337,12 @@ characterset_t* CCommand::DefaultBreakSet() {
 
 bool CCommand::Tokenize( const char* pCommand, characterset_t* pBreakSet ) {
 	Reset();
-	if ( !pCommand )
+	if ( not pCommand ) {
 		return false;
+	}
 
 	// Use default break set
-	if ( !pBreakSet ) {
+	if ( not pBreakSet ) {
 		pBreakSet = &s_BreakSet;
 	}
 
@@ -356,13 +360,14 @@ bool CCommand::Tokenize( const char* pCommand, characterset_t* pBreakSet ) {
 	// Parse the current command into the current command buffer
 	CUtlBuffer bufParse( m_pArgSBuffer, nLen, CUtlBuffer::TEXT_BUFFER | CUtlBuffer::READ_ONLY );
 	int nArgvBufferSize = 0;
-	while ( bufParse.IsValid() && ( m_nArgc < COMMAND_MAX_ARGC ) ) {
+	while ( bufParse.IsValid() and m_nArgc < COMMAND_MAX_ARGC ) {
 		char* pArgvBuf = &m_pArgvBuffer[ nArgvBufferSize ];
 		int nMaxLen = COMMAND_MAX_LENGTH - nArgvBufferSize;
 		int nStartGet = bufParse.TellGet();
 		int nSize = bufParse.ParseToken( pBreakSet, pArgvBuf, nMaxLen );
-		if ( nSize < 0 )
+		if ( nSize < 0 ) {
 			break;
+		}
 
 		// Check for overflow condition
 		if ( nMaxLen == nSize ) {
@@ -406,27 +411,28 @@ bool CCommand::Tokenize( const char* pCommand, characterset_t* pBreakSet ) {
 // Helper function to parse arguments to commands.
 //-----------------------------------------------------------------------------
 const char* CCommand::FindArg( const char* pName ) const {
-	int nArgC = ArgC();
+	const int nArgC = ArgC();
 	for ( int i = 1; i < nArgC; i++ ) {
-		if ( !Q_stricmp( Arg( i ), pName ) )
-			return ( i + 1 ) < nArgC ? Arg( i + 1 ) : "";
+		if ( not Q_stricmp( Arg( i ), pName ) ) {
+			return i + 1 < nArgC ? Arg( i + 1 ) : "";
+		}
 	}
 	return nullptr;
 }
 
 int CCommand::FindArgInt( const char* pName, int nDefaultVal ) const {
 	const char* pVal = FindArg( pName );
-	if ( pVal )
+	if ( pVal ) {
 		return atoi( pVal );
-	else
-		return nDefaultVal;
+	}
+	return nDefaultVal;
 }
 
 
 //-----------------------------------------------------------------------------
 // Default console command autocompletion function
 //-----------------------------------------------------------------------------
-int DefaultCompletionFunc( const char* partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] ) {
+int DefaultCompletionFunc( const char*, char _[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH] ) {
 	return 0;
 }
 
@@ -468,7 +474,7 @@ ConCommand::ConCommand( const char* pName, ICommandCallback* pCallback, const ch
 	m_pCommandCallback = pCallback;
 	m_bUsingNewCommandCallback = false;
 	m_pCommandCompletionCallback = pCompletionCallback;
-	m_bHasCompletionCallback = ( pCompletionCallback != nullptr );
+	m_bHasCompletionCallback = pCompletionCallback != nullptr;
 	m_bUsingCommandCallbackInterface = true;
 
 	// Setup the rest
@@ -478,8 +484,7 @@ ConCommand::ConCommand( const char* pName, ICommandCallback* pCallback, const ch
 //-----------------------------------------------------------------------------
 // Destructor
 //-----------------------------------------------------------------------------
-ConCommand::~ConCommand() {
-}
+ConCommand::~ConCommand() { }
 
 
 //-----------------------------------------------------------------------------
@@ -496,7 +501,7 @@ bool ConCommand::IsCommand() const {
 void ConCommand::Dispatch( const CCommand& command ) {
 	if ( m_bUsingNewCommandCallback ) {
 		if ( m_fnCommandCallback ) {
-			( *m_fnCommandCallback )( command );
+			(*m_fnCommandCallback)( command );
 			return;
 		}
 	} else if ( m_bUsingCommandCallbackInterface ) {
@@ -506,7 +511,7 @@ void ConCommand::Dispatch( const CCommand& command ) {
 		}
 	} else {
 		if ( m_fnCommandCallbackV1 ) {
-			( *m_fnCommandCallbackV1 )();
+			(*m_fnCommandCallbackV1)();
 			return;
 		}
 	}
@@ -521,17 +526,19 @@ void ConCommand::Dispatch( const CCommand& command ) {
 //-----------------------------------------------------------------------------
 int ConCommand::AutoCompleteSuggest( const char* partial, CUtlVector<CUtlString>& commands ) {
 	if ( m_bUsingCommandCallbackInterface ) {
-		if ( !m_pCommandCompletionCallback )
+		if ( not m_pCommandCompletionCallback ) {
 			return 0;
+		}
 		return m_pCommandCompletionCallback->CommandCompletionCallback( partial, commands );
 	}
 
 	Assert( m_fnCompletionCallback );
-	if ( !m_fnCompletionCallback )
+	if ( not m_fnCompletionCallback ) {
 		return 0;
+	}
 
 	char rgpchCommands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ];
-	int iret = (m_fnCompletionCallback) ( partial, rgpchCommands );
+	int iret = m_fnCompletionCallback( partial, rgpchCommands );
 	for ( int i = 0; i < iret; ++i ) {
 		CUtlString str = rgpchCommands[ i ];
 		commands.AddToTail( str );
@@ -602,15 +609,15 @@ void ConVar::InstallChangeCallback( FnChangeCallback_t callback ) {
 	}
 }
 
-bool ConVar::IsFlagSet( int flag ) const {
-	return ( flag & m_pParent->m_nFlags ) != 0;
+bool ConVar::IsFlagSet( const int flag ) const {
+	return (flag & m_pParent->m_nFlags) != 0;
 }
 
 const char* ConVar::GetHelpText() const {
 	return m_pParent->m_pszHelpString;
 }
 
-void ConVar::AddFlags( int flags ) {
+void ConVar::AddFlags( const int flags ) {
 	m_pParent->m_nFlags |= flags;
 
 	#ifdef ALLOW_DEVELOPMENT_CVARS
@@ -648,7 +655,7 @@ void ConVar::Init() {
 //-----------------------------------------------------------------------------
 void ConVar::InternalSetValue( const char* value ) {
 	if ( IsFlagSet( FCVAR_MATERIAL_THREAD_MASK ) ) {
-		if ( g_pCVar && !g_pCVar->IsMaterialThreadSetAllowed() ) {
+		if ( g_pCVar and not g_pCVar->IsMaterialThreadSetAllowed() ) {
 			g_pCVar->QueueMaterialThreadSetValue( this, value );
 			return;
 		}
@@ -662,11 +669,12 @@ void ConVar::InternalSetValue( const char* value ) {
 
 	float flOldValue = m_fValue;
 
-	val = (char*) value;
-	if ( !value )
+	val = const_cast<char*>( value );
+	if ( not value ) {
 		fNewValue = 0.0f;
-	else
-		fNewValue = (float) atof( value );
+	} else {
+		fNewValue = static_cast<float>( atof( value ) );
+	}
 
 	if ( ClampValue( fNewValue ) ) {
 		Q_snprintf( tempVal, sizeof( tempVal ), "%f", fNewValue );
@@ -675,9 +683,9 @@ void ConVar::InternalSetValue( const char* value ) {
 
 	// Redetermine value
 	m_fValue = fNewValue;
-	m_nValue = (int) ( fNewValue );
+	m_nValue = static_cast<int>( fNewValue );
 
-	if ( !( m_nFlags & FCVAR_NEVER_AS_STRING ) ) {
+	if ( not (m_nFlags & FCVAR_NEVER_AS_STRING) ) {
 		ChangeStringValue( val, flOldValue );
 	}
 }
@@ -687,9 +695,9 @@ void ConVar::InternalSetValue( const char* value ) {
 // Input  : *tempVal -
 //-----------------------------------------------------------------------------
 void ConVar::ChangeStringValue( const char* tempVal, float flOldValue ) {
-	Assert( !( m_nFlags & FCVAR_NEVER_AS_STRING ) );
+	Assert( not (m_nFlags & FCVAR_NEVER_AS_STRING) );
 
-	char* pszOldValue = (char*) stackalloc( m_StringLength );
+	auto pszOldValue = static_cast<char*>( stackalloc( m_StringLength ) );
 	memcpy( pszOldValue, m_pszString, m_StringLength );
 
 	if ( tempVal ) {
@@ -726,12 +734,12 @@ void ConVar::ChangeStringValue( const char* tempVal, float flOldValue ) {
 // Output : Returns true if value changed
 //-----------------------------------------------------------------------------
 bool ConVar::ClampValue( float& value ) {
-	if ( m_bHasMin && ( value < m_fMinVal ) ) {
+	if ( m_bHasMin and value < m_fMinVal ) {
 		value = m_fMinVal;
 		return true;
 	}
 
-	if ( m_bHasMax && ( value > m_fMaxVal ) ) {
+	if ( m_bHasMax and value > m_fMaxVal ) {
 		value = m_fMaxVal;
 		return true;
 	}
@@ -744,11 +752,12 @@ bool ConVar::ClampValue( float& value ) {
 // Input  : *value -
 //-----------------------------------------------------------------------------
 void ConVar::InternalSetFloatValue( float fNewValue ) {
-	if ( fNewValue == m_fValue )
+	if ( fNewValue == m_fValue ) {
 		return;
+	}
 
 	if ( IsFlagSet( FCVAR_MATERIAL_THREAD_MASK ) ) {
-		if ( g_pCVar && !g_pCVar->IsMaterialThreadSetAllowed() ) {
+		if ( g_pCVar and not g_pCVar->IsMaterialThreadSetAllowed() ) {
 			g_pCVar->QueueMaterialThreadSetValue( this, fNewValue );
 			return;
 		}
@@ -762,7 +771,7 @@ void ConVar::InternalSetFloatValue( float fNewValue ) {
 	// Redetermine value
 	float flOldValue = m_fValue;
 	m_fValue = fNewValue;
-	m_nValue = (int) m_fValue;
+	m_nValue = static_cast<int>( m_fValue );
 
 	if ( !( m_nFlags & FCVAR_NEVER_AS_STRING ) ) {
 		char tempVal[ 32 ];
@@ -778,11 +787,12 @@ void ConVar::InternalSetFloatValue( float fNewValue ) {
 // Input  : *value -
 //-----------------------------------------------------------------------------
 void ConVar::InternalSetIntValue( int nValue ) {
-	if ( nValue == m_nValue )
+	if ( nValue == m_nValue ) {
 		return;
+	}
 
 	if ( IsFlagSet( FCVAR_MATERIAL_THREAD_MASK ) ) {
-		if ( g_pCVar && !g_pCVar->IsMaterialThreadSetAllowed() ) {
+		if ( g_pCVar and not g_pCVar->IsMaterialThreadSetAllowed() ) {
 			g_pCVar->QueueMaterialThreadSetValue( this, nValue );
 			return;
 		}
@@ -835,11 +845,11 @@ void ConVar::Create( const char* pName, const char* pDefaultValue, int flags /*=
 	m_nValue = atoi( m_pszString ); // dont convert from float to int and lose bits
 
 	// Bounds Check, should never happen, if it does, no big deal
-	if ( m_bHasMin && ( m_fValue < m_fMinVal ) ) {
+	if ( m_bHasMin and ( m_fValue < m_fMinVal ) ) {
 		Assert( 0 );
 	}
 
-	if ( m_bHasMax && ( m_fValue > m_fMaxVal ) ) {
+	if ( m_bHasMax and ( m_fValue > m_fMaxVal ) ) {
 		Assert( 0 );
 	}
 
@@ -851,8 +861,7 @@ void ConVar::Create( const char* pName, const char* pDefaultValue, int flags /*=
 // Input  : *value -
 //-----------------------------------------------------------------------------
 void ConVar::SetValue( const char* value ) {
-	auto* var = static_cast<ConVar*>( m_pParent );
-	var->InternalSetValue( value );
+	m_pParent->InternalSetValue( value );
 }
 
 //-----------------------------------------------------------------------------
@@ -860,8 +869,7 @@ void ConVar::SetValue( const char* value ) {
 // Input  : value -
 //-----------------------------------------------------------------------------
 void ConVar::SetValue( float value ) {
-	auto* var = static_cast<ConVar*>( m_pParent );
-	var->InternalSetFloatValue( value );
+	m_pParent->InternalSetFloatValue( value );
 }
 
 //-----------------------------------------------------------------------------
@@ -869,8 +877,7 @@ void ConVar::SetValue( float value ) {
 // Input  : value -
 //-----------------------------------------------------------------------------
 void ConVar::SetValue( int value ) {
-	auto* var = static_cast<ConVar*>( m_pParent );
-	var->InternalSetIntValue( value );
+	m_pParent->InternalSetIntValue( value );
 }
 
 //-----------------------------------------------------------------------------
@@ -878,8 +885,7 @@ void ConVar::SetValue( int value ) {
 //-----------------------------------------------------------------------------
 void ConVar::Revert() {
 	// Force default value again
-	auto* var = static_cast<ConVar*>( m_pParent );
-	var->SetValue( var->m_pszDefaultValue );
+	m_pParent->SetValue( m_pParent->m_pszDefaultValue );
 }
 
 //-----------------------------------------------------------------------------
@@ -952,7 +958,7 @@ void ConVarRef::Init( const char* pName, bool bIgnoreMissing ) {
 	m_pConVarState = dynamic_cast<ConVar*>( m_pConVar );
 	if ( !IsValid() ) {
 		static bool bFirst = true;
-		if ( g_pCVar || bFirst ) {
+		if ( g_pCVar or bFirst ) {
 			if ( !bIgnoreMissing ) {
 				Warning( "ConVarRef %s doesn't point to an existing ConVar\n", pName );
 			}
@@ -1036,32 +1042,31 @@ void ConVar_PrintFlags( const ConCommandBase* var ) {
 // Purpose:
 //-----------------------------------------------------------------------------
 void ConVar_PrintDescription( const ConCommandBase* pVar ) {
-	bool bMin, bMax;
-	float fMin, fMax;
-	const char* pStr;
 
 	assert( pVar );
 
 	Color clr;
 	clr.SetColor( 255, 100, 100, 255 );
 
-	if ( !pVar->IsCommand() ) {
+	if ( not pVar->IsCommand() ) {
 		const auto* var = dynamic_cast<const ConVar*>( pVar );
 		const auto* pBounded = dynamic_cast<const ConVar_ServerBounded*>( var );
 
-		bMin = var->GetMin( fMin );
-		bMax = var->GetMax( fMax );
+		float fMin;
+		const bool bMin = var->GetMin( fMin );
+		float fMax;
+		const bool bMax = var->GetMax( fMax );
 
-		const char* value = nullptr;
-		char tempVal[ 32 ];
+		const char* value;
+		char tempVal[32];
 
-		if ( pBounded || var->IsFlagSet( FCVAR_NEVER_AS_STRING ) ) {
+		if ( pBounded or var->IsFlagSet( FCVAR_NEVER_AS_STRING ) ) {
 			value = tempVal;
 
-			int intVal = pBounded ? pBounded->GetInt() : var->GetInt();
-			float floatVal = pBounded ? pBounded->GetFloat() : var->GetFloat();
+			const int intVal = pBounded ? pBounded->GetInt() : var->GetInt();
+			const float floatVal = pBounded ? pBounded->GetFloat() : var->GetFloat();
 
-			if ( fabs( (float) intVal - floatVal ) < 0.000001 ) {
+			if ( std::fabs( static_cast<float>( intVal ) - floatVal ) < 0.000001 ) {
 				Q_snprintf( tempVal, sizeof( tempVal ), "%d", intVal );
 			} else {
 				Q_snprintf( tempVal, sizeof( tempVal ), "%f", floatVal );
@@ -1088,9 +1093,8 @@ void ConVar_PrintDescription( const ConCommandBase* pVar ) {
 		ConMsg( "\n" );
 
 		// Handled virtualized cvars.
-		if ( pBounded && fabs( pBounded->GetFloat() - var->GetFloat() ) > 0.0001f ) {
-			ConColorMsg( clr, "** NOTE: The real value is %.3f but the server has temporarily restricted it to %.3f **\n",
-						 var->GetFloat(), pBounded->GetFloat() );
+		if ( pBounded && std::fabs( pBounded->GetFloat() - var->GetFloat() ) > 0.0001f ) {
+			ConColorMsg( clr, "** NOTE: The real value is %.3f but the server has temporarily restricted it to %.3f **\n", var->GetFloat(), pBounded->GetFloat() );
 		}
 	} else {
 		auto* var = dynamic_cast<const ConCommand*>( pVar );
@@ -1100,8 +1104,8 @@ void ConVar_PrintDescription( const ConCommandBase* pVar ) {
 
 	ConVar_PrintFlags( pVar );
 
-	pStr = pVar->GetHelpText();
-	if ( pStr && pStr[ 0 ] ) {
+	const char* pStr = pVar->GetHelpText();
+	if ( pStr and pStr[0] ) {
 		ConMsg( " - %s\n", pStr );
 	}
 }
