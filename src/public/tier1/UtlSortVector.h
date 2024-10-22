@@ -198,21 +198,19 @@ int CUtlSortVector<T, LessFunc, BaseVector>::InsertAfter( int nElemIndex, const 
 	return nInsertedIndex;
 }
 
+using QSortCompareFunc_t = int(__cdecl*)( void* context, const void*, const void* );
+#if IsLinux()
+	extern "C" void qsort_s( void* base, size_t num, size_t width, QSortCompareFunc_t compare, void* context );
+#endif
 
 template<class T, class LessFunc, class BaseVector>
 void CUtlSortVector<T, LessFunc, BaseVector>::QuickSort( LessFunc& less, int X, int I ) {
-	using QSortCompareFunc_t = int(__cdecl*)( void* context, const void*, const void* );
-
-	#if IsLinux()
-		extern "C" void qsort_s( void* base, size_t num, size_t width, QSortCompareFunc_t compare, void* context );
-	#endif
-
 	if ( this->Count() > 1 ) {
 		QSortContext_t ctx;
 		ctx.m_pLessContext = m_pLessContext;
 		ctx.m_pLessFunc = &less;
 
-		qsort_s( this->Base(), this->Count(), sizeof( T ), static_cast<QSortCompareFunc_t>( &CUtlSortVector<T, LessFunc>::CompareHelper ), &ctx );
+		qsort_s( this->Base(), this->Count(), sizeof( T ), reinterpret_cast<QSortCompareFunc_t>( &CUtlSortVector<T, LessFunc>::CompareHelper ), &ctx );
 	}
 }
 

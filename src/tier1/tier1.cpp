@@ -20,6 +20,11 @@ IProcessUtils* g_pProcessUtils = nullptr;
 static bool s_bConnected = false;
 
 
+// for backwards compat (utlsortvector.h)
+#if !IsWindows()
+	void* g_pUtlSortVectorQSortContext = nullptr;
+#endif
+
 //-----------------------------------------------------------------------------
 // Call this to connect to all tier 1 libraries.
 // It's up to the caller to check the globals it cares about to see if ones are missing
