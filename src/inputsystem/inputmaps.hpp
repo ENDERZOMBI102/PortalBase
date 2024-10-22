@@ -2,13 +2,13 @@
 // Created by ENDERZOMBI102 on 26/10/2023.
 //
 #pragma once
-#include <array>
 #include "inputsystem/ButtonCode.h"
+#include <array>
 
 
-struct ButtonEntry {
+struct ButtonMapEntry {
 	const char* name;
 	const ButtonCode_t code;
 };
 
-extern std::array<ButtonEntry, 106> BUTTON_MAP;
+extern std::array<ButtonMapEntry, 106> BUTTON_MAP;

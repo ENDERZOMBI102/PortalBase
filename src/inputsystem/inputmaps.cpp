@@ -1,9 +1,10 @@
 //
 // Created by ENDERZOMBI102 on 26/10/2023.
 //
-#include "buttonentry.hpp"
+#include "inputmaps.hpp"
 
-std::array<ButtonEntry, 106> BUTTON_MAP {{
+
+std::array<ButtonMapEntry, 106> BUTTON_MAP {{
 	{ "0", ButtonCode_t::KEY_0 },
 	{ "1", ButtonCode_t::KEY_1 },
 	{ "2", ButtonCode_t::KEY_2 },
@@ -111,4 +112,3 @@ std::array<ButtonEntry, 106> BUTTON_MAP {{
 	{ "NUMLOCKTOGGLE", ButtonCode_t::KEY_NUMLOCKTOGGLE },
 	{ "SCROLLLOCKTOGGLE", ButtonCode_t::KEY_SCROLLLOCKTOGGLE }
 }};
-

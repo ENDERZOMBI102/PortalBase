@@ -53,7 +53,7 @@ public:  // IInputSystem
 
 	void ResetInputState() override;
 
-	void SetPrimaryUserId( int userId ) override;
+	void SetPrimaryUserId( int pUserId ) override;
 
 	const char* ButtonCodeToString( ButtonCode_t pCode ) const override;
 	const char* AnalogCodeToString( AnalogCode_t pCode ) const override;

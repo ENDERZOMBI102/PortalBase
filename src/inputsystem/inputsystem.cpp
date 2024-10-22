@@ -3,55 +3,74 @@
 //
 #include "inputsystem.hpp"
 #include "SDL3/SDL.h"
-#include "buttonentry.hpp"
 #include "icommandline.h"
+#include "inputmaps.hpp"
+
+#include <chrono>
 
 ConVar joy_gamecontroller_config{ "joy_gamecontroller_config", "", FCVAR_ARCHIVE, "Game controller mapping (passed to SDL with SDL_HINT_GAMECONTROLLERCONFIG), can also be configured in Steam Big Picture mode." };
 
 InitReturnVal_t CInputSystem::Init() {
-	// ensure we respect the `joy_gamecontroller_config` convar
-	joy_gamecontroller_config.InstallChangeCallback( []( IConVar*, const char*, float ) -> void {
-		const auto cfg{ joy_gamecontroller_config.GetString() };
+	int res{0};
 
-		if ( cfg and cfg[0] != '\0' ) {
-			DevMsg( "Passing joy_gamecontroller_config to SDL ('%s').\n", cfg );
-			SDL_SetHint( "SDL_GAMECONTROLLERCONFIG", cfg );
-		} else {
-			DevMsg( "Reset SDL hint as joy_gamecontroller_config is empty.\n" );
-			SDL_ResetHint( "SDL_GAMECONTROLLERCONFIG" );
-		}
-	});
-	const int res{ SDL_InitSubSystem( SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) };
+	res = SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
 	if ( res != 0 ) {
-		Error( "[AuroraSource|InputSystem] Failed to initialize SDL (%s)", SDL_GetError() );
+		Error( "[AuroraSource|InputSystem] Failed to initialize SDL events/video subsystem(s) (%s)", SDL_GetError() );
 		return InitReturnVal_t::INIT_FAILED;
 	}
 
-	// SDL_AddEventWatch(  ); may be useful???
-	// init controller if any
-	int32 joyNum;
-	const auto* joys{ SDL_GetJoysticks( &joyNum ) };
-	if ( joyNum != 0 ) [[unlikely]] {
-		for ( int i = 0; i != joyNum; i += 1 ) {
-			if ( not SDL_IsGamepad( joys[i] ) ) {
-				Warning( "Joystick is not recognized by the game controller system. You can configure the controller in Steam Big Picture mode.\n" );
-				continue;
+	// m_ConsoleTextMode makes us not init the joystick system
+	if ( not m_ConsoleTextMode ) {
+		// ensure we respect the `joy_gamecontroller_config` convar
+		joy_gamecontroller_config.InstallChangeCallback( []( IConVar*, const char*, float ) -> void {
+			const auto cfg{ joy_gamecontroller_config.GetString() };
+
+			if ( cfg and cfg[0] != '\0' ) {
+				DevMsg( "Passing joy_gamecontroller_config to SDL ('%s').\n", cfg );
+				SDL_SetHint( "SDL_GAMECONTROLLERCONFIG", cfg );
+			} else {
+				DevMsg( "Reset SDL hint as joy_gamecontroller_config is empty.\n" );
+				SDL_ResetHint( "SDL_GAMECONTROLLERCONFIG" );
 			}
-			const auto pad{ SDL_OpenGamepad( joys[i] ) };
-			if ( pad == nullptr ) {
-				Warning( "Failed to open controller %d: %s", i, SDL_GetError() );
-				continue;
-			}
-			// TODO: Finish this
+		});
+		res = SDL_InitSubSystem( SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC );
+		if ( res != 0 ) {
+			Error( "[AuroraSource|InputSystem] Failed to initialize SDL joystick subsystem (%s)", SDL_GetError() );
+			return InitReturnVal_t::INIT_FAILED;
 		}
-	} else {
-		Msg( "Did not detect any valid joysticks.\n" );
+
+		// init controller if any
+		int32 joyNum;
+		const auto* joys{ SDL_GetJoysticks( &joyNum ) };
+		if ( joyNum != 0 ) [[unlikely]] {
+			for ( int i = 0; i != joyNum; i += 1 ) {
+				if ( not SDL_IsGamepad( joys[i] ) ) {
+					Warning( "[AuroraSource|InputSystem] Joystick is not recognized by the game controller system. You can configure the controller in Steam Big Picture mode.\n" );
+					continue;
+				}
+				const auto pad{ SDL_OpenGamepad( joys[i] ) };
+				if ( pad == nullptr ) {
+					Warning( "[AuroraSource|InputSystem] Failed to open controller %d: %s", i, SDL_GetError() );
+					continue;
+				}
+				// TODO: Finish this
+			}
+		} else {
+			Msg( "[AuroraSource|InputSystem] Did not detect any valid joysticks.\n" );
+		}
 	}
 
 	return BaseClass::Init();
 }
 
 void CInputSystem::Shutdown() {
+	// quit systems in the reverse order of init
+	if ( not m_ConsoleTextMode ) {
+		SDL_QuitSubSystem( SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC );
+	}
+
+	SDL_QuitSubSystem( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
+
 	// TODO: Finish this
 	BaseClass::Shutdown();
 }
@@ -160,6 +179,9 @@ int CInputSystem::GetEventCount() const {
 }
 
 const InputEvent_t* CInputSystem::GetEventData() const {
+	if ( m_EventQueue.IsEmpty() ) {
+		return nullptr;
+	}
 	return &m_EventQueue.Head();
 }
 
@@ -169,9 +191,7 @@ void CInputSystem::PostUserEvent( const InputEvent_t& event ) {
 
 int CInputSystem::GetJoystickCount() const {
 	int count{0};
-	SDL_GetJoysticks( &count );
-
-	if ( count < 0 ) {
+	if ( SDL_GetJoysticks( &count ) == nullptr ) {
 		DevWarning( "[AuroraSource|InputSystem] Failed to enumerate joysticks: %s", SDL_GetError() );
 		return 0;
 	}
@@ -191,7 +211,7 @@ void CInputSystem::SampleDevices() {
 	AssertMsg( false, "TODO: `CInputSystem::SampleDevices()` not implemented" );
 }
 
-void CInputSystem::SetRumble( float fLeftMotor, float fRightMotor, int userId ) {
+void CInputSystem::SetRumble( const float fLeftMotor, const float fRightMotor, const int userId ) {
 	for ( auto& stick : m_Gamepads ) {
 		if ( stick.handle != nullptr and SDL_GetJoystickPlayerIndex( stick.handle ) == userId ) {
 			const int32 res = SDL_RumbleJoystick(
@@ -224,8 +244,12 @@ void CInputSystem::ResetInputState() {
 	m_PoolCount = 0;
 }
 
-void CInputSystem::SetPrimaryUserId( int userId ) {
-	m_PrimaryPadUserId = userId;
+void CInputSystem::SetPrimaryUserId( int pUserId ) {
+	if ( pUserId > 2 ) {
+		pUserId = -1;
+	}
+	m_PrimaryPadUserId = pUserId;
+	ConMsg( "[AuroraSource|InputSystem] Primary gamepad UserId is now %d\n", pUserId );
 }
 
 const char* CInputSystem::ButtonCodeToString( const ButtonCode_t pCode ) const {
@@ -238,7 +262,21 @@ const char* CInputSystem::ButtonCodeToString( const ButtonCode_t pCode ) const {
 }
 
 const char* CInputSystem::AnalogCodeToString( AnalogCode_t pCode ) const {
-	AssertMsg( false, "TODO: `CInputSystem::AnalogCodeToString( %d )` not implemented", pCode );
+	switch ( pCode ) {
+	case MOUSE_X:
+		return "MOUSE_X";
+	case MOUSE_Y:
+		return "MOUSE_Y";
+	case MOUSE_XY:
+		return "MOUSE_XY";
+	case MOUSE_WHEEL:
+		return "MOUSE_WHEEL";
+	default:
+		break;
+	}
+
+	// TODO: Implement missing entries (joystick)
+	AssertMsg( false, "TODO: `CInputSystem::AnalogCodeToString(%d)` not implemented", pCode );
 	return nullptr;
 }
 
@@ -252,12 +290,31 @@ ButtonCode_t CInputSystem::StringToButtonCode( const char* pString ) const {
 }
 
 AnalogCode_t CInputSystem::StringToAnalogCode( const char* pString ) const {
-	AssertMsg( false, "TODO: `CInputSystem::StringToAnalogCode` not implemented" );
+	if ( Q_strcmp( "MOUSE_X", pString ) ) {
+		return MOUSE_X;
+	}
+	if ( Q_strcmp( "MOUSE_Y", pString ) ) {
+		return MOUSE_Y;
+	}
+	if ( Q_strcmp( "MOUSE_XY", pString ) ) {
+		return MOUSE_XY;
+	}
+	if ( Q_strcmp( "MOUSE_WHEEL", pString ) ) {
+		return MOUSE_WHEEL;
+	}
+
+	AssertMsg( false, "TODO: `CInputSystem::StringToAnalogCode(%s)` not implemented", pString );
 	return ANALOG_CODE_INVALID;
 }
 
 void CInputSystem::SleepUntilInput( int nMaxSleepTimeMS ) {
-	AssertMsg( false, "TODO: `CInputSystem::SleepUntilInput( %d )` not implemented", nMaxSleepTimeMS );
+	// AssertMsg( false, "TODO: `CInputSystem::SleepUntilInput( %d )` not implemented", nMaxSleepTimeMS );
+	const auto end{ std::chrono::high_resolution_clock::now() + std::chrono::milliseconds{ nMaxSleepTimeMS } };
+	while ( m_EventQueue.IsEmpty() ) {
+		if ( std::chrono::high_resolution_clock::now() > end ) {
+			break;
+		}
+	}
 }
 
 ButtonCode_t CInputSystem::VirtualKeyToButtonCode( int nVirtualKey ) const {
@@ -316,26 +373,44 @@ int CInputSystem::CMessagePumpThread::Run() {
 	SDL_Event sdlEvent;
 	while ( s_InputSystem.m_Running ) {
 		while ( SDL_PollEvent( &sdlEvent ) ) {
-			InputEvent_t inputEvent{};
 			switch ( sdlEvent.type ) {
-				case SDL_EventType::SDL_EVENT_QUIT:
-					inputEvent.m_nType = InputEventType_t::IE_Quit;
-					break;
-				case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_DOWN:
-					inputEvent.m_nType = InputEventType_t::IE_ButtonPressed;
-					inputEvent.m_nData = sdlEvent.button.button;
-					inputEvent.m_nTick = SDL_GetTicks();
-					break;
-				case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_UP:
-					inputEvent.m_nType = InputEventType_t::IE_ButtonReleased;
-					inputEvent.m_nData = sdlEvent.button.button;
-					inputEvent.m_nTick = SDL_GetTicks();
-					break;
-				default:
-					Warning( "Missing event: %d", sdlEvent.type );
+			case SDL_EVENT_QUIT:
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+				s_InputSystem.m_EventQueue.Insert({
+					.m_nType = InputEventType_t::IE_Quit
+				});
+				break;
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+				s_InputSystem.m_EventQueue.Insert({
+					.m_nType = InputEventType_t::IE_ButtonPressed,
+					.m_nTick = static_cast<int32>( SDL_GetTicks() ),
+					.m_nData = sdlEvent.button.button,
+				});
+				break;
+			case SDL_EVENT_MOUSE_BUTTON_UP:
+				s_InputSystem.m_EventQueue.Insert({
+					.m_nType = InputEventType_t::IE_ButtonReleased,
+					.m_nTick = static_cast<int32>( SDL_GetTicks() ),
+					.m_nData = sdlEvent.button.button,
+				});
+				break;
+			case SDL_EVENT_MOUSE_MOTION:
+				s_InputSystem.m_EventQueue.Insert({
+					.m_nType = InputEventType_t::IE_AnalogValueChanged,
+					.m_nTick = static_cast<int32>( SDL_GetTicks() ),
+					.m_nData = AnalogCode_t::MOUSE_X,
+					.m_nData2 = 0, // sdlEvent.motion.x,
+				});
+				s_InputSystem.m_EventQueue.Insert({
+					.m_nType = InputEventType_t::IE_AnalogValueChanged,
+					.m_nTick = static_cast<int32>( SDL_GetTicks() ),
+					.m_nData = AnalogCode_t::MOUSE_Y,
+					.m_nData2 = 0, // sdlEvent.motion.y,
+				});
+				break;
+			default:
+				Warning( "[AuroraSource|InputSystem] Ignored SDL event: 0x%x", sdlEvent.type );
 			}
-
-			s_InputSystem.m_EventQueue.Insert( inputEvent );
 		}
 	}
 	return 0;
