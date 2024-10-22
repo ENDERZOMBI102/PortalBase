@@ -3,11 +3,9 @@
 // Purpose: A higher level link library for general use in the game and tools.
 //
 //===========================================================================//
-
-#include <tier1/tier1.h>
-#include "tier0/dbg.h"
-#include "vstdlib/iprocessutils.h"
 #include "icvar.h"
+#include "vstdlib/iprocessutils.h"
+#include <tier1/tier1.h>
 
 
 //-----------------------------------------------------------------------------
@@ -16,48 +14,40 @@
 // It is hoped that setting this, and using this library will be the common mechanism for
 // allowing link libraries to access tier1 library interfaces
 //-----------------------------------------------------------------------------
-ICvar *cvar = 0;
-ICvar *g_pCVar = 0;
-IProcessUtils *g_pProcessUtils = 0;
+ICvar* cvar = nullptr;
+ICvar* g_pCVar = nullptr;
+IProcessUtils* g_pProcessUtils = nullptr;
 static bool s_bConnected = false;
-
-// for utlsortvector.h
-#if !IsWindows()
-	void *g_pUtlSortVectorQSortContext = NULL;
-#endif
 
 
 //-----------------------------------------------------------------------------
 // Call this to connect to all tier 1 libraries.
 // It's up to the caller to check the globals it cares about to see if ones are missing
 //-----------------------------------------------------------------------------
-void ConnectTier1Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
-{
+void ConnectTier1Libraries( const CreateInterfaceFn* pFactoryList, const int pFactoryCount ) {
 	// Don't connect twice..
-	if ( s_bConnected )
+	if ( s_bConnected ) {
 		return;
+	}
 
 	s_bConnected = true;
 
-	for ( int i = 0; i < nFactoryCount; ++i )
-	{
-		if ( !g_pCVar )
-		{
-			cvar = g_pCVar = ( ICvar * )pFactoryList[i]( CVAR_INTERFACE_VERSION, NULL );
+	for ( int i = 0; i < pFactoryCount; ++i ) {
+		if ( !g_pCVar ) {
+			cvar = g_pCVar = static_cast<ICvar*>( pFactoryList[i]( CVAR_INTERFACE_VERSION, nullptr ) );
 		}
-		if ( !g_pProcessUtils )
-		{
-			g_pProcessUtils = ( IProcessUtils * )pFactoryList[i]( PROCESS_UTILS_INTERFACE_VERSION, NULL );
+		if ( !g_pProcessUtils ) {
+			g_pProcessUtils = static_cast<IProcessUtils*>( pFactoryList[i]( PROCESS_UTILS_INTERFACE_VERSION, nullptr ) );
 		}
 	}
 }
 
-void DisconnectTier1Libraries()
-{
-	if ( !s_bConnected )
+void DisconnectTier1Libraries() {
+	if ( !s_bConnected ) {
 		return;
+	}
 
-	g_pCVar = cvar = 0;
-	g_pProcessUtils = NULL;
+	g_pCVar = cvar = nullptr;
+	g_pProcessUtils = nullptr;
 	s_bConnected = false;
 }

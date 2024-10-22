@@ -32,7 +32,7 @@ extern IProcessUtils* g_pProcessUtils;
 // Call this to connect to/disconnect from all tier 1 libraries.
 // It's up to the caller to check the globals it cares about to see if ones are missing
 //-----------------------------------------------------------------------------
-void ConnectTier1Libraries( CreateInterfaceFn* pFactoryList, int nFactoryCount );
+void ConnectTier1Libraries( const CreateInterfaceFn* pFactoryList, int pFactoryCount );
 void DisconnectTier1Libraries();
 
 
@@ -41,15 +41,15 @@ void DisconnectTier1Libraries();
 //-----------------------------------------------------------------------------
 template<class IInterface, int ConVarFlag = 0>
 class CTier1AppSystem : public CTier0AppSystem<IInterface> {
-	typedef CTier0AppSystem<IInterface> BaseClass;
-
+	using BaseClass = CTier0AppSystem<IInterface>;
 public:
-	CTier1AppSystem( bool bIsPrimaryAppSystem = true ) : BaseClass( bIsPrimaryAppSystem ) {
-	}
+	explicit CTier1AppSystem( bool bIsPrimaryAppSystem = true )
+		: BaseClass( bIsPrimaryAppSystem ) { }
 
 	virtual bool Connect( CreateInterfaceFn factory ) {
-		if ( !BaseClass::Connect( factory ) )
+		if ( not BaseClass::Connect( factory ) ) {
 			return false;
+		}
 
 		if ( BaseClass::IsPrimaryAppSystem() ) {
 			ConnectTier1Libraries( &factory, 1 );
@@ -65,11 +65,12 @@ public:
 	}
 
 	virtual InitReturnVal_t Init() {
-		InitReturnVal_t nRetVal = BaseClass::Init();
-		if ( nRetVal != INIT_OK )
-			return nRetVal;
+		InitReturnVal_t retVal = BaseClass::Init();
+		if ( retVal != INIT_OK ) {
+			return retVal;
+		}
 
-		if ( g_pCVar && BaseClass::IsPrimaryAppSystem() ) {
+		if ( g_pCVar and BaseClass::IsPrimaryAppSystem() ) {
 			ConVar_Register( ConVarFlag );
 		}
 		return INIT_OK;

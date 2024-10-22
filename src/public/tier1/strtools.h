@@ -1051,7 +1051,7 @@ size_t Q_URLDecode( OUT_CAP(nDecodeDestLen) char *pchDecodeDest, int nDecodeDest
 	#define Q_GenerateUniqueName		V_GenerateUniqueName
 	#define Q_MakeRelativePath		V_MakeRelativePath
 	#define Q_qsort_s				V_qsort_s
-#endif // !defined( VSTDLIB_DLL_EXPORT )
+#endif
 
 
 #if IsPosix()
