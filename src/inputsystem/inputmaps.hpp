@@ -3,6 +3,7 @@
 //
 #pragma once
 #include "inputsystem/ButtonCode.h"
+#include "inputsystem/AnalogCode.h"
 #include <array>
 
 
@@ -11,4 +12,10 @@ struct ButtonMapEntry {
 	const ButtonCode_t code;
 };
 
-extern std::array<ButtonMapEntry, 106> BUTTON_MAP;
+struct AnalogMapEntry {
+	const char* name;
+	const AnalogCode_t code;
+};
+
+extern std::array<ButtonMapEntry, 113> BUTTON_MAP;
+extern std::array<AnalogMapEntry, 4> ANALOG_MAP;

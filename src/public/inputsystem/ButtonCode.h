@@ -213,99 +213,97 @@ enum ButtonCode_t {
 	KEY_XSTICK2_UP,                                // VAXIS NEGATIVE
 };
 
-inline bool IsAlpha( ButtonCode_t code ) {
-	return ( code >= KEY_A ) && ( code <= KEY_Z );
+inline bool IsAlpha( const ButtonCode_t code ) {
+	return code >= KEY_A and code <= KEY_Z;
 }
 
-inline bool IsAlphaNumeric( ButtonCode_t code ) {
-	return ( code >= KEY_0 ) && ( code <= KEY_Z );
+inline bool IsAlphaNumeric( const ButtonCode_t code ) {
+	return code >= KEY_0 and code <= KEY_Z;
 }
 
-inline bool IsSpace( ButtonCode_t code ) {
-	return ( code == KEY_ENTER ) || ( code == KEY_TAB ) || ( code == KEY_SPACE );
+inline bool IsSpace( const ButtonCode_t code ) {
+	return code == KEY_ENTER or code == KEY_TAB or code == KEY_SPACE;
 }
 
-inline bool IsKeypad( ButtonCode_t code ) {
-	return ( code >= MOUSE_FIRST ) && ( code <= KEY_PAD_DECIMAL );
+inline bool IsKeypad( const ButtonCode_t code ) {
+	return code >= MOUSE_FIRST and code <= KEY_PAD_DECIMAL;
 }
 
-inline bool IsPunctuation( ButtonCode_t code ) {
-	return ( code >= KEY_0 ) && ( code <= KEY_SPACE ) && !IsAlphaNumeric( code ) && !IsSpace( code ) && !IsKeypad( code );
+inline bool IsPunctuation( const ButtonCode_t code ) {
+	return code >= KEY_0 and code <= KEY_SPACE and !IsAlphaNumeric( code ) and !IsSpace( code ) and !IsKeypad( code );
 }
 
-inline bool IsKeyCode( ButtonCode_t code ) {
-	return ( code >= KEY_FIRST ) && ( code <= KEY_LAST );
+inline bool IsKeyCode( const ButtonCode_t code ) {
+	return code >= KEY_FIRST and code <= KEY_LAST;
 }
 
-inline bool IsMouseCode( ButtonCode_t code ) {
-	return ( code >= MOUSE_FIRST ) && ( code <= MOUSE_LAST );
+inline bool IsMouseCode( const ButtonCode_t code ) {
+	return code >= MOUSE_FIRST and code <= MOUSE_LAST;
 }
 
-inline bool IsNovintCode( ButtonCode_t code ) {
-	return ( ( code >= NOVINT_FIRST ) && ( code <= NOVINT_LAST ) );
+inline bool IsNovintCode( const ButtonCode_t code ) {
+	return code >= NOVINT_FIRST and code <= NOVINT_LAST;
 }
 
-inline bool IsNovintButtonCode( ButtonCode_t code ) {
+inline bool IsNovintButtonCode( const ButtonCode_t code ) {
 	return IsNovintCode( code );
 }
 
-inline bool IsJoystickCode( ButtonCode_t code ) {
-	return ( ( ( code >= JOYSTICK_FIRST ) && ( code <= JOYSTICK_LAST ) ) || IsNovintCode( code ) );
+inline bool IsJoystickCode( const ButtonCode_t code ) {
+	return ( code >= JOYSTICK_FIRST and code <= JOYSTICK_LAST ) or IsNovintCode( code );
 }
 
-inline bool IsJoystickButtonCode( ButtonCode_t code ) {
-	return ( ( ( code >= JOYSTICK_FIRST_BUTTON ) && ( code <= JOYSTICK_LAST_BUTTON ) ) || IsNovintButtonCode( code ) );
+inline bool IsJoystickButtonCode( const ButtonCode_t code ) {
+	return code >= JOYSTICK_FIRST_BUTTON and code <= JOYSTICK_LAST_BUTTON or IsNovintButtonCode( code );
 }
 
-inline bool IsJoystickPOVCode( ButtonCode_t code ) {
-	return ( code >= JOYSTICK_FIRST_POV_BUTTON ) && ( code <= JOYSTICK_LAST_POV_BUTTON );
+inline bool IsJoystickPOVCode( const ButtonCode_t code ) {
+	return code >= JOYSTICK_FIRST_POV_BUTTON and code <= JOYSTICK_LAST_POV_BUTTON;
 }
 
-inline bool IsJoystickAxisCode( ButtonCode_t code ) {
-	return ( code >= JOYSTICK_FIRST_AXIS_BUTTON ) && ( code <= JOYSTICK_LAST_AXIS_BUTTON );
+inline bool IsJoystickAxisCode( const ButtonCode_t code ) {
+	return code >= JOYSTICK_FIRST_AXIS_BUTTON and code <= JOYSTICK_LAST_AXIS_BUTTON;
 }
 
-inline ButtonCode_t GetBaseButtonCode( ButtonCode_t code ) {
+inline ButtonCode_t GetBaseButtonCode( const ButtonCode_t code ) {
 	if ( IsJoystickButtonCode( code ) ) {
-		int offset = ( code - JOYSTICK_FIRST_BUTTON ) % JOYSTICK_MAX_BUTTON_COUNT;
-		return (ButtonCode_t) ( JOYSTICK_FIRST_BUTTON + offset );
+		const int offset = ( code - JOYSTICK_FIRST_BUTTON ) % JOYSTICK_MAX_BUTTON_COUNT;
+		return static_cast<ButtonCode_t>( JOYSTICK_FIRST_BUTTON + offset );
 	}
 
 	if ( IsJoystickPOVCode( code ) ) {
-		int offset = ( code - JOYSTICK_FIRST_POV_BUTTON ) % JOYSTICK_POV_BUTTON_COUNT;
-		return (ButtonCode_t) ( JOYSTICK_FIRST_POV_BUTTON + offset );
+		const int offset = ( code - JOYSTICK_FIRST_POV_BUTTON ) % JOYSTICK_POV_BUTTON_COUNT;
+		return static_cast<ButtonCode_t>( JOYSTICK_FIRST_POV_BUTTON + offset );
 	}
 
 	if ( IsJoystickAxisCode( code ) ) {
-		int offset = ( code - JOYSTICK_FIRST_AXIS_BUTTON ) % JOYSTICK_AXIS_BUTTON_COUNT;
-		return (ButtonCode_t) ( JOYSTICK_FIRST_AXIS_BUTTON + offset );
+		const int offset = ( code - JOYSTICK_FIRST_AXIS_BUTTON ) % JOYSTICK_AXIS_BUTTON_COUNT;
+		return static_cast<ButtonCode_t>( JOYSTICK_FIRST_AXIS_BUTTON + offset );
 	}
 
 	return code;
 }
 
-inline int GetJoystickForCode( ButtonCode_t code ) {
-	if ( !IsJoystickCode( code ) )
-		return 0;
+inline int GetJoystickForCode( const ButtonCode_t code ) {
+	if ( not IsJoystickCode( code ) ) {
+	  return 0;
+	}
 
 	if ( IsJoystickButtonCode( code ) ) {
-		int offset = ( code - JOYSTICK_FIRST_BUTTON ) / JOYSTICK_MAX_BUTTON_COUNT;
-		return offset;
+		return ( code - JOYSTICK_FIRST_BUTTON ) / JOYSTICK_MAX_BUTTON_COUNT;
 	}
 	if ( IsJoystickPOVCode( code ) ) {
-		int offset = ( code - JOYSTICK_FIRST_POV_BUTTON ) / JOYSTICK_POV_BUTTON_COUNT;
-		return offset;
+		return ( code - JOYSTICK_FIRST_POV_BUTTON ) / JOYSTICK_POV_BUTTON_COUNT;
 	}
 	if ( IsJoystickAxisCode( code ) ) {
-		int offset = ( code - JOYSTICK_FIRST_AXIS_BUTTON ) / JOYSTICK_AXIS_BUTTON_COUNT;
-		return offset;
+		return ( code - JOYSTICK_FIRST_AXIS_BUTTON ) / JOYSTICK_AXIS_BUTTON_COUNT;
 	}
 
 	return 0;
 }
 
 inline ButtonCode_t ButtonCodeToJoystickButtonCode( ButtonCode_t code, int nDesiredJoystick ) {
-	if ( !IsJoystickCode( code ) || nDesiredJoystick == 0 ) {
+	if ( not IsJoystickCode( code ) or nDesiredJoystick == 0 ) {
 		return code;
 	}
 
@@ -315,17 +313,17 @@ inline ButtonCode_t ButtonCodeToJoystickButtonCode( ButtonCode_t code, int nDesi
 
 	// Now upsample it
 	if ( IsJoystickButtonCode( code ) ) {
-		int nOffset = code - JOYSTICK_FIRST_BUTTON;
+		const int nOffset = code - JOYSTICK_FIRST_BUTTON;
 		return JOYSTICK_BUTTON( nDesiredJoystick, nOffset );
 	}
 
 	if ( IsJoystickPOVCode( code ) ) {
-		int nOffset = code - JOYSTICK_FIRST_POV_BUTTON;
+		const int nOffset = code - JOYSTICK_FIRST_POV_BUTTON;
 		return JOYSTICK_POV_BUTTON( nDesiredJoystick, nOffset );
 	}
 
 	if ( IsJoystickAxisCode( code ) ) {
-		int nOffset = code - JOYSTICK_FIRST_AXIS_BUTTON;
+		const int nOffset = code - JOYSTICK_FIRST_AXIS_BUTTON;
 		return JOYSTICK_AXIS_BUTTON( nDesiredJoystick, nOffset );
 	}
 

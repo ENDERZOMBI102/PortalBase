@@ -15,7 +15,7 @@ InitReturnVal_t CInputSystem::Init() {
 
 	res = SDL_InitSubSystem( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
 	if ( res != 0 ) {
-		Error( "[AuroraSource|InputSystem] Failed to initialize SDL events/video subsystem(s) (%s)", SDL_GetError() );
+		Error( "[AuroraSource|InputSystem] Failed to initialize SDL events/video subsystem(s) (%s)\n", SDL_GetError() );
 		return InitReturnVal_t::INIT_FAILED;
 	}
 
@@ -35,7 +35,7 @@ InitReturnVal_t CInputSystem::Init() {
 		});
 		res = SDL_InitSubSystem( SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC );
 		if ( res != 0 ) {
-			Error( "[AuroraSource|InputSystem] Failed to initialize SDL joystick subsystem (%s)", SDL_GetError() );
+			Error( "[AuroraSource|InputSystem] Failed to initialize SDL joystick subsystem (%s)\n", SDL_GetError() );
 			return InitReturnVal_t::INIT_FAILED;
 		}
 
@@ -50,7 +50,7 @@ InitReturnVal_t CInputSystem::Init() {
 				}
 				const auto pad{ SDL_OpenGamepad( joys[i] ) };
 				if ( pad == nullptr ) {
-					Warning( "[AuroraSource|InputSystem] Failed to open controller %d: %s", i, SDL_GetError() );
+					Warning( "[AuroraSource|InputSystem] Failed to open controller %d: %s\n", i, SDL_GetError() );
 					continue;
 				}
 				// TODO: Finish this
@@ -262,17 +262,10 @@ const char* CInputSystem::ButtonCodeToString( const ButtonCode_t pCode ) const {
 }
 
 const char* CInputSystem::AnalogCodeToString( AnalogCode_t pCode ) const {
-	switch ( pCode ) {
-	case MOUSE_X:
-		return "MOUSE_X";
-	case MOUSE_Y:
-		return "MOUSE_Y";
-	case MOUSE_XY:
-		return "MOUSE_XY";
-	case MOUSE_WHEEL:
-		return "MOUSE_WHEEL";
-	default:
-		break;
+	for ( const auto& [name, code] : ANALOG_MAP ) {
+		if ( code == pCode ) {
+			return name;
+		}
 	}
 
 	// TODO: Implement missing entries (joystick)
@@ -290,24 +283,17 @@ ButtonCode_t CInputSystem::StringToButtonCode( const char* pString ) const {
 }
 
 AnalogCode_t CInputSystem::StringToAnalogCode( const char* pString ) const {
-	if ( Q_strcmp( "MOUSE_X", pString ) ) {
-		return MOUSE_X;
-	}
-	if ( Q_strcmp( "MOUSE_Y", pString ) ) {
-		return MOUSE_Y;
-	}
-	if ( Q_strcmp( "MOUSE_XY", pString ) ) {
-		return MOUSE_XY;
-	}
-	if ( Q_strcmp( "MOUSE_WHEEL", pString ) ) {
-		return MOUSE_WHEEL;
+	for ( const auto& [name, code] : ANALOG_MAP ) {
+		if ( Q_strcmp( name, pString ) == 0 ) {
+			return code;
+		}
 	}
 
 	AssertMsg( false, "TODO: `CInputSystem::StringToAnalogCode(%s)` not implemented", pString );
 	return ANALOG_CODE_INVALID;
 }
 
-void CInputSystem::SleepUntilInput( int nMaxSleepTimeMS ) {
+void CInputSystem::SleepUntilInput( const int nMaxSleepTimeMS ) {
 	// AssertMsg( false, "TODO: `CInputSystem::SleepUntilInput( %d )` not implemented", nMaxSleepTimeMS );
 	const auto end{ std::chrono::high_resolution_clock::now() + std::chrono::milliseconds{ nMaxSleepTimeMS } };
 	while ( m_EventQueue.IsEmpty() ) {
@@ -409,7 +395,7 @@ int CInputSystem::CMessagePumpThread::Run() {
 				});
 				break;
 			default:
-				Warning( "[AuroraSource|InputSystem] Ignored SDL event: 0x%x", sdlEvent.type );
+				Warning( "[AuroraSource|InputSystem] Ignored SDL event: 0x%x\n", sdlEvent.type );
 			}
 		}
 	}
