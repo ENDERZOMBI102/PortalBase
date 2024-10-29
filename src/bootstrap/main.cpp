@@ -35,7 +35,7 @@ int main( const int argc, const char** argv ) {
 	#endif
 
 	// create absolute launcher dll path
-	const auto launcherDll{ std::format( "{}/launcher{}", binDir, DLL_EXT_STRING ) };
+	const auto launcherDll{ std::format( "{}launcher{}", binDir, DLL_EXT_STRING ) };
 
 	// open launcher dll
 	const auto lib{ SDL_LoadObject( launcherDll.c_str() ) };
