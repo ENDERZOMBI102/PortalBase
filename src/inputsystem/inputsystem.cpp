@@ -134,7 +134,7 @@ void CInputSystem::EnableMessagePump( const bool bEnable ) {
 }
 
 void CInputSystem::PollInputState() {
-	if (! m_Enabled ) {
+	if ( not m_Enabled ) {
 		return;
 	}
 	m_PoolCount += 1;
