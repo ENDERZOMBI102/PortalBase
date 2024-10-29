@@ -6,6 +6,8 @@
 #include "utldict.h"
 
 
+class IFileSystem;
+
 class CQueuedLoader : public IQueuedLoader {
 public:  // IAppSystem
 	bool Connect( CreateInterfaceFn factory ) override;
@@ -63,5 +65,15 @@ public:  // IQueuedLoader
 	void PurgeAll() override;
 
 private:
+	bool m_SameMap{false};
+	bool m_Dynamic{false};
+	bool m_Batching{false};
+	bool m_Finished{false};
+	IFileSystem* m_FileSystem{};
+	LoaderSpewDetail m_SpewDetail{LOADER_DETAIL_NONE};
+	CUtlVector<const LoaderJob_t*> m_Jobs{};
+	CUtlVector<ILoaderProgress*> m_ProgressListeners{};
 	CUtlMap<ResourcePreload_t, IResourcePreload*> m_ResourcePreloaders{};
+	char m_LastMap[32] { };
+	char m_CurrentMap[32] { };
 };

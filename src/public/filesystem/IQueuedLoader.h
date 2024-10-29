@@ -25,20 +25,16 @@ using QueuedLoaderCallback_t = void(*)( void* pContext, void* pContext2, const v
 using DynamicResourceCallback_t = void(*)( const char* pFilename, void* pContext, void* pContext2 );
 
 struct LoaderJob_t {
-	LoaderJob_t() { // NOLINT(*-pro-type-member-init)
-		memset( this, 0, sizeof( *this ) );
-	}
-
-	const char* m_pFilename;           // path to resource
-	const char* m_pPathID;             // optional, can be NULL
-	QueuedLoaderCallback_t m_pCallback;// called at i/o delivery
-	void* m_pContext;                  // caller provided data
-	void* m_pContext2;                 // caller provided data
-	void* m_pTargetData;               // optional, caller provided target buffer
-	int m_nBytesToRead;                // optional read clamp, otherwise 0
-	unsigned int m_nStartOffset;       // optional start offset, otherwise 0
-	LoaderPriority_t m_Priority;       // data must arrive by specified interval
-	bool m_bPersistTargetData;         // caller wants ownership of i/o buffer
+	const char* m_pFilename{};             // path to resource
+	const char* m_pPathID{};               // optional, can be NULL
+	QueuedLoaderCallback_t m_pCallback{};  // called at i/o delivery
+	void* m_pContext{};                    // caller provided data
+	void* m_pContext2{};                   // caller provided data
+	void* m_pTargetData{};                 // optional, caller provided target buffer
+	int m_nBytesToRead{};                  // optional read clamp, otherwise 0
+	uint32 m_nStartOffset{};               // optional start offset, otherwise 0
+	LoaderPriority_t m_Priority{};         // data must arrive by specified interval
+	bool m_bPersistTargetData{};           // caller wants ownership of i/o buffer
 };
 
 enum ResourcePreload_t {

@@ -55,7 +55,8 @@ namespace {
 			return new CPlainFsDriver( pId, pAbsolute, pPath );
 		}
 
-		if ( V_strcmp( V_GetFileExtension( pPath ), "vpk" ) == 0 || V_strcmp( V_GetFileExtension( pPath ), "bsp" ) == 0 ) {
+		const char* ext{ V_GetFileExtension( pPath ) };
+		if ( V_strcmp( ext, "vpk" ) == 0 or V_strcmp( ext, "bsp" ) == 0 ) {
 			return new CPackFsDriver( pId, pAbsolute, pPath );
 		}
 
@@ -66,35 +67,49 @@ namespace {
 // ---------------
 // AppSystem
 // ---------------
-auto CFileSystemStdio::Connect( CreateInterfaceFn factory ) -> bool {
+auto CFileSystemStdio::Connect( CreateInterfaceFn ) -> bool {
 	return true;
 }
 auto CFileSystemStdio::Disconnect() -> void { }
 auto CFileSystemStdio::QueryInterface( const char* pInterfaceName ) -> void* {
-	if ( strcmp( pInterfaceName, FILESYSTEM_INTERFACE_VERSION ) == 0 ) {
+	if ( V_strcmp( pInterfaceName, FILESYSTEM_INTERFACE_VERSION ) == 0 ) {
+		return &s_FullFileSystem;
+	}
+
+	if ( V_strcmp( pInterfaceName, BASEFILESYSTEM_INTERFACE_VERSION ) == 0 ) {
 		return &s_FullFileSystem;
 	}
 
 	return nullptr;
 }
 auto CFileSystemStdio::Init() -> InitReturnVal_t {
-	if ( this->m_Initialized ) {
+	if ( m_Initialized ) {
 		return InitReturnVal_t::INIT_OK;
 	}
 
+	// FIXME: This is only correct on *nix
 	s_RootFsDriver = new CPlainFsDriver( 0, "/", "/" );
 
+	Log( "[AuroraSource|FileSystem] Filesystem module ready!" );
 	return InitReturnVal_t::INIT_OK;
 }
 auto CFileSystemStdio::Shutdown() -> void {
-	FileDescriptor::CleanupArena();
+	if ( not m_Initialized ) {
+		return;
+	}
+
+	// close all files and shutdown the drivers
+	this->RemoveAllSearchPaths();
+	s_RootFsDriver->Shutdown();
+	s_RootFsDriver->Release();
+	s_RootFsDriver = nullptr;
 }
 
 // ---------------
 // IBaseFilesystem
 // ---------------
 int CFileSystemStdio::Read( void* pOutput, int size, FileHandle_t file ) {
-	if (! (file && pOutput) ) {
+	if ( not (file and pOutput) ) {
 		return -1;
 	}
 
@@ -114,7 +129,7 @@ int CFileSystemStdio::Write( const void* pInput, int size, FileHandle_t file ) {
 	if ( size == 0 ) {
 		return 0;
 	}
-	if (! (file && pInput) ) {
+	if ( not (file and pInput) ) {
 		return -1;
 	}
 
@@ -134,8 +149,9 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 	// parse the options
 	const auto mode{ parseOpenMode( pOptions ) };
 
-	if ( V_strstr( pFileName, ".so" ) == nullptr ) {
-		Warning( "CFileSystemStdio::Open(%s, %s, %s)\n", pFileName, pOptions, pathID );
+	// fix double leading `/` (???)
+	if ( pFileName[0] == '/' and pFileName[1] == '/' ) {
+		pFileName += 1;
 	}
 
 	// absolute paths get special treatment
@@ -146,7 +162,7 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 			desc->m_Driver = s_RootFsDriver;
 			desc->m_Path = V_strdup( pFileName );
 			s_RootFsDriver->AddRef();  // This makes sure we're only `delete`-ing if there are no open files
-			this->m_Descriptors.AddToTail( desc );
+			m_Descriptors.AddToTail( desc );
 			return desc;
 		}
 		return nullptr;
@@ -166,7 +182,7 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 				desc->m_Driver = driver;
 				desc->m_Path = V_strdup( pFileName );
 				driver->AddRef();  // This makes sure we're only `delete`-ing if there are no open files
-				this->m_Descriptors.AddToTail( desc );
+				m_Descriptors.AddToTail( desc );
 				return desc;
 			}
 		}
@@ -180,7 +196,7 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 					desc->m_Driver = driver;
 					desc->m_Path = V_strdup( pFileName );
 					driver->AddRef();  // This makes sure we're only `delete`-ing if there are no open files
-					this->m_Descriptors.AddToTail( desc );
+					m_Descriptors.AddToTail( desc );
 					return desc;
 				}
 			}
@@ -192,7 +208,7 @@ void CFileSystemStdio::Close( FileHandle_t file ) {
 	const auto desc{ static_cast<FileDescriptor*>( file ) };
 	desc->m_Driver->Close( desc );
 	desc->m_Driver->Release();  // remove this file's ref
-	this->m_Descriptors.FindAndRemove( desc );
+	m_Descriptors.FindAndRemove( desc );
 	FileDescriptor::Free( desc );
 }
 
@@ -226,7 +242,7 @@ uint32 CFileSystemStdio::Size( FileHandle_t file ) {
 
 	// stat the file, "handle" error
 	const auto statMaybe{ desc->m_Driver->Stat( desc ) };
-	if (! statMaybe ) {
+	if ( not statMaybe ) {
 		return -1;
 	}
 
@@ -237,7 +253,7 @@ uint32 CFileSystemStdio::Size( FileHandle_t file ) {
 uint32 CFileSystemStdio::Size( const char* pFileName, const char* pPathID ) {
 	// open file
 	const auto desc{ static_cast<FileDescriptor*>( this->Open( pFileName, "r", pPathID ) ) };
-	if (! desc ) {
+	if ( not desc ) {
 		return -1;
 	}
 
@@ -322,19 +338,18 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 
 	// calculate base dir (current `-game` dir)
 	char absolute[1024];
-	if (! V_IsAbsolutePath( pPath ) ) {
-		AssertFatalMsg( _getcwd( absolute, sizeof( absolute ) ), "V_MakeAbsolutePath: _getcwd failed." );
-		V_ComposeFileName( absolute, CommandLine()->ParmValue( "-game", "" ), absolute, sizeof( absolute ) );
+	if ( not V_IsAbsolutePath( pPath ) ) {
+		AssertFatalMsg( _getcwd( absolute, std::size( absolute ) ), "V_MakeAbsolutePath: _getcwd failed." );
 
 		// make the absolute path of the thing
-		V_MakeAbsolutePath( absolute, 1024, pPath, absolute );
+		V_MakeAbsolutePath( absolute, std::size( absolute ), pPath, absolute );
 	} else {
 		// already absolute, just copy
 		V_strcpy_safe( absolute, pPath );
 	}
 
 	// if the path is non-existent, do nothing
-	if (! FileExists( absolute ) ) {
+	if ( not FileExists( absolute ) ) {
 		// was a vpk requested?
 		if ( V_strcmp( V_GetFileExtension( absolute ), "vpk" ) != 0 ) {
 			// no, nothing to do
@@ -344,7 +359,7 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 		char tmp[1024];
 		V_StripExtension( absolute, tmp, std::size( tmp ) );
 		V_strcat_safe( tmp, "_dir.vpk" );
-		if (! FileExists( tmp ) ) {
+		if ( not FileExists( tmp ) ) {
 			// it doesn't exist, we failed.
 			return;
 		}
@@ -355,8 +370,8 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 
 	// try all possibilities
 	auto driver{ createFsDriver( m_LastId, absolute, pPath ) };
-	AssertFatalMsg( driver, "Unsupported path entry: %s", absolute );
-	if (! driver ) {
+	if ( not driver ) {
+		AssertFatalMsg( false, "Unsupported path entry: %s", absolute );
 		return;
 	}
 
@@ -415,7 +430,7 @@ void CFileSystemStdio::RemoveAllSearchPaths() {
 		}
 		searchPath->m_Drivers.Purge();
 	}
-	this->m_SearchPaths.Purge();
+	m_SearchPaths.Purge();
 }
 
 void CFileSystemStdio::RemoveSearchPaths( const char* szPathID ) {
@@ -474,7 +489,7 @@ int CFileSystemStdio::GetSearchPath( const char* pathID, bool bGetPackFiles, cha
 
 	int length{0};
 	for ( const auto& client : m_SearchPaths[pathID]->m_Drivers ) {
-		if ( V_strcmp( client->GetType(), "pack" ) == 0 && !bGetPackFiles ) {
+		if ( V_strcmp( client->GetType(), "pack" ) == 0 and !bGetPackFiles ) {
 			// pack files disabled...
 			continue;
 		}
@@ -503,6 +518,7 @@ bool CFileSystemStdio::RenameFile( char const* pOldPath, char const* pNewPath, c
 void CFileSystemStdio::CreateDirHierarchy( const char* path, const char* pathID ) { AssertUnreachable(); }
 
 bool CFileSystemStdio::IsDirectory( const char* pFileName, const char* pPathID ) {
+	// TODO: If path is absolute, avoid the `Open` call
 	// try to open the file
 	const auto desc{ static_cast<FileDescriptor*>( Open( pFileName, "r", pPathID ) ) };
 	if ( desc ) {
@@ -510,7 +526,7 @@ bool CFileSystemStdio::IsDirectory( const char* pFileName, const char* pPathID )
 		const auto stat{ desc->m_Driver->Stat( desc ) };
 		desc->m_Driver->Release();
 		Close( desc );
-		return stat.has_value() && stat->m_Type == FileType::Directory;
+		return stat.has_value() and stat->m_Type == FileType::Directory;
 	}
 
 	return false;
@@ -535,13 +551,12 @@ int CFileSystemStdio::FPrintf( FileHandle_t file, PRINTF_FORMAT_STRING const cha
 // ---- Dynamic library operations ----
 CSysModule* CFileSystemStdio::LoadModule( const char* pFileName, const char* pPathID, bool bValidatedDllOnly ) {
 	// ensure the filename has a `.so`
-	char filepath[1024];
+	char filepath[MAX_PATH];
 	V_strcpy_safe( filepath, pFileName );
 	V_SetExtension( filepath, ".so", std::size( filepath ) );
 
 	// try from search paths TODO: Handle extraction if needed
 	char* absolute;
-	// if ( RelativePathToFullPath_safe( pFileName, pPathID, absolute ) )
 	const auto handle{ OpenEx( filepath, "rb", 0, pPathID, &absolute ) };
 	if ( handle ) {
 		Close( handle );
@@ -553,9 +568,9 @@ CSysModule* CFileSystemStdio::LoadModule( const char* pFileName, const char* pPa
 	// not in search paths, must be in `bin/`
 	char path[MAX_PATH] { };
 
-	GetCurrentDirectory( path, MAX_PATH );
-	V_MakeAbsolutePath( path, MAX_PATH, "bin/", path );
-	V_MakeAbsolutePath( path, MAX_PATH, filepath, path );
+	GetCurrentDirectory( path, std::size( path ) );
+	V_MakeAbsolutePath( path, std::size( path ), "bin/", path );
+	V_MakeAbsolutePath( path, std::size( path ), filepath, path );
 
 	if ( FileExists( path ) ) {
 		return Sys_LoadModule( path );
@@ -563,6 +578,7 @@ CSysModule* CFileSystemStdio::LoadModule( const char* pFileName, const char* pPa
 	return nullptr;
 }
 void CFileSystemStdio::UnloadModule( CSysModule* pModule ) {
+	// TODO: If extracted, must delete afterwards
 	Sys_UnloadModule( pModule );
 }
 
@@ -605,7 +621,7 @@ bool CFileSystemStdio::FindIsDirectory( FileFindHandle_t handle ) {
 	desc->m_Driver->AddRef();
 	const auto stats{ desc->m_Driver->Stat( desc ) };
 	desc->m_Driver->Release();
-	if (! stats ) {
+	if ( not stats ) {
 		return false;
 	}
 	return stats->m_Type == FileType::Directory;
@@ -711,7 +727,7 @@ void CFileSystemStdio::PrintSearchPaths() {
 	for ( const auto& [searchPathId, searchPath] : m_SearchPaths ) {
 		Log( "%s(reqOnly=%d):\n", searchPathId, searchPath->m_RequestOnly );
 		for ( const auto& path : searchPath->m_Drivers ) {
-			if ( path->GetNativePath() && strcmp( path->GetNativePath(), "" ) != 0 ) {
+			if ( path->GetNativePath() and V_strcmp( path->GetNativePath(), "" ) != 0 ) {
 				Log( "  - %s\n", path->GetNativePath() );
 			}
 		}
@@ -738,15 +754,15 @@ const FileSystemStatistics* CFileSystemStdio::GetFilesystemStatistics() {
 // ---- Start of new functions after Lost Coast release (7/05) ----
 FileHandle_t CFileSystemStdio::OpenEx( const char* pFileName, const char* pOptions, unsigned flags, const char* pathID, char** ppszResolvedFilename ) {
 	// TODO: handle the flags
-	if (! (pFileName && pOptions) ) {
+	if ( not (pFileName and pOptions) ) {
 		return nullptr;
 	}
 	if ( V_strstr( pFileName, ".so" ) == nullptr ) {
-		Warning( "CFileSystemStdio::OpenEx(%s, %s, %d, %s)\n", pFileName, pOptions, flags, pathID );
+		// Warning( "CFileSystemStdio::OpenEx(%s, %s, %d, %s)\n", pFileName, pOptions, flags, pathID );
 	}
 
 	const auto desc{ static_cast<FileDescriptor*>( Open( pFileName, pOptions, pathID ) ) };
-	if ( desc && ppszResolvedFilename ) {
+	if ( desc and ppszResolvedFilename ) {
 		const auto parent{ desc->m_Driver->GetNativeAbsolutePath() };
 		const auto len{ V_strlen( parent ) + V_strlen( pFileName ) + 2 };
 		const auto dest{ new char[len] };
@@ -759,7 +775,7 @@ FileHandle_t CFileSystemStdio::OpenEx( const char* pFileName, const char* pOptio
 
 int CFileSystemStdio::ReadEx( void* pOutput, int sizeDest, int size, FileHandle_t file ) {
 	// TODO: DO the `Ex` part :P
-	if (! (file && pOutput) ) {
+	if ( not (file and pOutput) ) {
 		return -1;
 	}
 
@@ -803,7 +819,7 @@ FSAsyncStatus_t CFileSystemStdio::AsyncReadMultipleCreditAlloc( const FileAsyncR
 bool CFileSystemStdio::GetFileTypeForFullPath( char const* pFullPath, wchar_t* buf, size_t bufSizeInBytes ) { AssertUnreachable(); return {}; }
 
 bool CFileSystemStdio::ReadToBuffer( FileHandle_t hFile, CUtlBuffer& buf, int nMaxBytes, FSAllocFunc_t pfnAlloc ) {
-	AssertMsg( !buf.IsReadOnly(), "was given a read-only buffer!" );
+	AssertMsg( not buf.IsReadOnly(), "was given a read-only buffer!" );
 	int total{ static_cast<int>( Size( hFile ) ) };
 	total = nMaxBytes == 0 ? total : std::min( total, nMaxBytes );
 
@@ -814,10 +830,10 @@ bool CFileSystemStdio::ReadToBuffer( FileHandle_t hFile, CUtlBuffer& buf, int nM
 
 // ---- Optimal IO operations ----
 bool CFileSystemStdio::GetOptimalIOConstraints( FileHandle_t hFile, unsigned* pOffsetAlign, unsigned* pSizeAlign, unsigned* pBufferAlign ) {
-	if (! hFile ) {
+	if ( not hFile ) {
 		return false;
 	}
-	const uint32 value{ strcmp( static_cast<FileDescriptor*>( hFile )->m_Driver->GetType(), "pack" ) != 0 };
+	const uint32 value{ V_strcmp( static_cast<FileDescriptor*>( hFile )->m_Driver->GetType(), "pack" ) != 0 };
 
 	if ( pOffsetAlign ) {
 		*pOffsetAlign = value;
@@ -888,7 +904,7 @@ void CFileSystemStdio::CacheAllVPKFileHashes( bool bCacheAllVPKHashes, bool bRec
 bool CFileSystemStdio::CheckVPKFileHash( int PackFileID, int nPackFileNumber, int nFileFraction, MD5Value_t& md5Value ) { AssertUnreachable(); return {}; }
 
 void CFileSystemStdio::NotifyFileUnloaded( const char* pszFilename, const char* pPathId ) {
-	Warning( "CFileSystemStdio::NotifyFileUnloaded(%s, %s)\n", pszFilename, pPathId );
+	// Warning( "CFileSystemStdio::NotifyFileUnloaded(%s, %s)\n", pszFilename, pPathId );
 }
 
 bool CFileSystemStdio::GetCaseCorrectFullPath_Ptr( const char* pFullPath, char* pDest, int maxLenInChars ) { AssertUnreachable(); return {}; }
