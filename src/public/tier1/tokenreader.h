@@ -22,44 +22,44 @@ enum trtoken_t {
 };
 
 
-#define IsToken( s1, s2 ) !strcmpi( s1, s2 )
+#define IsToken( s1, s2 ) (not strcmpi( s1, s2 ))
 
-#define MAX_TOKEN 128 + 1
-#define MAX_IDENT 64 + 1
-#define MAX_STRING 128 + 1
+#define MAX_TOKEN (128 + 1)
+#define MAX_IDENT (64 + 1)
+#define MAX_STRING (128 + 1)
 
 
 class TokenReader : private std::ifstream {
 public:
-	TokenReader();
+	TokenReader() = default;
 
-	bool Open( const char* pszFilename );
-	trtoken_t NextToken( char* pszStore, int nSize );
-	trtoken_t NextTokenDynamic( char** ppszStore );
+	bool Open( const char* pFilename );
+	trtoken_t NextToken( char* pStore, int pSize );
+	trtoken_t NextTokenDynamic( char** pStore );
 	void Close();
 
-	void IgnoreTill( trtoken_t ttype, const char* pszToken );
-	void Stuff( trtoken_t ttype, const char* pszToken );
+	void IgnoreTill( trtoken_t ttype, const char* pToken );
+	void Stuff( trtoken_t etype, const char* pToken );
 	bool Expecting( trtoken_t ttype, const char* pszToken );
-	const char* Error( char* error, ... );
-	trtoken_t PeekTokenType( char* = nullptr, int maxlen = 0 );
+	const char* Error( const char* error, ... );
+	trtoken_t PeekTokenType( char* = nullptr, int pMaxlen = 0 );
 
 	inline int GetErrorCount() const;
-private:
-	// compiler can't generate an assignment operator since descended from std::ifstream
-	inline TokenReader( TokenReader const& );
-	inline int operator=( TokenReader const& );
 
-	trtoken_t GetString( char* pszStore, int nSize );
+	// compiler can't generate an assignment operator since descended from std::ifstream
+	TokenReader( TokenReader const& ) = delete;
+	int operator=( TokenReader const& ) = delete;
+private:
+	trtoken_t GetString( char* pStore, int nSize );
 	bool SkipWhiteSpace();
 
-	int m_nLine;
-	int m_nErrorCount;
+	int m_nLine{1};
+	int m_nErrorCount{0};
 
-	char m_szFilename[ 128 ];
-	char m_szStuffed[ 128 ];
-	bool m_bStuffed;
-	trtoken_t m_eStuffed;
+	char m_szFilename[128] { };
+	char m_szStuffed[128] { };
+	bool m_bStuffed{ false };
+	trtoken_t m_eStuffed{};
 };
 
 
