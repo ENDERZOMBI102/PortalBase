@@ -8,5 +8,4 @@
 
 
 #define MAX_ENTITY_NAME_LEN 256
-
 #define MAX_IO_NAME_LEN 256

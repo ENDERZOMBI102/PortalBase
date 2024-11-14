@@ -57,60 +57,76 @@ struct DrawTexData_t {
 
 class IEditorTexture {
 public:
-	virtual ~IEditorTexture( void ) {
-	}
+	virtual ~IEditorTexture() { }
 
 	//
 	// dvs: remove one of these
 	//
-	virtual int GetImageWidth( void ) const = 0;
-	virtual int GetImageHeight( void ) const = 0;
+	[[nodiscard]]
+	virtual int GetImageWidth() const = 0;
+	[[nodiscard]]
+	virtual int GetImageHeight() const = 0;
 
-	virtual int GetWidth( void ) const = 0;
-	virtual int GetHeight( void ) const = 0;
+	[[nodiscard]]
+	virtual int GetWidth() const = 0;
+	[[nodiscard]]
+	virtual int GetHeight() const = 0;
 
-	virtual float GetDecalScale( void ) const = 0;
+	[[nodiscard]]
+	virtual float GetDecalScale() const = 0;
 
 	//
 	// dvs: Try to remove as many of these as possible:
 	//
-	virtual const char* GetName( void ) const = 0;
+	[[nodiscard]]
+	virtual const char* GetName() const = 0;
 	virtual int GetShortName( char* szShortName ) const = 0;
 	virtual int GetKeywords( char* szKeywords ) const = 0;
 	// FGDLIB:
 	//virtual void Draw(CDC *pDC, RECT &rect, int iFontHeight, int iIconHeight, DrawTexData_t &DrawTexData) = 0;
-	virtual TEXTUREFORMAT GetTextureFormat( void ) const = 0;
-	virtual int GetSurfaceAttributes( void ) const = 0;
-	virtual int GetSurfaceContents( void ) const = 0;
-	virtual int GetSurfaceValue( void ) const = 0;
-	virtual CPalette* GetPalette( void ) const = 0;
-	virtual bool HasData( void ) const = 0;
-	virtual bool HasPalette( void ) const = 0;
-	virtual bool Load( void ) = 0;  // ensure that texture is loaded. could this be done internally?
-	virtual void Reload( void ) = 0;// The texture changed
-	virtual bool IsLoaded( void ) const = 0;
-	virtual const char* GetFileName( void ) const = 0;
+	[[nodiscard]]
+	virtual TEXTUREFORMAT GetTextureFormat() const = 0;
+	[[nodiscard]]
+	virtual int GetSurfaceAttributes() const = 0;
+	[[nodiscard]]
+	virtual int GetSurfaceContents() const = 0;
+	[[nodiscard]]
+	virtual int GetSurfaceValue() const = 0;
+	[[nodiscard]]
+	virtual CPalette* GetPalette() const = 0;
+	[[nodiscard]]
+	virtual bool HasData() const = 0;
+	[[nodiscard]]
+	virtual bool HasPalette() const = 0;
+	virtual bool Load() = 0;  // ensure that texture is loaded. could this be done internally?
+	virtual void Reload() = 0;// The texture changed
+	[[nodiscard]]
+	virtual bool IsLoaded() const = 0;
+	[[nodiscard]]
+	virtual const char* GetFileName() const = 0;
 
-	virtual bool IsWater( void ) const = 0;
+	[[nodiscard]]
+	virtual bool IsWater() const = 0;
 
 	//-----------------------------------------------------------------------------
 	// Purpose:
 	// Input  : pData -
 	// Output :
 	//-----------------------------------------------------------------------------
-	virtual int GetImageDataRGB( void* pData = NULL ) = 0;
+	virtual int GetImageDataRGB( void* pData = nullptr ) = 0;
 
 	//-----------------------------------------------------------------------------
 	// Purpose:
 	// Input  : pData -
 	// Output :
 	//-----------------------------------------------------------------------------
-	virtual int GetImageDataRGBA( void* pData = NULL ) = 0;
+	virtual int GetImageDataRGBA( void* pData = nullptr ) = 0;
 
 	//-----------------------------------------------------------------------------
 	// Purpose: Returns true if this texture has an alpha component, false if not.
 	//-----------------------------------------------------------------------------
-	virtual bool HasAlpha( void ) const = 0;
+	[[nodiscard]]
+	virtual bool HasAlpha() const = 0;
 
 	//-----------------------------------------------------------------------------
 	// Purpose: Returns whether this texture is a dummy texture or not. Dummy textures
@@ -118,7 +134,8 @@ public:
 	//			not in the WAD (or the materials tree). The dummy texture enables us
 	//			to bind the texture, find it by name, etc.
 	//-----------------------------------------------------------------------------
-	virtual bool IsDummy( void ) const = 0;// dvs: perhaps not the best name?
+	[[nodiscard]]
+	virtual bool IsDummy() const = 0;// dvs: perhaps not the best name?
 
 	//-----------------------------------------------------------------------------
 	// Purpose: Returns the unique texture ID for this texture object. The texture ID
@@ -127,7 +144,8 @@ public:
 	//
 	//			Only the renderer ever needs to call SetTextureID.
 	//-----------------------------------------------------------------------------
-	virtual int GetTextureID( void ) const = 0;
+	[[nodiscard]]
+	virtual int GetTextureID() const = 0;
 
 	//-----------------------------------------------------------------------------
 	// Purpose: Sets the unique texture ID for this texture object. The texture ID
@@ -142,7 +160,7 @@ public:
 	// Returns the material system material associated with a texture
 	//-----------------------------------------------------------------------------
 
-	virtual IMaterial* GetMaterial() { return 0; }
+	virtual IMaterial* GetMaterial() { return nullptr; }
 };
 
 

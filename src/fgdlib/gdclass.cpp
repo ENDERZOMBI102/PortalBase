@@ -4,8 +4,7 @@
 //
 //=============================================================================
 #include "fgdlib/gdclass.h"
-#include "fgdlib/gamedata.h"// FGDLIB: eliminate dependency
-
+#include "fgdlib/gamedata.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -14,31 +13,7 @@
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
 GDclass::GDclass() {
-	m_nVariables = 0;
-	m_bBase = false;
-	m_bSolid = false;
-	m_bBase = false;
-	m_bSolid = false;
-	m_bModel = false;
-	m_bMove = false;
-	m_bKeyFrame = false;
-	m_bPoint = false;
-	m_bNPC = false;
-	m_bFilter = false;
-
-	m_bHalfGridSnap = false;
-
-	m_bGotSize = false;
-	m_bGotColor = false;
-
-	m_rgbColor.r = 220;
-	m_rgbColor.g = 30;
-	m_rgbColor.b = 220;
-	m_rgbColor.a = 0;
-
-	m_pszDescription = nullptr;
-
-	for ( int i = 0; i < 3; i++ ) {
+	for ( int i = 0; i < 3; i += 1 ) {
 		m_bmins[ i ] = -8;
 		m_bmaxs[ i ] = 8;
 	}
@@ -52,9 +27,9 @@ GDclass::~GDclass() {
 	//
 	// Free variables.
 	//
-	int nCount = m_Variables.Count();
-	for ( int i = 0; i < nCount; i++ ) {
-		GDinputvariable* pvi = m_Variables.Element( i );
+	int count = m_Variables.Count();
+	for ( int i = 0; i < count; i += 1 ) {
+		const GDinputvariable* pvi = m_Variables.Element( i );
 		delete pvi;
 	}
 	m_Variables.RemoveAll();
@@ -62,30 +37,30 @@ GDclass::~GDclass() {
 	//
 	// Free helpers.
 	//
-	nCount = m_Helpers.Count();
-	for ( int i = 0; i < nCount; i++ ) {
-		CHelperInfo* pHelper = m_Helpers.Element( i );
-		delete pHelper;
+	count = m_Helpers.Count();
+	for ( int i = 0; i < count; i += 1 ) {
+		const CHelperInfo* helper = m_Helpers.Element( i );
+		delete helper;
 	}
 	m_Helpers.RemoveAll();
 
 	//
 	// Free inputs.
 	//
-	nCount = m_Inputs.Count();
-	for ( int i = 0; i < nCount; i++ ) {
-		CClassInput* pInput = m_Inputs.Element( i );
-		delete pInput;
+	count = m_Inputs.Count();
+	for ( int i = 0; i < count; i += 1 ) {
+		const CClassInput* input = m_Inputs.Element( i );
+		delete input;
 	}
 	m_Inputs.RemoveAll();
 
 	//
 	// Free outputs.
 	//
-	nCount = m_Outputs.Count();
-	for ( int i = 0; i < nCount; i++ ) {
-		CClassOutput* pOutput = m_Outputs.Element( i );
-		delete pOutput;
+	count = m_Outputs.Count();
+	for ( int i = 0; i < count; i += 1 ) {
+		const CClassOutput* output = m_Outputs.Element( i );
+		delete output;
 	}
 	m_Outputs.RemoveAll();
 
@@ -105,7 +80,7 @@ void GDclass::AddBase( GDclass* pBase ) {
 	//
 	// Add variables from base - update variable table
 	//
-	for ( int i = 0; i < pBase->GetVariableCount(); i++ ) {
+	for ( int i = 0; i < pBase->GetVariableCount(); i += 1 ) {
 		GDinputvariable* pVar = pBase->GetVariableAt( i );
 		AddVariable( pVar, pBase, iBaseIndex, i );
 	}
@@ -115,10 +90,10 @@ void GDclass::AddBase( GDclass* pBase ) {
 	// UNDONE: need to use references to inputs & outputs to conserve memory
 	//
 	int nCount = pBase->GetInputCount();
-	for ( int i = 0; i < nCount; i++ ) {
-		CClassInput* pInput = pBase->GetInput( i );
+	for ( int i = 0; i < nCount; i += 1 ) {
+		const CClassInput* pInput = pBase->GetInput( i );
 
-		CClassInput* pNew = new CClassInput;
+		auto* pNew = new CClassInput;
 		*pNew = *pInput;
 		AddInput( pNew );
 	}
@@ -127,10 +102,10 @@ void GDclass::AddBase( GDclass* pBase ) {
 	// Add outputs from the base.
 	//
 	nCount = pBase->GetOutputCount();
-	for ( int i = 0; i < nCount; i++ ) {
-		CClassOutput* pOutput = pBase->GetOutput( i );
+	for ( int i = 0; i < nCount; i += 1 ) {
+		const CClassOutput* pOutput = pBase->GetOutput( i );
 
-		CClassOutput* pNew = new CClassOutput;
+		auto* pNew = new CClassOutput;
 		*pNew = *pOutput;
 		AddOutput( pNew );
 	}
@@ -138,7 +113,7 @@ void GDclass::AddBase( GDclass* pBase ) {
 	//
 	// If we don't have a bounding box, try to get the base's box.
 	//
-	if ( !m_bGotSize ) {
+	if ( not m_bGotSize ) {
 		if ( pBase->GetBoundBox( m_bmins, m_bmaxs ) ) {
 			m_bGotSize = true;
 		}
@@ -147,7 +122,7 @@ void GDclass::AddBase( GDclass* pBase ) {
 	//
 	// If we don't have a color, use the base's color.
 	//
-	if ( !m_bGotColor ) {
+	if ( not m_bGotColor ) {
 		m_rgbColor = pBase->GetColor();
 		m_bGotColor = true;
 	}
@@ -164,7 +139,7 @@ void GDclass::AddBase( GDclass* pBase ) {
 //			false if not. If this function returns true, pVar should not be
 //			deleted by the caller.
 //-----------------------------------------------------------------------------
-BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int iBaseIndex, int iVarIndex ) {
+BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int pBaseIndex, int pVarIndex ) {
 	int iThisIndex;
 	GDinputvariable* pThisVar = VarForName( pVar->GetName(), &iThisIndex );
 
@@ -176,7 +151,7 @@ BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int iBaseIndex
 		// Same name, different type. Flag this as an error.
 		//
 		if ( pThisVar->GetType() != pVar->GetType() ) {
-			return ( false );
+			return false;
 		}
 
 		GDinputvariable* pAddVar;
@@ -185,15 +160,14 @@ BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int iBaseIndex
 		//
 		// Check to see if we need to combine a choices/flags array.
 		//
-		if ( pVar->GetType() == ivFlags || pVar->GetType() == ivChoices ) {
+		if ( pVar->GetType() == ivFlags or pVar->GetType() == ivChoices ) {
 			//
 			// Combine two variables' flags into a new variable. Add the new
 			// variable to the local variable list and modify the old variable's
 			// position in our variable map to reflect the new local variable.
 			// This way, we can have multiple inheritance.
 			//
-			GDinputvariable* pNewVar = new GDinputvariable;
-
+			auto* pNewVar = new GDinputvariable;
 			*pNewVar = *pVar;
 			pNewVar->Merge( *pThisVar );
 
@@ -223,23 +197,23 @@ BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int iBaseIndex
 			// "pThisVar" was declared in a base class - we can replace the reference in
 			// our variable map with the new variable.
 			//
-			m_VariableMap[ iThisIndex ][ 0 ] = iBaseIndex;
+			m_VariableMap[ iThisIndex ][0] = static_cast<int16>( pBaseIndex );
 
-			if ( iBaseIndex == -1 ) {
+			if ( pBaseIndex == -1 ) {
 				m_Variables.AddToTail( pAddVar );
-				m_VariableMap[ iThisIndex ][ 1 ] = m_Variables.Count() - 1;
+				m_VariableMap[ iThisIndex ][1] = static_cast<int16>( m_Variables.Count() - 1 );
 			} else {
-				m_VariableMap[ iThisIndex ][ 1 ] = iVarIndex;
+				m_VariableMap[ iThisIndex ][1] = static_cast<int16>( pVarIndex );
 			}
 		}
 
-		return ( bReturn );
+		return bReturn;
 	}
 
 	//
 	// New variable.
 	//
-	if ( iBaseIndex == -1 ) {
+	if ( pBaseIndex == -1 ) {
 		//
 		// Variable declared in the leaf class definition - add it to the list.
 		//
@@ -254,21 +228,21 @@ BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int iBaseIndex
 		//str.Format("Too many gamedata variables for class \"%s\"", m_szName);
 		//AfxMessageBox(str);
 
-		return ( false );
+		return false;
 	}
 
 	//
 	// Add the variable to our list.
 	//
-	m_VariableMap[ m_nVariables ][ 0 ] = iBaseIndex;
-	m_VariableMap[ m_nVariables ][ 1 ] = iVarIndex;
-	++m_nVariables;
+	m_VariableMap[ m_nVariables ][0] = static_cast<int16>( pBaseIndex );
+	m_VariableMap[ m_nVariables ][1] = static_cast<int16>( pVarIndex );
+	m_nVariables += 1;
 
 	//
 	// We added the pointer to our list of items (see Variables.AddToTail, above) so
 	// we must return true here.
 	//
-	return ( true );
+	return true;
 }
 
 
@@ -276,15 +250,15 @@ BOOL GDclass::AddVariable( GDinputvariable* pVar, GDclass* pBase, int iBaseIndex
 // Finds an input by name.
 //-----------------------------------------------------------------------------
 CClassInput* GDclass::FindInput( const char* szName ) {
-	int nCount = GetInputCount();
-	for ( int i = 0; i < nCount; i++ ) {
+	const int count = GetInputCount();
+	for ( int i = 0; i < count; i += 1 ) {
 		CClassInput* pInput = GetInput( i );
-		if ( !stricmp( pInput->GetName(), szName ) ) {
-			return ( pInput );
+		if ( not stricmp( pInput->GetName(), szName ) ) {
+			return pInput;
 		}
 	}
 
-	return ( nullptr );
+	return nullptr;
 }
 
 
@@ -292,15 +266,15 @@ CClassInput* GDclass::FindInput( const char* szName ) {
 // Finds an output by name.
 //-----------------------------------------------------------------------------
 CClassOutput* GDclass::FindOutput( const char* szName ) {
-	int nCount = GetOutputCount();
-	for ( int i = 0; i < nCount; i++ ) {
+	const int count = GetOutputCount();
+	for ( int i = 0; i < count; i += 1 ) {
 		CClassOutput* pOutput = GetOutput( i );
-		if ( !stricmp( pOutput->GetName(), szName ) ) {
-			return ( pOutput );
+		if ( not stricmp( pOutput->GetName(), szName ) ) {
+			return pOutput;
 		}
 	}
 
-	return ( nullptr );
+	return nullptr;
 }
 
 
@@ -312,39 +286,39 @@ CClassOutput* GDclass::FindOutput( const char* szName ) {
 //			pfMaxs - Receives maximum X, Y, and Z coordinates for the class.
 // Output : Returns true if this class has a specified bounding box, false if not.
 //-----------------------------------------------------------------------------
-BOOL GDclass::GetBoundBox( Vector& pfMins, Vector& pfMaxs ) {
+BOOL GDclass::GetBoundBox( Vector& pMins, Vector& pMaxs ) {
 	if ( m_bGotSize ) {
-		pfMins[ 0 ] = m_bmins[ 0 ];
-		pfMins[ 1 ] = m_bmins[ 1 ];
-		pfMins[ 2 ] = m_bmins[ 2 ];
+		pMins[ 0 ] = m_bmins[ 0 ];
+		pMins[ 1 ] = m_bmins[ 1 ];
+		pMins[ 2 ] = m_bmins[ 2 ];
 
-		pfMaxs[ 0 ] = m_bmaxs[ 0 ];
-		pfMaxs[ 1 ] = m_bmaxs[ 1 ];
-		pfMaxs[ 2 ] = m_bmaxs[ 2 ];
+		pMaxs[ 0 ] = m_bmaxs[ 0 ];
+		pMaxs[ 1 ] = m_bmaxs[ 1 ];
+		pMaxs[ 2 ] = m_bmaxs[ 2 ];
 	}
 
-	return ( m_bGotSize );
+	return m_bGotSize;
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-CHelperInfo* GDclass::GetHelper( int nIndex ) {
-	return m_Helpers.Element( nIndex );
+CHelperInfo* GDclass::GetHelper( const int pIndex ) {
+	return m_Helpers.Element( pIndex );
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-CClassInput* GDclass::GetInput( int nIndex ) {
-	return m_Inputs.Element( nIndex );
+CClassInput* GDclass::GetInput( const int pIndex ) {
+	return m_Inputs.Element( pIndex );
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-CClassOutput* GDclass::GetOutput( int nIndex ) {
-	return m_Outputs.Element( nIndex );
+CClassOutput* GDclass::GetOutput( const int pIndex ) {
+	return m_Outputs.Element( pIndex );
 }
 
 
@@ -360,7 +334,7 @@ BOOL GDclass::InitFromTokens( TokenReader& tr, GameData* pGD ) {
 	//
 	// Initialize VariableMap
 	//
-	for ( int i = 0; i < GD_MAX_VARIABLES; i++ ) {
+	for ( int i = 0; i < GD_MAX_VARIABLES; i += 1 ) {
 		m_VariableMap[ i ][ 0 ] = -1;
 		m_VariableMap[ i ][ 1 ] = -1;
 	}
@@ -368,22 +342,22 @@ BOOL GDclass::InitFromTokens( TokenReader& tr, GameData* pGD ) {
 	//
 	// Parse all specifiers (base, size, color, etc.)
 	//
-	if ( !ParseSpecifiers( tr ) ) {
-		return ( false );
+	if ( not ParseSpecifiers( tr ) ) {
+		return false;
 	}
 
 	//
 	// Specifiers should be followed by an "="
 	//
-	if ( !GDSkipToken( tr, OPERATOR, "=" ) ) {
-		return ( false );
+	if ( not GDSkipToken( tr, OPERATOR, "=" ) ) {
+		return false;
 	}
 
 	//
 	// Parse the class name.
 	//
-	if ( !GDGetToken( tr, m_szName, sizeof( m_szName ), IDENT ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, m_szName, sizeof( m_szName ), IDENT ) ) {
+		return false;
 	}
 
 	//
@@ -391,7 +365,7 @@ BOOL GDclass::InitFromTokens( TokenReader& tr, GameData* pGD ) {
 	// we have no description.
 	//
 	char szToken[ MAX_TOKEN ];
-	if ( ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR ) && IsToken( szToken, ":" ) ) {
+	if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR and IsToken( szToken, ":" ) ) {
 		// Skip ":"
 		tr.NextToken( szToken, sizeof( szToken ) );
 
@@ -403,33 +377,33 @@ BOOL GDclass::InitFromTokens( TokenReader& tr, GameData* pGD ) {
 		m_pszDescription = nullptr;
 
 		// Load description
-		if ( !GDGetTokenDynamic( tr, &m_pszDescription, STRING ) ) {
-			return ( false );
+		if ( not GDGetTokenDynamic( tr, &m_pszDescription, STRING ) ) {
+			return false;
 		}
 	}
 
 	//
 	// Opening square brace.
 	//
-	if ( !GDSkipToken( tr, OPERATOR, "[" ) ) {
-		return ( false );
+	if ( not GDSkipToken( tr, OPERATOR, "[" ) ) {
+		return false;
 	}
 
 	//
 	// Get class variables.
 	//
-	if ( !ParseVariables( tr ) ) {
-		return ( false );
+	if ( not ParseVariables( tr ) ) {
+		return false;
 	}
 
 	//
 	// Closing square brace.
 	//
-	if ( !GDSkipToken( tr, OPERATOR, "]" ) ) {
-		return ( false );
+	if ( not GDSkipToken( tr, OPERATOR, "]" ) ) {
+		return false;
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -439,11 +413,11 @@ BOOL GDclass::InitFromTokens( TokenReader& tr, GameData* pGD ) {
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool GDclass::ParseBase( TokenReader& tr ) {
-	char szToken[ MAX_TOKEN ];
+	while ( true ) {
+		char szToken[MAX_TOKEN];
 
-	while ( 1 ) {
-		if ( !GDGetToken( tr, szToken, sizeof( szToken ), IDENT ) ) {
-			return ( false );
+		if ( not GDGetToken( tr, szToken, sizeof( szToken ), IDENT ) ) {
+			return false;
 		}
 
 		//
@@ -452,24 +426,25 @@ bool GDclass::ParseBase( TokenReader& tr ) {
 		GDclass* pBase = Parent->ClassForName( szToken );
 		if ( pBase == nullptr ) {
 			GDError( tr, "undefined base class '%s", szToken );
-			return ( false );
+			return false;
 		}
 
 		AddBase( pBase );
 
-		if ( !GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR ) ) {
-			return ( false );
+		if ( not GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR ) ) {
+			return false;
 		}
 
 		if ( IsToken( szToken, ")" ) ) {
 			break;
-		} else if ( !IsToken( szToken, "," ) ) {
+		}
+		if ( not IsToken( szToken, "," ) ) {
 			GDError( tr, "expecting ',' or ')', but found %s", szToken );
-			return ( false );
+			return false;
 		}
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -484,26 +459,26 @@ bool GDclass::ParseColor( TokenReader& tr ) {
 	//
 	// Red.
 	//
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
+		return false;
 	}
-	BYTE r = atoi( szToken );
+	const BYTE r = strtol( szToken, nullptr, 10 );
 
 	//
 	// Green.
 	//
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
+		return false;
 	}
-	BYTE g = atoi( szToken );
+	const BYTE g = strtol( szToken, nullptr, 10 );
 
 	//
 	// Blue.
 	//
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
+		return false;
 	}
-	BYTE b = atoi( szToken );
+	const BYTE b = strtol( szToken, nullptr, 10 );
 
 	m_rgbColor.r = r;
 	m_rgbColor.g = g;
@@ -512,11 +487,11 @@ bool GDclass::ParseColor( TokenReader& tr ) {
 
 	m_bGotColor = true;
 
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, ")" ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, ")" ) ) {
+		return false;
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -530,41 +505,39 @@ bool GDclass::ParseColor( TokenReader& tr ) {
 //			pszHelperName - Name of the helper being declared.
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool GDclass::ParseHelper( TokenReader& tr, char* pszHelperName ) {
-	char szToken[ MAX_TOKEN ];
-
-	CHelperInfo* pHelper = new CHelperInfo;
-	pHelper->SetName( pszHelperName );
+bool GDclass::ParseHelper( TokenReader& tr, const char* pHelperName ) {
+	auto* pHelper = new CHelperInfo;
+	pHelper->SetName( pHelperName );
 
 	bool bCloseParen = false;
-	while ( !bCloseParen ) {
-		trtoken_t eType = tr.PeekTokenType( szToken, sizeof( szToken ) );
+	while ( not bCloseParen ) {
+		char szToken[MAX_TOKEN];
+		const trtoken_t eType = tr.PeekTokenType( szToken, sizeof( szToken ) );
 
 		if ( eType == OPERATOR ) {
-			if ( !GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR ) ) {
+			if ( not GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR ) ) {
 				delete pHelper;
-				return ( false );
+				return false;
 			}
 
 			if ( IsToken( szToken, ")" ) ) {
 				bCloseParen = true;
 			} else if ( IsToken( szToken, "=" ) ) {
 				delete pHelper;
-				return ( false );
+				return false;
 			}
 		} else {
-			if ( !GDGetToken( tr, szToken, sizeof( szToken ), eType ) ) {
+			if ( not GDGetToken( tr, szToken, sizeof( szToken ), eType ) ) {
 				delete pHelper;
-				return ( false );
-			} else {
-				pHelper->AddParameter( szToken );
+				return false;
 			}
+			pHelper->AddParameter( szToken );
 		}
 	}
 
 	m_Helpers.AddToTail( pHelper );
 
-	return ( true );
+	return true;
 }
 
 
@@ -579,15 +552,15 @@ bool GDclass::ParseSize( TokenReader& tr ) {
 	//
 	// Mins.
 	//
-	for ( int i = 0; i < 3; i++ ) {
-		if ( !GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
-			return ( false );
+	for ( int i = 0; i < 3; i += 1 ) {
+		if ( not GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
+			return false;
 		}
 
-		m_bmins[ i ] = (float) atof( szToken );
+		m_bmins[ i ] = strtof( szToken, nullptr );
 	}
 
-	if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR && IsToken( szToken, "," ) ) {
+	if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR and IsToken( szToken, "," ) ) {
 		//
 		// Skip ","
 		//
@@ -596,18 +569,18 @@ bool GDclass::ParseSize( TokenReader& tr ) {
 		//
 		// Get maxes.
 		//
-		for ( int i = 0; i < 3; i++ ) {
-			if ( !GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
-				return ( false );
+		for ( int i = 0; i < 3; i += 1 ) {
+			if ( not GDGetToken( tr, szToken, sizeof( szToken ), INTEGER ) ) {
+				return false;
 			}
-			m_bmaxs[ i ] = (float) atof( szToken );
+			m_bmaxs[ i ] = strtof( szToken, nullptr );
 		}
 	} else {
 		//
 		// Split mins across origin.
 		//
-		for ( int i = 0; i < 3; i++ ) {
-			float div2 = m_bmins[ i ] / 2;
+		for ( int i = 0; i < 3; i += 1 ) {
+			const float div2 = m_bmins[ i ] / 2;
 			m_bmaxs[ i ] = div2;
 			m_bmins[ i ] = -div2;
 		}
@@ -615,11 +588,11 @@ bool GDclass::ParseSize( TokenReader& tr ) {
 
 	m_bGotSize = true;
 
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, ")" ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, ")" ) ) {
+		return false;
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -629,9 +602,8 @@ bool GDclass::ParseSize( TokenReader& tr ) {
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool GDclass::ParseSpecifiers( TokenReader& tr ) {
-	char szToken[ MAX_TOKEN ];
-
 	while ( tr.PeekTokenType() == IDENT ) {
+		char szToken[MAX_TOKEN];
 		tr.NextToken( szToken, sizeof( szToken ) );
 
 		//
@@ -643,29 +615,29 @@ bool GDclass::ParseSpecifiers( TokenReader& tr ) {
 			//
 			// Handle specifiers require parens after them.
 			//
-			if ( !GDSkipToken( tr, OPERATOR, "(" ) ) {
-				return ( false );
+			if ( not GDSkipToken( tr, OPERATOR, "(" ) ) {
+				return false;
 			}
 
 			if ( IsToken( szToken, "base" ) ) {
-				if ( !ParseBase( tr ) ) {
-					return ( false );
+				if ( not ParseBase( tr ) ) {
+					return false;
 				}
 			} else if ( IsToken( szToken, "size" ) ) {
-				if ( !ParseSize( tr ) ) {
-					return ( false );
+				if ( not ParseSize( tr ) ) {
+					return false;
 				}
 			} else if ( IsToken( szToken, "color" ) ) {
-				if ( !ParseColor( tr ) ) {
-					return ( false );
+				if ( not ParseColor( tr ) ) {
+					return false;
 				}
-			} else if ( !ParseHelper( tr, szToken ) ) {
-				return ( false );
+			} else if ( not ParseHelper( tr, szToken ) ) {
+				return false;
 			}
 		}
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -679,20 +651,20 @@ bool GDclass::ParseSpecifiers( TokenReader& tr ) {
 bool GDclass::ParseInput( TokenReader& tr ) {
 	char szToken[ MAX_TOKEN ];
 
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), IDENT, "input" ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), IDENT, "input" ) ) {
+		return false;
 	}
 
-	CClassInput* pInput = new CClassInput;
+	auto* pInput = new CClassInput;
 
-	bool bReturn = ParseInputOutput( tr, pInput );
+	const bool bReturn = ParseInputOutput( tr, pInput );
 	if ( bReturn ) {
 		AddInput( pInput );
 	} else {
 		delete pInput;
 	}
 
-	return ( bReturn );
+	return bReturn;
 }
 
 
@@ -702,14 +674,15 @@ bool GDclass::ParseInput( TokenReader& tr ) {
 //			pInputOutput - Input or output to fill out.
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool GDclass::ParseInputOutput( TokenReader& tr, CClassInputOutputBase* pInputOutput ) {
+// ReSharper disable once CppMemberFunctionMayBeStatic
+bool GDclass::ParseInputOutput( TokenReader& tr, CClassInputOutputBase* pInputOutput ) { // NOLINT(*-convert-member-functions-to-static)
 	char szToken[ MAX_TOKEN ];
 
 	//
 	// Read the name.
 	//
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), IDENT ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), IDENT ) ) {
+		return false;
 	}
 
 	pInputOutput->SetName( szToken );
@@ -717,28 +690,28 @@ bool GDclass::ParseInputOutput( TokenReader& tr, CClassInputOutputBase* pInputOu
 	//
 	// Read the type.
 	//
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, "(" ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, "(" ) ) {
+		return false;
 	}
 
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), IDENT ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), IDENT ) ) {
+		return false;
 	}
 
-	InputOutputType_t eType = pInputOutput->SetType( szToken );
+	const InputOutputType_t eType = pInputOutput->SetType( szToken );
 	if ( eType == iotInvalid ) {
 		GDError( tr, "bad input/output type '%s'", szToken );
-		return ( false );
+		return false;
 	}
 
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, ")" ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), OPERATOR, ")" ) ) {
+		return false;
 	}
 
 	//
 	// Check the next operator - if ':', we have a description.
 	//
-	if ( ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR ) && ( IsToken( szToken, ":" ) ) ) {
+	if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR and IsToken( szToken, ":" ) ) {
 		//
 		// Skip the ":".
 		//
@@ -748,14 +721,14 @@ bool GDclass::ParseInputOutput( TokenReader& tr, CClassInputOutputBase* pInputOu
 		// Read the description.
 		//
 		char* pszDescription;
-		if ( !GDGetTokenDynamic( tr, &pszDescription, STRING ) ) {
-			return ( false );
+		if ( not GDGetTokenDynamic( tr, &pszDescription, STRING ) ) {
+			return false;
 		}
 
 		pInputOutput->SetDescription( pszDescription );
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -769,20 +742,20 @@ bool GDclass::ParseInputOutput( TokenReader& tr, CClassInputOutputBase* pInputOu
 bool GDclass::ParseOutput( TokenReader& tr ) {
 	char szToken[ MAX_TOKEN ];
 
-	if ( !GDGetToken( tr, szToken, sizeof( szToken ), IDENT, "output" ) ) {
-		return ( false );
+	if ( not GDGetToken( tr, szToken, sizeof( szToken ), IDENT, "output" ) ) {
+		return false;
 	}
 
-	CClassOutput* pOutput = new CClassOutput;
+	auto* pOutput = new CClassOutput;
 
-	bool bReturn = ParseInputOutput( tr, pOutput );
+	const bool bReturn = ParseInputOutput( tr, pOutput );
 	if ( bReturn ) {
 		AddOutput( pOutput );
 	} else {
 		delete pOutput;
 	}
 
-	return ( bReturn );
+	return bReturn;
 }
 
 
@@ -792,41 +765,41 @@ bool GDclass::ParseOutput( TokenReader& tr ) {
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool GDclass::ParseVariables( TokenReader& tr ) {
-	while ( 1 ) {
+	while ( true ) {
 		char szToken[ MAX_TOKEN ];
 
 		if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR ) {
 			break;
 		}
 
-		if ( !stricmp( szToken, "input" ) ) {
-			if ( !ParseInput( tr ) ) {
-				return ( false );
+		if ( not stricmp( szToken, "input" ) ) {
+			if ( not ParseInput( tr ) ) {
+				return false;
 			}
 
 			continue;
 		}
 
-		if ( !stricmp( szToken, "output" ) ) {
-			if ( !ParseOutput( tr ) ) {
-				return ( false );
+		if ( not stricmp( szToken, "output" ) ) {
+			if ( not ParseOutput( tr ) ) {
+				return false;
 			}
 
 			continue;
 		}
 
-		if ( !stricmp( szToken, "key" ) ) {
+		if ( not stricmp( szToken, "key" ) ) {
 			GDGetToken( tr, szToken, sizeof( szToken ) );
 		}
 
-		GDinputvariable* var = new GDinputvariable;
-		if ( !var->InitFromTokens( tr ) ) {
+		auto* var = new GDinputvariable;
+		if ( not var->InitFromTokens( tr ) ) {
 			delete var;
-			return ( false );
+			return false;
 		}
 
 		int nDupIndex;
-		GDinputvariable* pDupVar = VarForName( var->GetName(), &nDupIndex );
+		const GDinputvariable* pDupVar = VarForName( var->GetName(), &nDupIndex );
 
 		// check for duplicate variable definitions
 		if ( pDupVar ) {
@@ -839,12 +812,12 @@ bool GDclass::ParseVariables( TokenReader& tr ) {
 			}
 		}
 
-		if ( !AddVariable( var, this, -1, m_Variables.Count() ) ) {
+		if ( not AddVariable( var, this, -1, m_Variables.Count() ) ) {
 			delete var;
 		}
 	}
 
-	return ( true );
+	return true;
 }
 
 
@@ -853,9 +826,10 @@ bool GDclass::ParseVariables( TokenReader& tr ) {
 // Input  : iIndex -
 // Output : GDinputvariable *
 //-----------------------------------------------------------------------------
-GDinputvariable* GDclass::GetVariableAt( int iIndex ) {
-	if ( iIndex < 0 || iIndex >= m_nVariables )
+GDinputvariable* GDclass::GetVariableAt( const int iIndex ) { // NOLINT(*-no-recursion)
+	if ( iIndex < 0 or iIndex >= m_nVariables ) {
 		return nullptr;
+	}
 
 	if ( m_VariableMap[ iIndex ][ 0 ] == -1 ) {
 		return m_Variables.Element( m_VariableMap[ iIndex ][ 1 ] );
@@ -871,12 +845,13 @@ GDinputvariable* GDclass::GetVariableAt( int iIndex ) {
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-GDinputvariable* GDclass::VarForName( const char* pszName, int* piIndex ) {
-	for ( int i = 0; i < GetVariableCount(); i++ ) {
+GDinputvariable* GDclass::VarForName( const char* pName, int* piIndex ) {
+	for ( int i = 0; i < GetVariableCount(); i += 1 ) {
 		GDinputvariable* pVar = GetVariableAt( i );
-		if ( !strcmpi( pVar->GetName(), pszName ) ) {
-			if ( piIndex )
+		if ( not strcmpi( pVar->GetName(), pName ) ) {
+			if ( piIndex ) {
 				piIndex[ 0 ] = i;
+			}
 			return pVar;
 		}
 	}
@@ -884,14 +859,14 @@ GDinputvariable* GDclass::VarForName( const char* pszName, int* piIndex ) {
 	return nullptr;
 }
 
-void GDclass::GetHelperForGDVar( GDinputvariable* pVar, CUtlVector<const char*>* pszHelperName ) {
+void GDclass::GetHelperForGDVar( const GDinputvariable* pVar, CUtlVector<const char*>* pHelperName ) {
 	const char* pszName = pVar->GetName();
-	for ( int i = 0; i < GetHelperCount(); i++ ) {
-		CHelperInfo* pHelper = GetHelper( i );
-		int nParamCount = pHelper->GetParameterCount();
-		for ( int j = 0; j < nParamCount; j++ ) {
-			if ( !strcmpi( pszName, pHelper->GetParameter( j ) ) ) {
-				pszHelperName->AddToTail( pHelper->GetName() );
+	for ( int i = 0; i < GetHelperCount(); i += 1 ) {
+		const CHelperInfo* pHelper = GetHelper( i );
+		const int nParamCount = pHelper->GetParameterCount();
+		for ( int j = 0; j < nParamCount; j += 1 ) {
+			if ( not strcmpi( pszName, pHelper->GetParameter( j ) ) ) {
+				pHelperName->AddToTail( pHelper->GetName() );
 			}
 		}
 	}

@@ -1,130 +1,109 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
 //=============================================================================
-
 #include "fgdlib/gamedata.h"
 #include "KeyValues.h"
-#include "fgdlib/helperinfo.h"
 #include "filesystem_tools.h"
 #include "tier0/dbg.h"
 #include "tier1/strtools.h"
 #include "utlmap.h"
-#include "worldsize.h"
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#pragma warning(disable:4244)
+#pragma warning( disable : 4244 )
 
 
-const int MAX_ERRORS = 5;
-
-
+constexpr int MAX_ERRORS = 5;
 static GameDataMessageFunc_t g_pMsgFunc = nullptr;
 
 
 //-----------------------------------------------------------------------------
 // Sets the function used for emitting error messages while loading gamedata files.
 //-----------------------------------------------------------------------------
-void GDSetMessageFunc(GameDataMessageFunc_t pFunc)
-{
+void GDSetMessageFunc( const GameDataMessageFunc_t pFunc ) {
 	g_pMsgFunc = pFunc;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Fetches the next token from the file.
-// Input  : tr - 
+// Input  : tr -
 //			ppszStore - Destination buffer, one of the following:
 //				pointer to nullptr - token will be placed in an allocated buffer
 //				pointer to non-nullptr buffer - token will be placed in buffer
-//			ttexpecting - 
-//			pszExpecting - 
-// Output : 
+//			ttexpecting -
+//			pszExpecting -
+// Output :
 //-----------------------------------------------------------------------------
-static bool DoGetToken(TokenReader &tr, char **ppszStore, int nSize, trtoken_t ttexpecting, const char *pszExpecting)
-{
+static bool DoGetToken( TokenReader& tr, char** pStore, const int pSize, const trtoken_t ttexpecting, const char* pExpecting ) {
 	trtoken_t ttype;
 
-	if (*ppszStore != nullptr)
-	{
+	if ( *pStore != nullptr ) {
 		// Reads the token into the given buffer.
-		ttype = tr.NextToken(*ppszStore, nSize);
-	}
-	else
-	{
+		ttype = tr.NextToken( *pStore, pSize );
+	} else {
 		// Allocates a buffer to hold the token.
-		ttype = tr.NextTokenDynamic(ppszStore);
+		ttype = tr.NextTokenDynamic( pStore );
 	}
 
-	if (ttype == TOKENSTRINGTOOLONG)
-	{
-		GDError(tr, "unterminated string or string too long");
+	if ( ttype == TOKENSTRINGTOOLONG ) {
+		GDError( tr, "unterminated string or string too long" );
 		return false;
 	}
 
 	//
 	// Check for a bad token type.
 	//
-	char *pszStore = *ppszStore;
+	char* pszStore = *pStore;
 	bool bBadTokenType = false;
-	if ((ttype != ttexpecting) && (ttexpecting != TOKENNONE))
-	{
+	if ( ttype != ttexpecting and ttexpecting != TOKENNONE ) {
 		//
 		// If we were expecting a string and got an integer, don't worry about it.
 		// We can translate from integer to string.
 		//
-		if (!((ttexpecting == STRING) && (ttype == INTEGER)))
-		{
+		if ( not ( ttexpecting == STRING and ttype == INTEGER ) ) {
 			bBadTokenType = true;
 		}
 	}
 
-	if (bBadTokenType && (pszExpecting == nullptr))
-	{
+	if ( bBadTokenType and pExpecting == nullptr ) {
 		//
 		// We didn't get the expected token type but no expected
 		// string was specified.
 		//
-		const char *pszTokenName;
-		switch (ttexpecting)
-		{
-			case IDENT:
-			{
+		const char* pszTokenName;
+		switch ( ttexpecting ) {
+			case IDENT: {
 				pszTokenName = "identifier";
 				break;
 			}
 
-			case INTEGER:
-			{
+			case INTEGER: {
 				pszTokenName = "integer";
 				break;
 			}
 
-			case STRING:
-			{
+			case STRING: {
 				pszTokenName = "string";
 				break;
 			}
 
 			case OPERATOR:
-			default:
-			{
+			default: {
 				pszTokenName = "symbol";
 				break;
 			}
 		}
-		
-		GDError(tr, "expecting %s", pszTokenName);
+
+		GDError( tr, "expecting %s", pszTokenName );
 		return false;
 	}
-	else if (bBadTokenType || ((pszExpecting != nullptr) && !IsToken(pszStore, pszExpecting)))
-	{
+	if ( bBadTokenType or pExpecting != nullptr and not IsToken( pszStore, pExpecting ) ) {
 		//
 		// An expected string was specified, and we got either the wrong type or
 		// the right type but the wrong string,
 		//
-		GDError(tr, "expecting '%s', but found '%s'", pszExpecting, pszStore);
+		GDError( tr, "expecting '%s', but found '%s'", pExpecting, pszStore );
 		return false;
 	}
 
@@ -133,33 +112,29 @@ static bool DoGetToken(TokenReader &tr, char **ppszStore, int nSize, trtoken_t t
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : tr - 
-//			error - 
-// Output : 
+// Purpose:
+// Input  : tr -
+//			error -
+// Output :
 //-----------------------------------------------------------------------------
-bool GDError(TokenReader &tr, const char *error, ...)
-{
+bool GDError( TokenReader& tr, const char* error, ... ) {
 	char szBuf[128];
 	va_list vl;
-	va_start(vl, error);
-	vsprintf(szBuf, error, vl);
-	va_end(vl);
+	va_start( vl, error );
+	vsprintf( szBuf, error, vl );
+	va_end( vl );
 
-	if (g_pMsgFunc)
-	{
+	if ( g_pMsgFunc ) {
 		// HACK: should use an enumeration for error level
-		g_pMsgFunc(1, tr.Error(szBuf));
+		g_pMsgFunc( 1, tr.Error( szBuf ) );
 	}
-	
-	if (tr.GetErrorCount() >= MAX_ERRORS)
-	{
-		if (g_pMsgFunc)
-		{
+
+	if ( tr.GetErrorCount() >= MAX_ERRORS ) {
+		if ( g_pMsgFunc ) {
 			// HACK: should use an enumeration for error level
-			g_pMsgFunc(1, "   - too many errors; aborting.");
+			g_pMsgFunc( 1, "   - too many errors; aborting." );
 		}
-		
+
 		return false;
 	}
 
@@ -178,12 +153,10 @@ bool GDError(TokenReader &tr, const char *error, ...)
 // Output : Returns true if the operation succeeded, false if there was an error.
 //			If there was an error, the error will be reported in the message window.
 //-----------------------------------------------------------------------------
-bool GDGetToken(TokenReader &tr, char *pszStore, int nSize, trtoken_t ttexpecting, const char *pszExpecting)
-{
-	Assert(pszStore != nullptr);
-	if (pszStore != nullptr)
-	{
-		return DoGetToken(tr, &pszStore, nSize, ttexpecting, pszExpecting);
+bool GDGetToken( TokenReader& tr, char* pszStore, int nSize, trtoken_t ttexpecting, const char* pszExpecting ) {
+	Assert( pszStore != nullptr );
+	if ( pszStore != nullptr ) {
+		return DoGetToken( tr, &pszStore, nSize, ttexpecting, pszExpecting );
 	}
 
 	return false;
@@ -201,68 +174,57 @@ bool GDGetToken(TokenReader &tr, char *pszStore, int nSize, trtoken_t ttexpectin
 // Output : Returns true if the operation succeeded, false if there was an error.
 //			If there was an error, the error will be reported in the message window.
 //-----------------------------------------------------------------------------
-bool GDSkipToken(TokenReader &tr, trtoken_t ttexpecting, const char *pszExpecting)
-{
+bool GDSkipToken( TokenReader& tr, const trtoken_t ttexpecting, const char* pszExpecting ) {
 	//
 	// Read the next token into a buffer and discard it.
 	//
 	char szDiscardBuf[MAX_TOKEN];
-	char *pszDiscardBuf = szDiscardBuf;
-	return DoGetToken(tr, &pszDiscardBuf, sizeof(szDiscardBuf), ttexpecting, pszExpecting);
+	char* pszDiscardBuf = szDiscardBuf;
+	return DoGetToken( tr, &pszDiscardBuf, std::size( szDiscardBuf ), ttexpecting, pszExpecting );
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Fetches the next token from the file, allocating a buffer exactly
 //			large enough to hold the token.
-// Input  : tr - 
-//			ppszStore - 
-//			ttexpecting - 
-//			pszExpecting - 
-// Output : 
+// Input  : tr -
+//			ppszStore -
+//			ttexpecting -
+//			pszExpecting -
+// Output :
 //-----------------------------------------------------------------------------
-bool GDGetTokenDynamic(TokenReader &tr, char **ppszStore, trtoken_t ttexpecting, const char *pszExpecting)
-{
-	if (ppszStore == nullptr)
-	{
+bool GDGetTokenDynamic( TokenReader& tr, char** const pStore, const trtoken_t ttexpecting, const char* pExpecting ) {
+	if ( pStore == nullptr ) {
 		return false;
 	}
 
-	*ppszStore = nullptr;
-	return DoGetToken(tr, ppszStore, -1, ttexpecting, pszExpecting);
+	*pStore = nullptr;
+	return DoGetToken( tr, pStore, -1, ttexpecting, pExpecting );
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
-GameData::GameData()
-{
-	m_nMaxMapCoord = 8192;
-	m_nMinMapCoord = -8192;
-	m_InstanceClass = nullptr;
-}
+GameData::GameData() = default;
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Destructor.
 //-----------------------------------------------------------------------------
-GameData::~GameData()
-{
+GameData::~GameData() {
 	ClearData();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void GameData::ClearData()
-{
+void GameData::ClearData() {
 	// delete classes.
-	int nCount = m_Classes.Count();
-	for (int i = 0; i < nCount; i++)
-	{
-		GDclass *pm = m_Classes.Element(i);
+	const int nCount = m_Classes.Count();
+	for ( int i = 0; i < nCount; i += 1 ) {
+		const GDclass* pm = m_Classes.Element( i );
 		delete pm;
 	}
 	m_Classes.RemoveAll();
@@ -271,169 +233,127 @@ void GameData::ClearData()
 
 //-----------------------------------------------------------------------------
 // Purpose: Loads a gamedata (FGD) file into this object.
-// Input  : pszFilename - 
+// Input  : pszFilename -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool GameData::Load(const char *pszFilename)
-{
+bool GameData::Load( const char* pFilename ) { // NOLINT(*-no-recursion)
 	TokenReader tr;
 
 	#if IsWindows()
-		if(GetFileAttributes(pszFilename) == 0xffffffff)
+		if ( GetFileAttributes( pszFilename ) == 0xffffffff ) {
 			return false;
+		}
 	#endif
 
-	if(!tr.Open(pszFilename))
+	if ( not tr.Open( pFilename ) ) {
 		return false;
+	}
 
-	trtoken_t ttype;
-	char szToken[128];
-
-	while (true)
-	{
-		if (tr.GetErrorCount() >= MAX_ERRORS)
-		{
+	while ( true ) {
+		char szToken[128];
+		if ( tr.GetErrorCount() >= MAX_ERRORS ) {
 			break;
 		}
 
-		ttype = tr.NextToken(szToken, sizeof(szToken));
+		const trtoken_t ttype = tr.NextToken( szToken, std::size( szToken ) );
 
-		if(ttype == TOKENEOF)
+		if ( ttype == TOKENEOF ) {
 			break;
+		}
 
-		if(ttype != OPERATOR || !IsToken(szToken, "@"))
-		{
-			if(!GDError(tr, "expected @"))
+		if ( ttype != OPERATOR or not IsToken( szToken, "@" ) ) {
+			if ( not GDError( tr, "expected @" ) ) {
 				return false;
+			}
 		}
 
 		// check what kind it is, and parse a new object
-		if (tr.NextToken(szToken, sizeof(szToken)) != IDENT)
-		{
-			if(!GDError(tr, "expected identifier after @"))
+		if ( tr.NextToken( szToken, std::size( szToken ) ) != IDENT ) {
+			if ( not GDError( tr, "expected identifier after @" ) ) {
 				return false;
+			}
 		}
 
-		if (IsToken(szToken, "baseclass") || IsToken(szToken, "pointclass") || IsToken(szToken, "solidclass") || IsToken(szToken, "keyframeclass") ||
-			IsToken(szToken, "moveclass") || IsToken(szToken, "npcclass") || IsToken(szToken, "filterclass"))
-		{
+		if ( IsToken( szToken, "baseclass" ) or IsToken( szToken, "pointclass" ) or IsToken( szToken, "solidclass" ) or IsToken( szToken, "keyframeclass" ) or
+			 IsToken( szToken, "moveclass" ) or IsToken( szToken, "npcclass" ) or IsToken( szToken, "filterclass" ) ) {
 			//
 			// New class.
 			//
-			GDclass *pNewClass = new GDclass;
-			if (!pNewClass->InitFromTokens(tr, this))
-			{
-				tr.IgnoreTill(OPERATOR, "@");	// go to next section
+			auto pNewClass = new GDclass;
+			if ( not pNewClass->InitFromTokens( tr, this ) ) {
+				tr.IgnoreTill( OPERATOR, "@" );  // go to next section
 				delete pNewClass;
-			}
-			else
-			{
-				if (IsToken(szToken, "baseclass"))			// Not directly available to user.
-				{
-					pNewClass->SetBaseClass(true);
-				}
-				else if (IsToken(szToken, "pointclass"))	// Generic point class.
-				{
-					pNewClass->SetPointClass(true);
-				}
-				else if (IsToken(szToken, "solidclass"))	// Tied to solids.
-				{
-					pNewClass->SetSolidClass(true);
-				}
-				else if (IsToken(szToken, "npcclass"))		// NPC class - can be spawned by npc_maker.
-				{
-					pNewClass->SetPointClass(true);
-					pNewClass->SetNPCClass(true);
-				}
-				else if (IsToken(szToken, "filterclass"))	// Filter class - can be used as a filter
-				{
-					pNewClass->SetPointClass(true);
-					pNewClass->SetFilterClass(true);
-				}
-				else if (IsToken(szToken, "moveclass"))		// Animating
-				{
-					pNewClass->SetMoveClass(true);
-					pNewClass->SetPointClass(true);
-				}
-				else if (IsToken(szToken, "keyframeclass"))	// Animation keyframes
-				{
-					pNewClass->SetKeyFrameClass(true);
-					pNewClass->SetPointClass(true);
+			} else {
+				if ( IsToken( szToken, "baseclass" ) ) {  // Not directly available to user.
+					pNewClass->SetBaseClass( true );
+				} else if ( IsToken( szToken, "pointclass" ) ) {  // Generic point class.
+					pNewClass->SetPointClass( true );
+				} else if ( IsToken( szToken, "solidclass" ) ) {  // Tied to solids.
+					pNewClass->SetSolidClass( true );
+				} else if ( IsToken( szToken, "npcclass" ) ) {  // NPC class - can be spawned by npc_maker.
+					pNewClass->SetPointClass( true );
+					pNewClass->SetNPCClass( true );
+				} else if ( IsToken( szToken, "filterclass" ) ) {  // Filter class - can be used as a filter
+					pNewClass->SetPointClass( true );
+					pNewClass->SetFilterClass( true );
+				} else if ( IsToken( szToken, "moveclass" ) ) {  // Animating
+					pNewClass->SetMoveClass( true );
+					pNewClass->SetPointClass( true );
+				} else if ( IsToken( szToken, "keyframeclass" ) ) {  // Animation keyframes
+					pNewClass->SetKeyFrameClass( true );
+					pNewClass->SetPointClass( true );
 				}
 
-				// Check and see if this new class matches an existing one. If so we will override the previous definition.
-				int nExistingClassIndex = 0;
-				GDclass *pExistingClass = ClassForName(pNewClass->GetName(), &nExistingClassIndex);
-				if (nullptr != pExistingClass)
-				{
-					m_Classes.InsertAfter(nExistingClassIndex, pNewClass);
-					m_Classes.Remove(nExistingClassIndex);
-				}
-				else
-				{
-					m_Classes.AddToTail(pNewClass);
+				// Check and see if this new class matches an existing one. If so, we will override the previous definition.
+				int existingClassIndex = 0;
+				const GDclass* pExistingClass = ClassForName( pNewClass->GetName(), &existingClassIndex );
+				if ( nullptr != pExistingClass ) {
+					m_Classes.InsertAfter( existingClassIndex, pNewClass );
+					m_Classes.Remove( existingClassIndex );
+				} else {
+					m_Classes.AddToTail( pNewClass );
 				}
 			}
-		}
-		else if (IsToken(szToken, "include"))
-		{
-			if (GDGetToken(tr, szToken, sizeof(szToken), STRING))
-			{
+		} else if ( IsToken( szToken, "include" ) ) {
+			if ( GDGetToken( tr, szToken, std::size( szToken ), STRING ) ) {
 				// Let's assume it's in the same directory.
 				char justPath[MAX_PATH], loadFilename[MAX_PATH];
-				if ( Q_ExtractFilePath( pszFilename, justPath, sizeof( justPath ) ) )
-				{
-					Q_snprintf( loadFilename, sizeof( loadFilename ), "%s%s", justPath, szToken );
-				}
-				else
-				{
-					Q_strncpy( loadFilename, szToken, sizeof( loadFilename ) );
+				if ( Q_ExtractFilePath( pFilename, justPath, std::size( justPath ) ) ) {
+					Q_snprintf( loadFilename, std::size( loadFilename ), "%s%s", justPath, szToken );
+				} else {
+					Q_strncpy( loadFilename, szToken, std::size( loadFilename ) );
 				}
 
 				// First try our fully specified directory
-				if (!Load(loadFilename))
-				{
+				if ( not Load( loadFilename ) ) {
 					// Failing that, try our start directory
-					if (!Load(szToken))
-					{
-						GDError(tr, "error including file: %s", szToken);
+					if ( not Load( szToken ) ) {
+						GDError( tr, "error including file: %s", szToken );
 					}
 				}
 			}
-		}
-		else if (IsToken(szToken, "mapsize"))
-		{
-			if (!ParseMapSize(tr))
-			{
-				// Error in map size specifier, skip to next @ sign. 
-				tr.IgnoreTill(OPERATOR, "@");
+		} else if ( IsToken( szToken, "mapsize" ) ) {
+			if ( not ParseMapSize( tr ) ) {
+				// Error in map size specifier, skip to next @ sign.
+				tr.IgnoreTill( OPERATOR, "@" );
 			}
-		}
-		else if ( IsToken( szToken, "materialexclusion" ) )
-		{
-			if ( !LoadFGDMaterialExclusions( tr ) )
-			{
-				// FGD exclusions not defined; skip to next @ sign. 
-				tr.IgnoreTill(OPERATOR, "@");
+		} else if ( IsToken( szToken, "materialexclusion" ) ) {
+			if ( not LoadFGDMaterialExclusions( tr ) ) {
+				// FGD exclusions weren't defined; skip to next @ sign.
+				tr.IgnoreTill( OPERATOR, "@" );
 			}
-		}
-		else if ( IsToken( szToken, "autovisgroup" ) )
-		{
-			if ( !LoadFGDAutoVisGroups( tr ) )
-			{
-				// FGD AutoVisGroups not defined; skip to next @ sign. 
-				tr.IgnoreTill(OPERATOR, "@");
+		} else if ( IsToken( szToken, "autovisgroup" ) ) {
+			if ( not LoadFGDAutoVisGroups( tr ) ) {
+				// FGD AutoVisGroups not defined; skip to next @ sign.
+				tr.IgnoreTill( OPERATOR, "@" );
 			}
-		}
-		else
-		{
-			GDError(tr, "unrecognized section name %s", szToken);
-			tr.IgnoreTill(OPERATOR, "@");
+		} else {
+			GDError( tr, "unrecognized section name %s", szToken );
+			tr.IgnoreTill( OPERATOR, "@" );
 		}
 	}
 
-	if (tr.GetErrorCount() > 0)
-	{
+	if ( tr.GetErrorCount() > 0 ) {
 		return false;
 	}
 
@@ -450,42 +370,35 @@ bool GameData::Load(const char *pszFilename)
 //
 //			ex: mapsize(-8192, 8192)
 //
-// Input  : tr - 
+// Input  : tr -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool GameData::ParseMapSize(TokenReader &tr)
-{
-	if (!GDSkipToken(tr, OPERATOR, "("))
-	{
+bool GameData::ParseMapSize( TokenReader& tr ) {
+	if ( not GDSkipToken( tr, OPERATOR, "(" ) ) {
 		return false;
 	}
 
 	char szToken[128];
-	if (!GDGetToken(tr, szToken, sizeof(szToken), INTEGER))
-	{
+	if ( not GDGetToken( tr, szToken, std::size( szToken ), INTEGER ) ) {
 		return false;
 	}
-	int nMin = atoi(szToken);	
+	const int min = strtol( szToken, nullptr, 10 );
 
-	if (!GDSkipToken(tr, OPERATOR, ","))
-	{
+	if ( not GDSkipToken( tr, OPERATOR, "," ) ) {
 		return false;
 	}
 
-	if (!GDGetToken(tr, szToken, sizeof(szToken), INTEGER))
-	{
+	if ( not GDGetToken( tr, szToken, std::size( szToken ), INTEGER ) ) {
 		return false;
 	}
-	int nMax = atoi(szToken);	
+	const int max = strtol( szToken, nullptr, 10 );
 
-	if (nMin != nMax)
-	{
-		m_nMinMapCoord = std::min(nMin, nMax);
-		m_nMaxMapCoord = std::max(nMin, nMax);
+	if ( min != max ) {
+		m_nMinMapCoord = std::min( min, max );
+		m_nMaxMapCoord = std::max( min, max );
 	}
 
-	if (!GDSkipToken(tr, OPERATOR, ")"))
-	{
+	if ( not GDSkipToken( tr, OPERATOR, ")" ) ) {
 		return false;
 	}
 
@@ -494,21 +407,19 @@ bool GameData::ParseMapSize(TokenReader &tr)
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pszName - 
-//			piIndex - 
-// Output : 
+// Purpose:
+// Input  : pszName -
+//			piIndex -
+// Output :
 //-----------------------------------------------------------------------------
-GDclass *GameData::ClassForName(const char *pszName, int *piIndex)
-{
-	int nCount = m_Classes.Count();
-	for (int i = 0; i < nCount; i++)
-	{
-		GDclass *mp = m_Classes.Element(i);
-		if(!strcmp(mp->GetName(), pszName))
-		{
-			if(piIndex)
+GDclass* GameData::ClassForName( const char* pszName, int* piIndex ) {
+	const int count = m_Classes.Count();
+	for ( int i = 0; i < count; i += 1 ) {
+		GDclass* mp = m_Classes.Element( i );
+		if ( not strcmp( mp->GetName(), pszName ) ) {
+			if ( piIndex ) {
 				piIndex[0] = i;
+			}
 			return mp;
 		}
 	}
@@ -518,12 +429,7 @@ GDclass *GameData::ClassForName(const char *pszName, int *piIndex)
 
 
 // These are 'standard' keys that every entity uses, but they aren't specified that way in the .fgd
-static const char *RequiredKeys[] =
-{
-	"Origin",
-	"Angles",
-	nullptr
-};
+static const char* RequiredKeys[] { "Origin", "Angles", nullptr };
 
 //-----------------------------------------------------------------------------
 // Purpose: this function will set up the initial class about to be instanced
@@ -533,46 +439,36 @@ static const char *RequiredKeys[] =
 //			Angles - the angle rotation of the instance
 // Output : if successful, will return the game data class of the class name
 //-----------------------------------------------------------------------------
-GDclass *GameData::BeginInstanceRemap( const char *pszClassName, const char *pszInstancePrefix, Vector &Origin, QAngle &Angle )
-{
+GDclass* GameData::BeginInstanceRemap( const char* pszClassName, const char* pszInstancePrefix, const Vector& Origin, const QAngle& Angle ) {
 	m_InstanceOrigin = Origin;
 	m_InstanceAngle = Angle;
 	AngleMatrix( m_InstanceAngle, m_InstanceOrigin, m_InstanceMat );
 
 	strcpy( m_InstancePrefix, pszInstancePrefix );
 
-	if ( m_InstanceClass )
-	{
+	if ( m_InstanceClass ) {
 		delete m_InstanceClass;
 		m_InstanceClass = nullptr;
 	}
 
-	if ( strcmpi( pszClassName, "info_overlay_accessor" ) == 0 )
-	{	// yucky hack for a made up entity in the bsp process
+	if ( strcmpi( pszClassName, "info_overlay_accessor" ) == 0 ) {  // yucky hack for a made up entity in the bsp process
 		pszClassName = "info_overlay";
 	}
 
-	GDclass	*BaseClass = ClassForName( pszClassName );
-	if ( BaseClass )
-	{
+	if ( GDclass* BaseClass = ClassForName( pszClassName ) ) {
 		m_InstanceClass = new GDclass();
 		m_InstanceClass->Parent = this;
 		m_InstanceClass->AddBase( BaseClass );
 
-		for( int i = 0; RequiredKeys[ i ]; i++ )
-		{
-			if ( m_InstanceClass->VarForName( RequiredKeys[ i ] ) == nullptr )
-			{
-				BaseClass = ClassForName( RequiredKeys[ i ] );
-				if ( BaseClass )
-				{
+		for ( int i = 0; RequiredKeys[i]; i += 1 ) {
+			if ( m_InstanceClass->VarForName( RequiredKeys[i] ) == nullptr ) {
+				BaseClass = ClassForName( RequiredKeys[i] );
+				if ( BaseClass ) {
 					m_InstanceClass->AddBase( BaseClass );
 				}
 			}
 		}
-	}
-	else
-	{
+	} else {
 		m_InstanceClass = nullptr;
 	}
 
@@ -580,8 +476,7 @@ GDclass *GameData::BeginInstanceRemap( const char *pszClassName, const char *psz
 }
 
 
-enum tRemapOperation
-{
+enum tRemapOperation {
 	REMAP_NAME = 0,
 	REMAP_POSITION,
 	REMAP_ANGLE,
@@ -589,7 +484,7 @@ enum tRemapOperation
 };
 
 
-static CUtlMap< GDIV_TYPE, tRemapOperation > RemapOperation;
+static CUtlMap<GDIV_TYPE, tRemapOperation> RemapOperation;
 
 
 //-----------------------------------------------------------------------------
@@ -598,9 +493,8 @@ static CUtlMap< GDIV_TYPE, tRemapOperation > RemapOperation;
 //			type2 - the second type to compare against
 // Output : returns true if the first type is less than the second one
 //-----------------------------------------------------------------------------
-static bool CUtlType_LessThan( const GDIV_TYPE &type1, const GDIV_TYPE &type2 )
-{
-	return ( type1 < type2 );
+static bool CUtlType_LessThan( const GDIV_TYPE& type1, const GDIV_TYPE& type2 ) {
+	return type1 < type2;
 }
 
 
@@ -608,15 +502,13 @@ static bool CUtlType_LessThan( const GDIV_TYPE &type1, const GDIV_TYPE &type2 )
 // Purpose: this function will attempt to remap a key's value
 // Input  : pszKey - the name of the key
 //			pszInvalue - the original value
-//			AllowNameRemapping - only do name remapping if this parameter is true.  
+//			AllowNameRemapping - only do name remapping if this parameter is true.
 //				this is generally only false on the instance level.
 // Output : returns true if the value changed
 //			pszOutValue - the new value if changed
 //-----------------------------------------------------------------------------
-bool GameData::RemapKeyValue( const char *pszKey, const char *pszInValue, char *pszOutValue, TNameFixup NameFixup )
-{
-	if ( RemapOperation.Count() == 0 )
-	{
+bool GameData::RemapKeyValue( const char* pszKey, const char* pszInValue, char* pszOutValue, const TNameFixup NameFixup ) {
+	if ( RemapOperation.Count() == 0 ) {
 		RemapOperation.SetLessFunc( &CUtlType_LessThan );
 		RemapOperation.Insert( ivAngle, REMAP_ANGLE );
 		RemapOperation.Insert( ivTargetDest, REMAP_NAME );
@@ -626,52 +518,44 @@ bool GameData::RemapKeyValue( const char *pszKey, const char *pszInValue, char *
 		RemapOperation.Insert( ivAngleNegativePitch, REMAP_ANGLE_NEGATIVE_PITCH );
 	}
 
-	if ( !m_InstanceClass )
-	{
+	if ( not m_InstanceClass ) {
 		return false;
 	}
 
-	GDinputvariable *KVVar = m_InstanceClass->VarForName( pszKey );
-	if ( !KVVar )
-	{
+	const GDinputvariable* KVVar = m_InstanceClass->VarForName( pszKey );
+	if ( not KVVar ) {
 		return false;
 	}
 
-	GDIV_TYPE	KVType = KVVar->GetType();
-	int			KVRemapIndex = RemapOperation.Find( KVType );
-	if ( KVRemapIndex == RemapOperation.InvalidIndex() )
-	{
+	const GDIV_TYPE KVType = KVVar->GetType();
+	const int KVRemapIndex = RemapOperation.Find( KVType );
+	if ( KVRemapIndex == CUtlMap<GDIV_TYPE, tRemapOperation>::InvalidIndex() ) {
 		return false;
 	}
 
 	strcpy( pszOutValue, pszInValue );
 
-	switch( RemapOperation[ KVRemapIndex ] )
-	{
+	switch ( RemapOperation[KVRemapIndex] ) {
 		case REMAP_NAME:
-			if ( KVType != ivInstanceVariable )
-			{
+			if ( KVType != ivInstanceVariable ) {
 				RemapNameField( pszInValue, pszOutValue, NameFixup );
 			}
 			break;
 
-		case REMAP_POSITION:
-			{
-				Vector	inPoint( 0.0f, 0.0f, 0.0f ), outPoint;
+		case REMAP_POSITION: {
+			Vector inPoint( 0.0f, 0.0f, 0.0f ), outPoint;
 
-				sscanf ( pszInValue, "%f %f %f", &inPoint.x, &inPoint.y, &inPoint.z );
-				VectorTransform( inPoint, m_InstanceMat, outPoint );
-				sprintf( pszOutValue, "%g %g %g", outPoint.x, outPoint.y, outPoint.z );
-			}
-			break;
-			
+			sscanf( pszInValue, "%f %f %f", &inPoint.x, &inPoint.y, &inPoint.z );
+			VectorTransform( inPoint, m_InstanceMat, outPoint );
+			sprintf( pszOutValue, "%g %g %g", outPoint.x, outPoint.y, outPoint.z );
+		} break;
+
 		case REMAP_ANGLE:
-			if ( m_InstanceAngle.x != 0.0f || m_InstanceAngle.y != 0.0f || m_InstanceAngle.z != 0.0f )
-			{
-				QAngle		inAngles( 0.0f, 0.0f, 0.0f ), outAngles;
+			if ( m_InstanceAngle.x != 0.0f or m_InstanceAngle.y != 0.0f or m_InstanceAngle.z != 0.0f ) {
+				QAngle inAngles( 0.0f, 0.0f, 0.0f ), outAngles;
 				matrix3x4_t angToWorld, localMatrix;
 
-				sscanf ( pszInValue, "%f %f %f", &inAngles.x, &inAngles.y, &inAngles.z );
+				sscanf( pszInValue, "%f %f %f", &inAngles.x, &inAngles.y, &inAngles.z );
 
 				AngleMatrix( inAngles, angToWorld );
 				MatrixMultiply( m_InstanceMat, angToWorld, localMatrix );
@@ -682,43 +566,40 @@ bool GameData::RemapKeyValue( const char *pszKey, const char *pszInValue, char *
 			break;
 
 		case REMAP_ANGLE_NEGATIVE_PITCH:
-			if ( m_InstanceAngle.x != 0.0f || m_InstanceAngle.y != 0.0f || m_InstanceAngle.z != 0.0f )
-			{
-				QAngle		inAngles( 0.0f, 0.0f, 0.0f ), outAngles;
+			if ( m_InstanceAngle.x != 0.0f or m_InstanceAngle.y != 0.0f or m_InstanceAngle.z != 0.0f ) {
+				QAngle inAngles( 0.0f, 0.0f, 0.0f ), outAngles;
 				matrix3x4_t angToWorld, localMatrix;
 
-				sscanf ( pszInValue, "%f", &inAngles.x );	// just the pitch
+				sscanf( pszInValue, "%f", &inAngles.x );  // just the pitch
 				inAngles.x = -inAngles.x;
 
 				AngleMatrix( inAngles, angToWorld );
 				MatrixMultiply( m_InstanceMat, angToWorld, localMatrix );
 				MatrixAngles( localMatrix, outAngles );
 
-				sprintf( pszOutValue, "%g", -outAngles.x );	// just the pitch
+				sprintf( pszOutValue, "%g", -outAngles.x );  // just the pitch
 			}
 			break;
 	}
 
-	return ( strcmpi( pszInValue, pszOutValue ) != 0 );
+	return strcmpi( pszInValue, pszOutValue ) != 0;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: this function will attempt to remap a name field.
 // Input  : pszInvalue - the original value
-//			AllowNameRemapping - only do name remapping if this parameter is true.  
+//			AllowNameRemapping - only do name remapping if this parameter is true.
 //				this is generally only false on the instance level.
 // Output : returns true if the value changed
 //			pszOutValue - the new value if changed
 //-----------------------------------------------------------------------------
-bool GameData::RemapNameField( const char *pszInValue, char *pszOutValue, TNameFixup NameFixup )
-{
+bool GameData::RemapNameField( const char* pszInValue, char* pszOutValue, TNameFixup NameFixup ) {
 	strcpy( pszOutValue, pszInValue );
 
-	if ( pszInValue[ 0 ] && pszInValue[ 0 ] != '@' )
-	{	// ! at the start of a value means it is global and should not be remaped
-		switch( NameFixup )
-		{
+	// `!` at the start of a value means that it is global and should not be remapped
+	if ( pszInValue[0] and pszInValue[0] != '@' ) {
+		switch ( NameFixup ) {
 			case NAME_FIXUP_PREFIX:
 				sprintf( pszOutValue, "%s-%s", m_InstancePrefix, pszInValue );
 				break;
@@ -726,50 +607,44 @@ bool GameData::RemapNameField( const char *pszInValue, char *pszOutValue, TNameF
 			case NAME_FIXUP_POSTFIX:
 				sprintf( pszOutValue, "%s-%s", pszInValue, m_InstancePrefix );
 				break;
+			default:
+				AssertUnreachable();
 		}
 	}
 
-	return ( strcmpi( pszInValue, pszOutValue ) != 0 );
+	return strcmpi( pszInValue, pszOutValue ) != 0;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Gathers any FGD-defined material directory exclusions
-// Input  : 
-// Output : 
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-bool GameData::LoadFGDMaterialExclusions( TokenReader &tr )
-{
-	if ( !GDSkipToken( tr, OPERATOR, "[" ) )
-	{
+bool GameData::LoadFGDMaterialExclusions( TokenReader& tr ) {
+	if ( not GDSkipToken( tr, OPERATOR, "[" ) ) {
 		return false;
 	}
-	while ( 1 )
-	{
+	while ( true ) {
 		char szToken[128];
-		bool bMatchFound = false;
 
-		if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR )
-		{
+		if ( tr.PeekTokenType( szToken, std::size( szToken ) ) == OPERATOR ) {
 			break;
 		}
-		else if ( GDGetToken( tr, szToken, sizeof( szToken ), STRING ) )
-		{		
+		if ( GDGetToken( tr, szToken, std::size( szToken ), STRING ) ) {
+			bool matchFound = false;
 			// Make sure we haven't loaded this from another FGD
-			for ( int i = 0; i < m_FGDMaterialExclusions.Count(); i++ )
-			{
-				if ( !stricmp( szToken, m_FGDMaterialExclusions[i].szDirectory ) )
-				{			
-					bMatchFound = true;
+			for ( int i = 0; i < m_FGDMaterialExclusions.Count(); i += 1 ) {
+				if ( not stricmp( szToken, m_FGDMaterialExclusions[i].szDirectory ) ) {
+					matchFound = true;
 					break;
 				}
 			}
 
 			// Parse the string
-			if ( bMatchFound == false )
-			{
-				int index = m_FGDMaterialExclusions.AddToTail();
-				Q_strncpy( m_FGDMaterialExclusions[index].szDirectory, szToken, sizeof( m_FGDMaterialExclusions[index].szDirectory ) );
+			if ( matchFound == false ) {
+				const int index = m_FGDMaterialExclusions.AddToTail();
+				Q_strncpy( m_FGDMaterialExclusions[index].szDirectory, szToken, static_cast<int>( std::size( m_FGDMaterialExclusions[index].szDirectory ) ) );
 				m_FGDMaterialExclusions[index].bUserGenerated = false;
 			}
 		}
@@ -778,9 +653,8 @@ bool GameData::LoadFGDMaterialExclusions( TokenReader &tr )
 	//
 	// Closing square brace.
 	//
-	if ( !GDSkipToken( tr, OPERATOR, "]" ) )
-	{
-		return( false );
+	if ( not GDSkipToken( tr, OPERATOR, "]" ) ) {
+		return false;
 	}
 
 	return true;
@@ -788,99 +662,79 @@ bool GameData::LoadFGDMaterialExclusions( TokenReader &tr )
 
 //-----------------------------------------------------------------------------
 // Purpose: Gathers any FGD-defined Auto VisGroups
-// Input  : 
-// Output : 
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-bool GameData::LoadFGDAutoVisGroups( TokenReader &tr )
-{
-	int gindex = 0; // Index of AutoVisGroups
-	int cindex = 0;	// Index of Classes
+bool GameData::LoadFGDAutoVisGroups( TokenReader& tr ) {
+	int gindex = 0;  // Index of AutoVisGroups
 
 	char szToken[128];
-	
+
 	// Handle the Parent -- World Geometry, Entities, World Detail
-	if ( GDSkipToken( tr, OPERATOR, "=" ) )
-	{
+	if ( GDSkipToken( tr, OPERATOR, "=" ) ) {
 		// We expect a name
-		if ( !GDGetToken( tr, szToken, sizeof( szToken ), STRING ) )
-		{
-			return( false );
+		if ( not GDGetToken( tr, szToken, std::size( szToken ), STRING ) ) {
+			return false;
 		}
-		
+
 		gindex = m_FGDAutoVisGroups.AddToTail();
-		Q_strncpy( m_FGDAutoVisGroups[gindex].szParent, szToken, sizeof( m_FGDAutoVisGroups[gindex].szParent ) );
+		Q_strncpy( m_FGDAutoVisGroups[gindex].szParent, szToken, static_cast<int>( std::size( m_FGDAutoVisGroups[gindex].szParent ) ) );
 
 		// We expect a Class
-		if ( !GDSkipToken( tr, OPERATOR, "[" ) )
-		{
-			return( false );
+		if ( not GDSkipToken( tr, OPERATOR, "[" ) ) {
+			return false;
 		}
 	}
 
 	// Handle the Class(es) -- Brush Entities, Occluders, Lights
-	while ( 1 )
-	{
-		if ( GDGetToken( tr, szToken, sizeof( szToken ), STRING ) )
-		{
-			cindex = m_FGDAutoVisGroups[gindex].m_Classes.AddToTail();
-			Q_strncpy( m_FGDAutoVisGroups[gindex].m_Classes[cindex].szClass, szToken, sizeof( m_FGDAutoVisGroups[gindex].m_Classes[cindex].szClass ) );
+	while ( true ) {
+		if ( GDGetToken( tr, szToken, std::size( szToken ), STRING ) ) {
+			const int classIndex = m_FGDAutoVisGroups[gindex].m_Classes.AddToTail();  // Index of Classes
+			Q_strncpy( m_FGDAutoVisGroups[gindex].m_Classes[classIndex].szClass, szToken, static_cast<int>( std::size( m_FGDAutoVisGroups[gindex].m_Classes[classIndex].szClass ) ) );
 
-			if ( !GDSkipToken( tr, OPERATOR, "[" ) )
-			{
-				return( false );
+			if ( not GDSkipToken( tr, OPERATOR, "[" ) ) {
+				return false;
 			}
 
 			// Parse objects/entities -- func_detail, point_template, light_spot
-			while ( 1 )
-			{
-				if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == OPERATOR )
-				{
+			while ( true ) {
+				if ( tr.PeekTokenType( szToken, std::size( szToken ) ) == OPERATOR ) {
 					break;
 				}
 
-				if ( !GDGetToken( tr, szToken, sizeof( szToken ), STRING ) )
-				{
-					return( false );
+				if ( not GDGetToken( tr, szToken, std::size( szToken ), STRING ) ) {
+					return false;
 				}
 
-				m_FGDAutoVisGroups[gindex].m_Classes[cindex].szEntities.CopyAndAddToTail( szToken );
-
+				m_FGDAutoVisGroups[gindex].m_Classes[classIndex].szEntities.CopyAndAddToTail( szToken );
 			}
 
-			if ( !GDSkipToken( tr, OPERATOR, "]" ) )
-			{
-				return( false );
+			if ( not GDSkipToken( tr, OPERATOR, "]" ) ) {
+				return false;
 			}
 
 			// See if we have another Class coming up
-			if ( tr.PeekTokenType( szToken, sizeof( szToken ) ) == STRING )
-			{
+			if ( tr.PeekTokenType( szToken, std::size( szToken ) ) == STRING ) {
 				continue;
 			}
 
 			// If no more Classes, we now expect a terminating ']'
-			if ( !GDSkipToken( tr, OPERATOR, "]" ) )
-			{
-				return( false );
+			if ( not GDSkipToken( tr, OPERATOR, "]" ) ) {
+				return false;
 			}
 
 			// We're done
 			return true;
 		}
+
 		// We don't have another Class; look for a terminating brace
-		else
-		{
-			if ( !GDSkipToken( tr, OPERATOR, "]" ) )
-			{
-				return( false );
-			}
+		if ( not GDSkipToken( tr, OPERATOR, "]" ) ) {
+			return false;
 		}
 	}
 
 	// Safety net
+	// ReSharper disable once CppDFAUnreachableCode
 	GDError( tr, "Malformed AutoVisGroup -- Last processed:  %s", szToken );
-	return( false );
+	return false;
 }
-
-// memdbgon must be the last include file in a .cpp file!!!
-#include "tier0/memdbgoff.h"

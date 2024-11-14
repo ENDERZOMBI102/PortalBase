@@ -1,23 +1,18 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
-
-#ifndef GDVAR_H
-#define GDVAR_H
 #pragma once
-
+#include <tokenreader.h>  // dvs: for MAX_STRING. Fix.
 #include <utlvector.h>
-#include <tokenreader.h> // dvs: for MAX_STRING. Fix.
 
 
 class MDkeyvalue;
 
 
-enum GDIV_TYPE
-{
+enum GDIV_TYPE {
 	ivBadType = -1,
 	ivAngle,
 	ivTargetDest,
@@ -28,8 +23,8 @@ enum GDIV_TYPE
 	ivChoices,
 	ivFlags,
 	ivDecal,
-	ivColor255,		// components are 0-255
-	ivColor1,		// components are 0-1
+	ivColor255,  // components are 0-255
+	ivColor1,    // components are 0-1
 	ivStudioModel,
 	ivSprite,
 	ivSound,
@@ -39,19 +34,19 @@ enum GDIV_TYPE
 	ivFloat,
 	ivMaterial,
 	ivScene,
-	ivSide,			// One brush face ID.
-	ivSideList,		// One or more brush face IDs, space delimited.
-	ivOrigin,		// The origin of an entity, in the form "x y z".
-	ivVecLine,		// An origin that draws a line back to the parent entity.
-	ivAxis,			// The axis of rotation for a rotating entity, in the form "x0 y0 z0, x1 y1 z1".
+	ivSide,      // One brush face ID.
+	ivSideList,  // One or more brush face IDs, space delimited.
+	ivOrigin,    // The origin of an entity, in the form "x y z".
+	ivVecLine,   // An origin that draws a line back to the parent entity.
+	ivAxis,      // The axis of rotation for a rotating entity, in the form "x0 y0 z0, x1 y1 z1".
 	ivPointEntityClass,
 	ivNodeDest,
-	ivInstanceFile,			// used for hammer to know this field should display a browse button to find map files
-	ivAngleNegativePitch,	// used for instance rotating when just a pitch value is present
-	ivInstanceVariable,		// used for instance variables for easy hammer editing
-	ivInstanceParm,			// used for instance parameter declaration
+	ivInstanceFile,        // used for hammer to know this field should display a browse button to find map files
+	ivAngleNegativePitch,  // used for instance rotating when just a pitch value is present
+	ivInstanceVariable,    // used for instance variables for easy hammer editing
+	ivInstanceParm,        // used for instance parameter declaration
 
-	ivMax					// count of types
+	ivMax  // count of types
 };
 
 
@@ -59,109 +54,106 @@ enum GDIV_TYPE
 // Defines an element in a choices/flags list. Choices values are strings;
 // flags values are integers, hence the iValue and szValue members.
 //-----------------------------------------------------------------------------
-typedef struct
-{
-	unsigned long iValue;		// Bitflag value for ivFlags
-	char szValue[MAX_STRING];	// String value for ivChoices
-	char szCaption[MAX_STRING];	// Name of this choice
-	BOOL bDefault;				// Flag set by default?
-} GDIVITEM;
+struct GDIVITEM {
+	uint32 iValue;               // Bitflag value for ivFlags
+	char szValue[MAX_STRING];    // String value for ivChoices
+	char szCaption[MAX_STRING];  // Name of this choice
+	BOOL bDefault;               // Flag set by default?
+};
 
 
-class GDinputvariable
-{
-	public:
+class GDinputvariable {
+public:
+	GDinputvariable();
+	GDinputvariable( const char* szType, const char* szName );
+	~GDinputvariable();
 
-		GDinputvariable();
-		GDinputvariable( const char *szType, const char *szName );
-		~GDinputvariable();
+	BOOL InitFromTokens( TokenReader& tr );
 
-		BOOL InitFromTokens(TokenReader& tr);
-		
-		// functions:
-		inline const char *GetName() { return m_szName; }
-		inline const char *GetLongName(void) { return m_szLongName; }
-		inline const char *GetDescription(void);
+	// functions:
+	[[nodiscard]]
+	inline const char* GetName() const { return m_szName; }
+	[[nodiscard]]
+	inline const char* GetLongName() const { return m_szLongName; }
+	inline const char* GetDescription() const;
 
-		inline int GetFlagCount() { return m_Items.Count(); }
-		inline int GetFlagMask(int nFlag);
-		inline const char *GetFlagCaption(int nFlag);
-		
-		inline int GetChoiceCount() { return m_Items.Count(); }
-		inline const char *GetChoiceCaption(int nChoice);
+	[[nodiscard]]
+	inline int GetFlagCount() const { return m_Items.Count(); }
+	inline int GetFlagMask( int nFlag );
+	inline const char* GetFlagCaption( int nFlag );
 
-		inline GDIV_TYPE GetType() { return m_eType; }
-		const char *GetTypeText(void);
-		
-		inline void GetDefault(int *pnStore)
-		{ 
-			pnStore[0] = m_nDefault; 
-		}
+	[[nodiscard]]
+	inline int GetChoiceCount() const { return m_Items.Count(); }
+	inline const char* GetChoiceCaption( int nChoice );
 
-		inline void GetDefault(char *pszStore)
-		{ 
-			strcpy(pszStore, m_szDefault); 
-		}
-		
-		GDIV_TYPE GetTypeFromToken(const char *pszToken);
-		trtoken_t GetStoreAsFromType(GDIV_TYPE eType);
+	[[nodiscard]]
+	inline GDIV_TYPE GetType() const { return m_eType; }
+	const char* GetTypeText() const;
 
-		const char *ItemStringForValue(const char *szValue);
-		const char *ItemValueForString(const char *szString);
+	inline void GetDefault( int* pnStore ) const {
+		pnStore[0] = m_nDefault;
+	}
 
-		BOOL IsFlagSet(unsigned int);
-		void SetFlag(unsigned int, BOOL bSet);
+	inline void GetDefault( char* pszStore ) const {
+		strcpy( pszStore, m_szDefault );
+	}
 
-		void ResetDefaults();
+	GDIV_TYPE GetTypeFromToken( const char* pszToken );
+	trtoken_t GetStoreAsFromType( GDIV_TYPE eType );
 
-		void ToKeyValue(MDkeyvalue* pkv);
-		void FromKeyValue(MDkeyvalue* pkv);
+	const char* ItemStringForValue( const char* szValue );
+	const char* ItemValueForString( const char* szString );
 
-		inline bool IsReportable(void);
-		inline bool IsReadOnly(void);
+	BOOL IsFlagSet( unsigned int ) const;
+	void SetFlag( unsigned int, BOOL bSet );
 
-		GDinputvariable &operator =(GDinputvariable &Other);
-		void Merge(GDinputvariable &Other);
+	void ResetDefaults();
 
-		static const char *GetVarTypeName( GDIV_TYPE eType );
+	void ToKeyValue( MDkeyvalue* pkv );
+	void FromKeyValue( MDkeyvalue* pkv );
 
-	private:
+	inline bool IsReportable() const;
+	inline bool IsReadOnly() const;
 
-		// for choices/flags:
-		CUtlVector<GDIVITEM> m_Items;
+	GDinputvariable& operator=( const GDinputvariable& pOther );
+	void Merge( GDinputvariable& Other );
 
-		const static char *m_pszEmpty;
+	static const char* GetVarTypeName( GDIV_TYPE eType );
 
-		char m_szName[MAX_IDENT];
-		char m_szLongName[MAX_STRING];
-		char *m_pszDescription;
+private:
+	// for choices/flags:
+	CUtlVector<GDIVITEM> m_Items;
 
-		GDIV_TYPE m_eType;
+	const static char* m_pszEmpty;
 
-		int m_nDefault;
-		char m_szDefault[MAX_STRING];
+	char m_szName[MAX_IDENT];
+	char m_szLongName[MAX_STRING];
+	char* m_pszDescription;
 
-		int m_nValue;
-		char m_szValue[MAX_STRING];
+	GDIV_TYPE m_eType;
 
-		bool m_bReportable;
-		bool m_bReadOnly;
+	int m_nDefault;
+	char m_szDefault[MAX_STRING];
 
-		friend class GDclass;
+	int m_nValue;
+	char m_szValue[MAX_STRING];
+
+	bool m_bReportable;
+	bool m_bReadOnly;
+
+	friend class GDclass;
 };
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *GDinputvariable::GetDescription(void)
-{
-	if (m_pszDescription != NULL)
-	{	
-		return(m_pszDescription);
+const char* GDinputvariable::GetDescription() const {
+	if ( m_pszDescription != nullptr ) {
+		return ( m_pszDescription );
 	}
 
-	return(m_pszEmpty);
+	return ( m_pszEmpty );
 }
 
 
@@ -169,9 +161,8 @@ const char *GDinputvariable::GetDescription(void)
 // Purpose: Returns whether or not this variable is read only. Read only variables
 //			cannot be edited in the Entity Properties dialog.
 //-----------------------------------------------------------------------------
-bool GDinputvariable::IsReadOnly(void)
-{
-	return(m_bReadOnly);
+bool GDinputvariable::IsReadOnly() const {
+	return m_bReadOnly;
 }
 
 
@@ -179,9 +170,8 @@ bool GDinputvariable::IsReadOnly(void)
 // Purpose: Returns whether or not this variable should be displayed in the Entity
 //			Report dialog.
 //-----------------------------------------------------------------------------
-bool GDinputvariable::IsReportable(void)
-{
-	return(m_bReportable);
+bool GDinputvariable::IsReportable() const {
+	return m_bReportable;
 }
 
 
@@ -189,31 +179,25 @@ bool GDinputvariable::IsReportable(void)
 // Returns the flag mask (eg 4096) for the flag at the given index. The
 // array is packed, so it isn't just 1 >> nFlag.
 //-----------------------------------------------------------------------------
-int GDinputvariable::GetFlagMask(int nFlag)
-{
-	Assert(m_eType == ivFlags);
-	return m_Items.Element(nFlag).iValue;
+int GDinputvariable::GetFlagMask( int nFlag ) {
+	Assert( m_eType == ivFlags );
+	return static_cast<int32>( m_Items.Element( nFlag ).iValue );
 }
 
 
 //-----------------------------------------------------------------------------
 // Returns the caption text (eg "Only break on trigger") for the flag at the given index.
 //-----------------------------------------------------------------------------
-const char *GDinputvariable::GetFlagCaption(int nFlag)
-{
-	Assert(m_eType == ivFlags);
-	return m_Items.Element(nFlag).szCaption;
+const char* GDinputvariable::GetFlagCaption( int nFlag ) {
+	Assert( m_eType == ivFlags );
+	return m_Items.Element( nFlag ).szCaption;
 }
 
 
 //-----------------------------------------------------------------------------
 // Returns the caption text (eg "Yes") for the choice at the given index.
 //-----------------------------------------------------------------------------
-const char *GDinputvariable::GetChoiceCaption(int nChoice)
-{
-	Assert(m_eType == ivChoices);
-	return m_Items.Element(nChoice).szCaption;
+const char* GDinputvariable::GetChoiceCaption( int nChoice ) {
+	Assert( m_eType == ivChoices );
+	return m_Items.Element( nChoice ).szCaption;
 }
-
-
-#endif // GDVAR_H
