@@ -1,15 +1,12 @@
 # server_sdk.cmake
+include( "${CMAKE_CURRENT_LIST_DIR}/server_base.cmake" )
 
-include("${CMAKE_CURRENT_LIST_DIR}/server_base.cmake")
-
-if (${IS_SOURCESDK})
-	include("${CMAKE_CURRENT_LIST_DIR}/nav_mesh.cmake")
+if ( ${IS_SOURCESDK} )
+	include( "${CMAKE_CURRENT_LIST_DIR}/nav_mesh.cmake" )
 endif()
 
-set(SERVER_SDK_DIR ${CMAKE_CURRENT_LIST_DIR})
-set(
-	SERVER_SDK_SOURCE_FILES
-
+set( SERVER_SDK_DIR ${CMAKE_CURRENT_LIST_DIR} )
+set( SERVER_SDK_SOURCE_FILES
 	"${SERVER_SDK_DIR}/ai_relationship.cpp"
 	"${SERVER_SDK_DIR}/basegrenade_concussion.cpp"
 	"${SERVER_SDK_DIR}/basegrenade_contact.cpp"
@@ -117,32 +114,31 @@ set(
 	"${SRCDIR}/game/shared/sdk/weapon_shotgun.cpp"
 )
 
-set(
-	SERVER_SDK_EXCLUDE_SOURCES
+set( SERVER_SDK_EXCLUDE_SOURCES
 )
 
-add_library(server_sdk MODULE ${SERVER_SDK_SOURCE_FILES})
+add_library( server_sdk MODULE ${SERVER_SDK_SOURCE_FILES} )
 
-set_target_properties(
-	server_sdk PROPERTIES
-	OUTPUT_NAME "server"
-	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/mod_sdk/bin"
+set_target_properties( server_sdk
+	PROPERTIES
+		OUTPUT_NAME "server"
+		PREFIX ""
+		LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/mod_sdk/bin"
 )
 
-target_use_server_base(server_sdk SERVER_SDK_EXCLUDE_SOURCES)
+target_use_server_base( server_sdk SERVER_SDK_EXCLUDE_SOURCES )
 
-target_include_directories(
-	server_sdk PRIVATE
-	"${SERVER_SDK_DIR}/sdk"
-	"${SRCDIR}/game/shared/sdk"
+target_include_directories( server_sdk
+	PRIVATE
+		"${SERVER_SDK_DIR}/sdk"
+		"${SRCDIR}/game/shared/sdk"
 )
 
-target_compile_definitions(
-	server_sdk PRIVATE
-	SDKDLL
+target_compile_definitions( server_sdk
+	PRIVATE
+		SDKDLL
 )
 
-if (${IS_SOURCESDK})
-	target_use_nav_mesh(server_sdk)
+if ( ${IS_SOURCESDK} )
+	target_use_nav_mesh( server_sdk )
 endif()

@@ -1,15 +1,12 @@
 # server_hl2mp.cmake
+include( "${CMAKE_CURRENT_LIST_DIR}/server_base.cmake" )
 
-include("${CMAKE_CURRENT_LIST_DIR}/server_base.cmake")
-
-if (${IS_SOURCESDK})
-	include("${CMAKE_CURRENT_LIST_DIR}/nav_mesh.cmake")
+if ( ${IS_SOURCESDK} )
+	include( "${CMAKE_CURRENT_LIST_DIR}/nav_mesh.cmake" )
 endif()
 
-set(SERVER_HL2MP_DIR ${CMAKE_CURRENT_LIST_DIR})
-set(
-	SERVER_HL2MP_SOURCE_FILES
-
+set( SERVER_HL2MP_DIR ${CMAKE_CURRENT_LIST_DIR} )
+set( SERVER_HL2MP_SOURCE_FILES
 	"${SERVER_HL2MP_DIR}/ai_relationship.cpp"
 	"${SERVER_HL2MP_DIR}/basegrenade_concussion.cpp"
 	"${SERVER_HL2MP_DIR}/basegrenade_contact.cpp"
@@ -272,35 +269,34 @@ set(
 	"${SRCDIR}/game/shared/hl2mp/weapon_stunstick.cpp"
 )
 
-set(
-	SERVER_HL2MP_EXCLUDE_SOURCES
+set( SERVER_HL2MP_EXCLUDE_SOURCES
 )
 
-add_library(server_hl2mp MODULE ${SERVER_HL2MP_SOURCE_FILES})
+add_library( server_hl2mp MODULE ${SERVER_HL2MP_SOURCE_FILES} )
 
-set_target_properties(
-	server_hl2mp PROPERTIES
-	OUTPUT_NAME "server"
-	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/mod_hl2mp/bin"
+set_target_properties( server_hl2mp
+	PROPERTIES
+		OUTPUT_NAME "server"
+		PREFIX ""
+		LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/mod_hl2mp/bin"
 )
 
-target_use_server_base(server_hl2mp SERVER_HL2MP_EXCLUDE_SOURCES)
+target_use_server_base( server_hl2mp SERVER_HL2MP_EXCLUDE_SOURCES )
 
-target_include_directories(
-	server_hl2mp PRIVATE
-	"${SRCDIR}/game/shared/hl2"
-	"${SERVER_HL2MP_DIR}/hl2"
-	"${SERVER_HL2MP_DIR}/hl2mp"
-	"${SRCDIR}/game/shared/hl2mp"
+target_include_directories( server_hl2mp
+	PRIVATE
+		"${SRCDIR}/game/shared/hl2"
+		"${SERVER_HL2MP_DIR}/hl2"
+		"${SERVER_HL2MP_DIR}/hl2mp"
+		"${SRCDIR}/game/shared/hl2mp"
 )
 
-target_compile_definitions(
-	server_hl2mp PRIVATE
-	HL2MP
-	HL2_DLL
+target_compile_definitions( server_hl2mp
+	PRIVATE
+		HL2MP
+		HL2_DLL
 )
 
-if (${IS_SOURCESDK})
-	target_use_nav_mesh(server_hl2mp)
+if ( ${IS_SOURCESDK} )
+	target_use_nav_mesh( server_hl2mp )
 endif()

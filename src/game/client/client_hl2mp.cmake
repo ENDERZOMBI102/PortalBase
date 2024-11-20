@@ -1,5 +1,4 @@
 # client_hl2mp.cmake
-
 include( "${CMAKE_CURRENT_LIST_DIR}/client_base.cmake" )
 
 set( CLIENT_HL2MP_DIR ${CMAKE_CURRENT_LIST_DIR} )
