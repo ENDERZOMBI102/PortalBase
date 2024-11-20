@@ -141,7 +141,7 @@ public:
 	// is already used, it'll return null.
 	virtual edict_t* CreateEdict( int iForceEdictIndex = -1 ) = 0;
 	// Remove the specified edict and place back into the free edict list
-	virtual void RemoveEdict( edict_t * e ) = 0;
+	virtual void RemoveEdict( edict_t* e ) = 0;
 
 	// Memory allocation for entity class data
 	virtual void* PvAllocEntPrivateData( long cb ) = 0;
@@ -233,7 +233,7 @@ public:
 
 	// Reset the pvs, pvssize is the size in bytes of the buffer pointed to by pvs.
 	// This should be called right before any calls to AddOriginToPVS
-	virtual void ResetPVS( byte * pvs, int pvssize ) = 0;
+	virtual void ResetPVS( byte* pvs, int pvssize ) = 0;
 	// Merge the pvs bits into the current accumulated pvs based on the specified origin ( not that each pvs origin has an 8 world unit fudge factor )
 	virtual void AddOriginToPVS( const Vector& origin ) = 0;
 
