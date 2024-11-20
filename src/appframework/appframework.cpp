@@ -26,7 +26,7 @@ int AppMain( void* hInstance, void* hPrevInstance, const char* lpCmdLine, int nC
 	s_AppInstance = hInstance;
 	return pAppSystemGroup->Run();
 }
-int AppMain( int argc, char** argv, CAppSystemGroup* pAppSystemGroup ) {
+int AppMain( const int argc, char** argv, CAppSystemGroup* pAppSystemGroup ) {
 	CommandLine()->CreateCmdLine( argc, argv );
 	return pAppSystemGroup->Run();
 }
@@ -36,7 +36,7 @@ int AppStartup( void* hInstance, void* hPrevInstance, const char* lpCmdLine, int
 	s_AppInstance = hInstance;
 	return pAppSystemGroup->Startup();
 }
-int AppStartup( int argc, char** argv, CAppSystemGroup* pAppSystemGroup ) {
+int AppStartup( const int argc, char** argv, CAppSystemGroup* pAppSystemGroup ) {
 	CommandLine()->CreateCmdLine( argc, argv );
 	return pAppSystemGroup->Startup();
 }
@@ -47,19 +47,19 @@ void AppShutdown( CAppSystemGroup* pAppSystemGroup ) {
 
 // --- CSteamApplication ---
 CSteamApplication::CSteamApplication( CSteamAppSystemGroup* pAppSystemGroup )
-	: m_pChildAppSystemGroup{ pAppSystemGroup }, CAppSystemGroup() { }
+	: CAppSystemGroup(), m_pChildAppSystemGroup{ pAppSystemGroup } { }
 
 int CSteamApplication::Startup() {
-	return this->m_pChildAppSystemGroup->Startup();
+	return m_pChildAppSystemGroup->Startup();
 }
 void CSteamApplication::Shutdown() {
-	this->m_pChildAppSystemGroup->Shutdown();
+	m_pChildAppSystemGroup->Shutdown();
 }
 
 // CSteamApplication - IAppSystem
 bool CSteamApplication::Create() {
 	// load ICVar/cvar factory
-	if (! AddSystem( LoadModule( VStdLib_GetICVarFactory() ), CVAR_INTERFACE_VERSION ) ) {
+	if ( not AddSystem( LoadModule( VStdLib_GetICVarFactory() ), CVAR_INTERFACE_VERSION ) ) {
 		return false;
 	}
 
@@ -68,19 +68,20 @@ bool CSteamApplication::Create() {
 	FileSystem_SetErrorMode( FSErrorMode_t::FS_ERRORMODE_AUTO );
 	const auto res{ FileSystem_GetFileSystemDLLName( fsDllName, 1024, m_bSteam ) };
 	if ( res != FSReturnCode_t::FS_OK ) {
-		const char* error{ "N/D" };
+		const char* error;
 		switch ( res ) {
 			case FS_MISSING_GAMEINFO_FILE: error = "MISSING_GAMEINFO_FILE"; break;
 			case FS_INVALID_GAMEINFO_FILE: error = "INVALID_GAMEINFO_FILE"; break;
 			case FS_INVALID_PARAMETERS: error = "INVALID_PARAMETERS"; break;
 			case FS_UNABLE_TO_INIT: error = "UNABLE_TO_INIT"; break;
 			case FS_MISSING_STEAM_DLL: error = "MISSING_STEAM_DLL"; break;
+			default: error = "N/A"; break;
 		}
 		Warning( "Failed to find filesystem module. (%s)\n", error );
 		return false;
 	}
 	m_pFileSystem = dynamic_cast<IFileSystem*>( AddSystem( LoadModule( fsDllName ), FILESYSTEM_INTERFACE_VERSION ) );
-	if (! m_pFileSystem ) {
+	if ( not m_pFileSystem ) {
 		return false;
 	}
 

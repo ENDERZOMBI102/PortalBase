@@ -20,11 +20,10 @@
 // The application object for apps that use tier2
 //-----------------------------------------------------------------------------
 class CTier2SteamApp : public CSteamAppSystemGroup {
-	typedef CSteamAppSystemGroup BaseClass;
-
+	using BaseClass = CSteamAppSystemGroup;
 public:
 	// Methods of IApplication
-	virtual bool PreInit() {
+	bool PreInit() override {
 		CreateInterfaceFn factory = GetFactory();
 		ConnectTier1Libraries( &factory, 1 );
 		ConVar_Register( 0 );
@@ -32,7 +31,7 @@ public:
 		return true;
 	}
 
-	virtual void PostShutdown() {
+	void PostShutdown() override {
 		DisconnectTier2Libraries();
 		ConVar_Unregister();
 		DisconnectTier1Libraries();
@@ -44,25 +43,24 @@ public:
 // The application object for apps that use tier2 and datamodel
 //-----------------------------------------------------------------------------
 class CTier2DmSteamApp : public CTier2SteamApp {
-	typedef CTier2SteamApp BaseClass;
-
+	using BaseClass = CTier2SteamApp;
 public:
 	// Methods of IApplication
-	virtual bool PreInit() {
-		if ( !BaseClass::PreInit() ) {
+	bool PreInit() override {
+		if ( not BaseClass::PreInit() ) {
 			return false;
 		}
 
-		CreateInterfaceFn factory = GetFactory();
-		if ( !ConnectDataModel( factory ) ) {
+		const CreateInterfaceFn factory = GetFactory();
+		if ( not ConnectDataModel( factory ) ) {
 			return false;
 		}
 
-		InitReturnVal_t nRetVal = InitDataModel();
-		return ( nRetVal == INIT_OK );
+		const InitReturnVal_t nRetVal = InitDataModel();
+		return nRetVal == INIT_OK;
 	}
 
-	virtual void PostShutdown() {
+	void PostShutdown() override {
 		ShutdownDataModel();
 		DisconnectDataModel();
 		BaseClass::PostShutdown();

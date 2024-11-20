@@ -20,20 +20,20 @@
 // The application object for apps that use tier3
 //-----------------------------------------------------------------------------
 class CTier3SteamApp : public CTier2SteamApp {
-	typedef CTier2SteamApp BaseClass;
-
+	using BaseClass = CTier2SteamApp;
 public:
 	// Methods of IApplication
-	virtual bool PreInit() {
-		if ( !BaseClass::PreInit() )
+	bool PreInit() override {
+		if ( not BaseClass::PreInit() ) {
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		ConnectTier3Libraries( &factory, 1 );
 		return true;
 	}
 
-	virtual void PostShutdown() {
+	void PostShutdown() override {
 		DisconnectTier3Libraries();
 		BaseClass::PostShutdown();
 	}
@@ -44,20 +44,20 @@ public:
 // The application object for apps that use tier3
 //-----------------------------------------------------------------------------
 class CTier3DmSteamApp : public CTier2DmSteamApp {
-	typedef CTier2DmSteamApp BaseClass;
-
+	using BaseClass = CTier2DmSteamApp;
 public:
 	// Methods of IApplication
-	virtual bool PreInit() {
-		if ( !BaseClass::PreInit() )
+	bool PreInit() override {
+		if ( not BaseClass::PreInit() ) {
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		ConnectTier3Libraries( &factory, 1 );
 		return true;
 	}
 
-	virtual void PostShutdown() {
+	void PostShutdown() override {
 		DisconnectTier3Libraries();
 		BaseClass::PostShutdown();
 	}
@@ -68,13 +68,13 @@ public:
 // The application object for apps that use vgui
 //-----------------------------------------------------------------------------
 class CVguiSteamApp : public CTier3SteamApp {
-	typedef CTier3SteamApp BaseClass;
-
+	using BaseClass = CTier3SteamApp;
 public:
 	// Methods of IApplication
-	virtual bool PreInit() {
-		if ( !BaseClass::PreInit() )
+	bool PreInit() override {
+		if ( not BaseClass::PreInit() ) {
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		return vgui::VGui_InitInterfacesList( "CVguiSteamApp", &factory, 1 );
@@ -86,13 +86,13 @@ public:
 // The application object for apps that use vgui
 //-----------------------------------------------------------------------------
 class CVguiDmSteamApp : public CTier3DmSteamApp {
-	typedef CTier3DmSteamApp BaseClass;
-
+	using BaseClass = CTier3DmSteamApp;
 public:
 	// Methods of IApplication
-	virtual bool PreInit() {
-		if ( !BaseClass::PreInit() )
+	bool PreInit() override {
+		if ( not BaseClass::PreInit() ) {
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		return vgui::VGui_InitInterfacesList( "CVguiSteamApp", &factory, 1 );

@@ -19,22 +19,23 @@ void CKeyValuesSystem::FreeKeyValuesMemory( void* pMem ) {
 }
 
 HKeySymbol CKeyValuesSystem::GetSymbolForString( const char* name, bool bCreate ) {
-	auto idx{ this->m_SymbolTable.Find( name ) };
+	auto idx{ m_SymbolTable.Find( name ) };
 
-	if ( bCreate && !idx.IsValid() )
-		idx = this->m_SymbolTable.AddString( name );
+	if ( bCreate and !idx.IsValid() ) {
+		idx = m_SymbolTable.AddString( name );
+	}
 
 	return idx;
 }
 const char* CKeyValuesSystem::GetStringForSymbol( HKeySymbol symbol ) {
-	return this->m_SymbolTable.String( symbol );
+	return m_SymbolTable.String( symbol );
 }
 
 void CKeyValuesSystem::AddKeyValuesToMemoryLeakList( void* pMem, HKeySymbol pName ) {
-	this->m_LeakList.insert({ pMem, pName });
+	m_LeakList.insert({ pMem, pName });
 }
 void CKeyValuesSystem::RemoveKeyValuesFromMemoryLeakList( void* pMem ) {
-	this->m_LeakList.erase( pMem );
+	m_LeakList.erase( pMem );
 }
 
 void CKeyValuesSystem::AddFileKeyValuesToCache( const KeyValues* _kv, const char* resourceName, const char* pathID ) {
@@ -52,8 +53,9 @@ void CKeyValuesSystem::InvalidateCacheForFile( const char* resourceName, const c
 }
 
 CKeyValuesSystem::~CKeyValuesSystem() {
-	if (! this->m_LeakList.empty() )
-		Warning( "[CKeyValuesSystem] Some memory was leaked!!" );
+	if ( not m_LeakList.empty() ) {
+		Warning( "[AuroraSource|CKeyValuesSystem] Memory leak detected." );
+	}
 }
 
 static CKeyValuesSystem g_KeyValueSystem{};

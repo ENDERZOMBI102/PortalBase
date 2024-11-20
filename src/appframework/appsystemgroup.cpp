@@ -25,7 +25,7 @@ int CAppSystemGroup::Run() {
 	s_RootAppSystem = this;
 	int res{1};
 
-	if (! this->Create() ) {
+	if ( not this->Create() ) {
 		Error( "AppSystemGroup::Create() returned `false`, this is usually because modules are missing or corrupt, check log for possibly more info." );
 		return 1;
 	}
@@ -45,10 +45,10 @@ int CAppSystemGroup::Run() {
 }
 
 int CAppSystemGroup::Startup() {
-	if (! this->ConnectSystems() ) {
+	if ( not this->ConnectSystems() ) {
 		return 1;
 	}
-	if (! this->PreInit() ) {
+	if ( not this->PreInit() ) {
 		return 2;
 	}
 	if ( InitSystems() == InitReturnVal_t::INIT_FAILED ) {
@@ -64,7 +64,7 @@ void CAppSystemGroup::Shutdown() {
 }
 
 CAppSystemGroup::AppSystemGroupStage_t CAppSystemGroup::GetErrorStage() const {
-	return this->m_nErrorStage;
+	return m_nErrorStage;
 }
 
 // protected
@@ -76,66 +76,66 @@ AppModule_t CAppSystemGroup::LoadModule( const char* pDLLName ) {
 	}
 
 	CSysModule* sysModule{ Sys_LoadModule( pDLLName ) };
-	if (! sysModule ) {
+	if ( not sysModule ) {
 		Warning( "Failed to load module `%s`", pDLLName );
 		return CUtlVector<Module_t>::InvalidIndex();
 	}
 
-	CreateInterfaceFn factory{ Sys_GetFactory( sysModule ) };
-	if (! factory ) {
+	const CreateInterfaceFn factory{ Sys_GetFactory( sysModule ) };
+	if ( not factory ) {
 		Warning( "Failed to load module factory of `%s`", pDLLName );
 		return CUtlVector<Module_t>::InvalidIndex();
 	}
 
-	Module_t module{ .m_pModule = sysModule, .m_Factory = factory, .m_pModuleName = pDLLName };
-	return this->m_Modules.AddToTail( module );
+	const Module_t module{ .m_pModule = sysModule, .m_Factory = factory, .m_pModuleName = pDLLName };
+	return m_Modules.AddToTail( module );
 }
-AppModule_t CAppSystemGroup::LoadModule( CreateInterfaceFn factory ) {
-	for ( int i{ 0 }; i < this->m_Modules.Count(); i += 1 ) {
-		if ( this->m_Modules[i].m_Factory == factory ) {
+AppModule_t CAppSystemGroup::LoadModule( const CreateInterfaceFn factory ) {
+	for ( int i{ 0 }; i < m_Modules.Count(); i += 1 ) {
+		if ( m_Modules[i].m_Factory == factory ) {
 			return i;
 		}
 	}
 
-	Module_t module{ .m_pModule = nullptr, .m_Factory = factory, .m_pModuleName = nullptr };
-	return this->m_Modules.AddToTail( module );
+	const Module_t module{ .m_pModule = nullptr, .m_Factory = factory, .m_pModuleName = nullptr };
+	return m_Modules.AddToTail( module );
 }
 
-IAppSystem* CAppSystemGroup::AddSystem( AppModule_t pModule, const char* pInterfaceName ) {
-	auto index{ this->m_SystemDict.Find( pInterfaceName ) };
+IAppSystem* CAppSystemGroup::AddSystem( const AppModule_t pModule, const char* pInterfaceName ) {
+	auto index{ m_SystemDict.Find( pInterfaceName ) };
 	if ( index == CUtlDict<int, uint16>::InvalidIndex() ) {
-		index = this->m_Systems.AddToTail();
+		index = m_Systems.AddToTail();
 	} else {
 		Warning( "System `%s` has been added multiple times! This will overrides the last value!", pInterfaceName );
 	}
 
 	int retCode;
-	const auto mod{ this->m_Modules[ pModule ] };
-	auto system{ reinterpret_cast<IAppSystem*>( mod.m_Factory( pInterfaceName, &retCode ) ) };
+	const auto mod{ m_Modules[pModule] };
+	const auto system{ static_cast<IAppSystem*>( mod.m_Factory( pInterfaceName, &retCode ) ) };
 	if ( retCode != IFACE_OK ) {
 		Warning( "Failed to load system for interface `%s` from module `%s`.\n", pInterfaceName, mod.m_pModuleName ? mod.m_pModuleName : "N/A" );
 		return nullptr;
 	}
 
-	this->m_SystemDict.Insert( pInterfaceName, index );
+	m_SystemDict.Insert( pInterfaceName, index );
 	return system;
 }
 void CAppSystemGroup::AddSystem( IAppSystem* pAppSystem, const char* pInterfaceName ) {
-	auto index{ this->m_Systems.AddToTail( pAppSystem ) };
-	this->m_SystemDict.Insert( pInterfaceName, index );
+	const auto index{ m_Systems.AddToTail( pAppSystem ) };
+	m_SystemDict.Insert( pInterfaceName, index );
 }
 
 bool CAppSystemGroup::AddSystems( AppSystemInfo_t* pSystems ) {
 	for ( int i{0}; pSystems[i].m_pModuleName; i += 1 ) {
-		auto info{ pSystems[i] };
-		auto module{ LoadModule( info.m_pModuleName ) };
+		const auto info{ pSystems[i] };
+		const auto module{ LoadModule( info.m_pModuleName ) };
 		if ( module == CUtlVector<Module_t>::InvalidIndex() ) {
 			s_FailedSystemIndex = i;
 			m_nErrorStage = AppSystemGroupStage_t::CREATION;
 			return false;
 		}
 
-		if (! AddSystem( module,  info.m_pInterfaceName ) ) {
+		if ( not AddSystem( module,  info.m_pInterfaceName ) ) {
 			s_FailedSystemIndex = i;
 			m_nErrorStage = AppSystemGroupStage_t::CREATION;
 			return false;
@@ -188,7 +188,7 @@ bool CAppSystemGroup::ConnectSystems() {
 	const auto factory{ GetFactory() };
 
 	for ( int i{0}; i < m_Systems.Count(); i += 1 ) {
-		if (! m_Systems[i]->Connect( factory ) ) {
+		if ( not m_Systems[i]->Connect( factory ) ) {
 			s_FailedSystemIndex = i;
 			m_nErrorStage = AppSystemGroupStage_t::CONNECTION;
 			return false;
@@ -221,7 +221,7 @@ void CAppSystemGroup::ShutdownSystems() {
 }
 
 CAppSystemGroup* CAppSystemGroup::GetParent() {
-	return this->m_pParentAppSystem;
+	return m_pParentAppSystem;
 }
 
 CSysModule* CAppSystemGroup::LoadModuleDLL( const char* pDLLName ) {
@@ -235,7 +235,7 @@ void CAppSystemGroup::ReportStartupFailure( int nErrorStage, int nSysIndex ) { A
 // CSteamAppSystemGroup
 // ----------------------
 CSteamAppSystemGroup::CSteamAppSystemGroup( IFileSystem* pFileSystem, CAppSystemGroup* pParentAppSystem )
-	: m_pFileSystem{pFileSystem}, CAppSystemGroup( pParentAppSystem ) { }
+	: CAppSystemGroup( pParentAppSystem ), m_pFileSystem{ pFileSystem } { }
 
 void CSteamAppSystemGroup::Setup( IFileSystem* pFileSystem, CAppSystemGroup* pParentAppSystem ) {
 	if ( pFileSystem ) {
@@ -246,7 +246,7 @@ void CSteamAppSystemGroup::Setup( IFileSystem* pFileSystem, CAppSystemGroup* pPa
 	}
 }
 
-bool CSteamAppSystemGroup::SetupSearchPaths( const char* pStartingDir, bool bOnlyUseStartingDir, bool bIsTool ) {
+bool CSteamAppSystemGroup::SetupSearchPaths( const char* pStartingDir, const bool bOnlyUseStartingDir, const bool bIsTool ) {
 	// find the `gameinfo.txt`
 	CFSSteamSetupInfo steamInfo;
 	steamInfo.m_pDirectoryName = pStartingDir;
