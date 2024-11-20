@@ -46,10 +46,10 @@
 
 			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
 			// as the first "mod" search path (after any user customizations).
-			mod                              "|gameinfo_path|."
+			game+mod                              "|gameinfo_path|."
 		    // Redirect writes to the runtime folder, so we don't clog the mod one.
-			mod+mod_write+default_write_path "runtime"
-			gamebin                          "|gameinfo_path|bin"
+			game+mod+mod_write+default_write_path "runtime"
+			gamebin                               "|gameinfo_path|bin"
 
 			// We search VPK files before ordinary folders, because most files will be found in
 			// VPKs, and we can avoid making thousands of file system calls to attempt to open files
