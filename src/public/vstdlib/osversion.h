@@ -11,7 +11,6 @@
 // $NoKeywords: $
 //=============================================================================//
 #pragma once
-
 #include "vstdlib/vstdlib.h"
 
 // TODO: Add missing newer versions

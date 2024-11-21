@@ -7,6 +7,7 @@ set( VSTDLIB_SOURCE_FILES
 	"${VSTDLIB_DIR}/keyvaluessystem.cpp"
 	"${VSTDLIB_DIR}/pcgengine.cpp"
 	"${VSTDLIB_DIR}/jobthread.cpp"
+	"${VSTDLIB_DIR}/osversion.cpp"
 
 	# Header files
 	"${VSTDLIB_DIR}/cvarsystem.hpp"
