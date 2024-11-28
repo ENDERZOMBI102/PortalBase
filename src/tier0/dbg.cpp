@@ -59,7 +59,7 @@ SpewRetval_t DefaultSpewFunc( SpewType_t pSpewType, const tchar* pMsg ) {
 SpewRetval_t DefaultSpewFuncAbortOnAsserts( SpewType_t pSpewType, const tchar* pMsg ) {
 	auto res{ DefaultSpewFunc( pSpewType, pMsg ) };
 	if ( pSpewType == SpewType_t::SPEW_ASSERT ) {
-		return SpewRetval_t::SPEW_DEBUGGER;
+		return SpewRetval_t::SPEW_ABORT;
 	}
 
 	return res;

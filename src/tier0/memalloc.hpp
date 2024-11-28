@@ -1,7 +1,7 @@
 #pragma once
-
 #include "tier0/memalloc.h"
 #include "tier0/platform.h"
+
 
 #if IsWindows()
 	class CMemAlloc : public IMemAlloc {

@@ -197,11 +197,11 @@ inline float FloatNegate( vec_t f ) {
 
 
 // FIXME: why are these here?  Hardly anyone actually needs them.
-struct [[deprecated( "Why are you using this?" )]] color24 {
+struct /*[[deprecated( "Why are you using this?" )]]*/ color24 {
 	byte r, g, b;
 };
 
-struct [[deprecated( "Why are you using this?" )]] color32 {
+struct /*[[deprecated( "Why are you using this?" )]]*/ color32 {
 	bool operator!=( const color32 &other ) const;
 
 	byte r, g, b, a;

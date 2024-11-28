@@ -23,7 +23,7 @@ void MakeFullPath( const char* pIn, char* pOut, int outLen ) {
 }
 
 int main( const int argc, char* argv[] ) {
-	char dllName[ 512 ];
+	char dllName[512];
 
 	CommandLine()->CreateCmdLine( argc, argv );
 

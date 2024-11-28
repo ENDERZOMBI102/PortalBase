@@ -144,3 +144,12 @@ target_compile_definitions( tier1
 	PRIVATE
 		TIER1_STATIC_LIB
 )
+target_compile_options( tier1
+	PRIVATE
+		"-fPIE"
+)
+target_link_libraries( tier1
+	PRIVATE
+		tier0
+)
+

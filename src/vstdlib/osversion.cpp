@@ -2,12 +2,12 @@
 // Created by ENDERZOMBI102 on 21/11/2024.
 //
 #include "vstdlib/osversion.h"
-
 #include "dbg.h"
 #include "strtools.h"
-
 #include <cstdio>
 #include <fstream>
+// This must be the final include in a .cpp file!!!
+#include "memdbgon.h"
 
 
 auto GetNameFromOSType( const EOSType eOSType ) -> const char* {
@@ -62,7 +62,7 @@ auto GetNameFromOSType( const EOSType eOSType ) -> const char* {
 			return "Unknown";
 	}
 }
-const char* GetOSDetailString( char* pchOutBuf, const int cchOutBuf ) {
+auto GetOSDetailString( char* pchOutBuf, const int cchOutBuf ) -> const char* {
 	#if IsLinux()
 		// successfully tested on: Arch, openSUSE
 		std::fstream stream{ "/etc/os-release", std::ios_base::in };
@@ -79,11 +79,13 @@ const char* GetOSDetailString( char* pchOutBuf, const int cchOutBuf ) {
 				return pchOutBuf;
 			}
 		}
+		return nullptr;
 	#elif IsWindows()
 		AssertUnreachable();
+		return nullptr;
 	#endif
 }
-EOSType GetOSType() {
+auto GetOSType() -> EOSType {
 	if constexpr ( IsLinux() ) {
 		return EOSType::k_eLinuxUnknown;
 	}
@@ -95,10 +97,10 @@ EOSType GetOSType() {
 	}
 	return EOSType::k_eOSUnknown;
 }
-bool OSTypesAreCompatible( EOSType eOSTypeDetected, EOSType eOSTypeRequired ) {
+auto OSTypesAreCompatible( EOSType eOSTypeDetected, EOSType eOSTypeRequired ) -> bool {
 	AssertUnreachable();
 }
-const char* GetPlatformName( bool* pbIs64Bit ) {
+auto GetPlatformName( bool* pbIs64Bit ) -> const char* {
 	*pbIs64Bit = Is64BitOS();
 	AssertUnreachable();
 }

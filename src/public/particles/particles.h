@@ -1295,7 +1295,7 @@ private:
 class CM128InitialAttributeIterator : public CStridedConstPtr<fltx4> {
 public:
 	ALWAYS_INLINE CM128InitialAttributeIterator( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->GetInitialM128AttributePtr( nAttribute, &m_nStride );
+		m_Data = pParticles->GetInitialM128AttributePtr( nAttribute, &m_Stride );
 	}
 };
 
@@ -1303,14 +1303,14 @@ public:
 class CM128AttributeIterator : public CStridedConstPtr<fltx4> {
 public:
 	ALWAYS_INLINE CM128AttributeIterator( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->GetM128AttributePtr( nAttribute, &m_nStride );
+		m_Data = pParticles->GetM128AttributePtr( nAttribute, &m_Stride );
 	}
 };
 
 class C4IAttributeIterator : public CStridedConstPtr<FourInts> {
 public:
 	ALWAYS_INLINE C4IAttributeIterator( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->Get4IAttributePtr( nAttribute, &m_nStride );
+		m_Data = pParticles->Get4IAttributePtr( nAttribute, &m_Stride );
 	}
 };
 
@@ -1319,7 +1319,7 @@ public:
 	ALWAYS_INLINE CM128AttributeWriteIterator() {
 	}
 	ALWAYS_INLINE void Init( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->GetM128AttributePtrForWrite( nAttribute, &m_nStride );
+		m_Data = pParticles->GetM128AttributePtrForWrite( nAttribute, &m_Stride );
 	}
 	ALWAYS_INLINE CM128AttributeWriteIterator( int nAttribute, CParticleCollection* pParticles ) {
 		Init( nAttribute, pParticles );
@@ -1329,21 +1329,21 @@ public:
 class C4VAttributeIterator : public CStridedConstPtr<FourVectors> {
 public:
 	ALWAYS_INLINE C4VAttributeIterator( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->Get4VAttributePtr( nAttribute, &m_nStride );
+		m_Data = pParticles->Get4VAttributePtr( nAttribute, &m_Stride );
 	}
 };
 
 class C4VInitialAttributeIterator : public CStridedConstPtr<FourVectors> {
 public:
 	ALWAYS_INLINE C4VInitialAttributeIterator( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->GetInitial4VAttributePtr( nAttribute, &m_nStride );
+		m_Data = pParticles->GetInitial4VAttributePtr( nAttribute, &m_Stride );
 	}
 };
 
 class C4VAttributeWriteIterator : public CStridedPtr<FourVectors> {
 public:
 	ALWAYS_INLINE C4VAttributeWriteIterator( int nAttribute, CParticleCollection* pParticles ) {
-		m_pData = pParticles->Get4VAttributePtrForWrite( nAttribute, &m_nStride );
+		m_Data = pParticles->Get4VAttributePtrForWrite( nAttribute, &m_Stride );
 	}
 };
 

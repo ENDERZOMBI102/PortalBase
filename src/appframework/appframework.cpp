@@ -47,7 +47,7 @@ void AppShutdown( CAppSystemGroup* pAppSystemGroup ) {
 
 // --- CSteamApplication ---
 CSteamApplication::CSteamApplication( CSteamAppSystemGroup* pAppSystemGroup )
-	: CAppSystemGroup(), m_pChildAppSystemGroup{ pAppSystemGroup } { }
+	: m_pChildAppSystemGroup{ pAppSystemGroup } { }
 
 int CSteamApplication::Startup() {
 	return m_pChildAppSystemGroup->Startup();

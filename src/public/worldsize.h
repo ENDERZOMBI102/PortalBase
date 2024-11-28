@@ -33,4 +33,4 @@
 
 #define ASSERT_COORD( v ) Assert( ((v).x>=MIN_COORD_INTEGER*2) and ((v).x<=MAX_COORD_INTEGER*2) and \
 								  ((v).y>=MIN_COORD_INTEGER*2) and ((v).y<=MAX_COORD_INTEGER*2) and \
-								  ((v).z>=MIN_COORD_INTEGER*2) and ((v).z<=MAX_COORD_INTEGER*2) ); \
+								  ((v).z>=MIN_COORD_INTEGER*2) and ((v).z<=MAX_COORD_INTEGER*2) );

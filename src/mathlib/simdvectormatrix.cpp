@@ -12,13 +12,14 @@
 #include "mathlib/ssemath.h"
 #include "tier0/dbg.h"
 
+
 void CSIMDVectorMatrix::CreateFromRGBA_FloatImageData( int srcwidth, int srcheight, float const* srcdata ) {
 	Assert( srcwidth && srcheight && srcdata );
 	SetSize( srcwidth, srcheight );
 
 	FourVectors* p_write_ptr = m_pData;
-	int n_vectors_per_source_line = ( srcwidth >> 2 );
-	int ntrailing_pixels_per_source_line = ( srcwidth & 3 );
+	int n_vectors_per_source_line = srcwidth >> 2;
+	int ntrailing_pixels_per_source_line = srcwidth & 3;
 	for ( int y = 0; y < srcheight; y++ ) {
 		float const* data_in = srcdata;
 		auto* data_out = reinterpret_cast<float*>( p_write_ptr );
@@ -48,10 +49,10 @@ void CSIMDVectorMatrix::CreateFromRGBA_FloatImageData( int srcwidth, int srcheig
 	}
 }
 
-void CSIMDVectorMatrix::RaiseToPower( float power ) {
+void CSIMDVectorMatrix::RaiseToPower( const float power ) {
 	int nv = NVectors();
 	if ( nv ) {
-		int fixed_point_exp = (int) ( 4.0 * power );
+		const int fixed_point_exp = static_cast<int>( 4.0 * power );
 		FourVectors* src = m_pData;
 		do {
 			src->x = Pow_FixedPoint_Exponent_SIMD( src->x, fixed_point_exp );
@@ -69,9 +70,8 @@ CSIMDVectorMatrix& CSIMDVectorMatrix::operator+=( CSIMDVectorMatrix const& src )
 	if ( nv ) {
 		FourVectors* srcv = src.m_pData;
 		FourVectors* destv = m_pData;
-		do// !! speed !! inline more iters
-		{
-			*( destv++ ) += *( srcv++ );
+		do { // !! speed !! inline more iters
+			*destv++ += *srcv++;
 		} while ( --nv );
 	}
 	return *this;
@@ -83,8 +83,7 @@ CSIMDVectorMatrix& CSIMDVectorMatrix::operator*=( Vector const& src ) {
 		FourVectors scalevalue;
 		scalevalue.DuplicateVector( src );
 		FourVectors* destv = m_pData;
-		do// !! speed !! inline more iters
-		{
+		do { // !! speed !! inline more iters
 			destv->VProduct( scalevalue );
 			destv++;
 		} while ( --nv );

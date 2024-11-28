@@ -18,7 +18,9 @@
 
 
 #if IsPosix()
-	#define DX_TO_GL_ABSTRACTION
+	#if !defined( DX_TO_GL_ABSTRACTION )
+		#define DX_TO_GL_ABSTRACTION
+	#endif
 	#include <appframework/ilaunchermgr.h>
 
 	static CreateInterfaceFn g_fileSystemFactory;

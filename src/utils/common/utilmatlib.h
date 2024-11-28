@@ -7,6 +7,7 @@
 // $NoKeywords: $
 //=============================================================================//
 #pragma once
+#include "interface.h"
 
 #define MATERIAL_NOT_FOUND nullptr
 
