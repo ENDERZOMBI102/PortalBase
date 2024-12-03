@@ -109,7 +109,7 @@ void LoadHudTextures( CUtlDict< CHudTexture *, int >& list, const char *szFilena
 						iTexRight	= pTemp->GetInt( "width", 0 )	+ iTexLeft,
 						iTexBottom	= pTemp->GetInt( "height", 0 )	+ iTexTop;
 
-					for ( int i = 0; i < hudTextureFileRefs.Size(); i++ )
+					for ( int i = 0; i < hudTextureFileRefs.Count(); i++ )
 					{
 						const char *cszFilename = pTemp->GetString( hudTextureFileRefs[i].m_fileKeySymbol, NULL );
 						if ( cszFilename )
@@ -408,7 +408,7 @@ void CHud::Init( void )
 	gLCD.Init();
 
 	// Initialize all created elements
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for ( int i = 0; i < m_HudList.Count(); i++ )
 	{
 		m_HudList[i]->Init();
 	}
@@ -420,7 +420,7 @@ void CHud::Init( void )
 	{
 		if ( kv->LoadFromFile( filesystem, "scripts/HudLayout.res" ) )
 		{
-			int numelements = m_HudList.Size();
+			int numelements = m_HudList.Count();
 
 			for ( int i = 0; i < numelements; i++ )
 			{
@@ -501,7 +501,7 @@ void CHud::Shutdown( void )
 
 	// Deleting hudlist items can result in them being removed from the same hudlist (m_bNeedsRemove).
 	//	So go through and kill the last item until the array is empty.
-	while ( m_HudList.Size() > 0 )
+	while ( m_HudList.Count() > 0 )
 	{
 		delete m_HudList.Tail();
 	}
@@ -517,7 +517,7 @@ void CHud::Shutdown( void )
 void CHud::LevelInit( void )
 {
 	// Tell all the registered hud elements to LevelInit
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for ( int i = 0; i < m_HudList.Count(); i++ )
 	{
 		m_HudList[i]->LevelInit();
 	}
@@ -538,7 +538,7 @@ void CHud::LevelInit( void )
 void CHud::LevelShutdown( void )
 {
 	// Tell all the registered hud elements to LevelShutdown
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for ( int i = 0; i < m_HudList.Count(); i++ )
 	{
 		m_HudList[i]->LevelShutdown();
 	}
@@ -873,7 +873,7 @@ void CHud::OnRestore()
 //-----------------------------------------------------------------------------
 void CHud::VidInit( void )
 {
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for ( int i = 0; i < m_HudList.Count(); i++ )
 	{
 		m_HudList[i]->VidInit();
 	}
@@ -887,7 +887,7 @@ void CHud::VidInit( void )
 //-----------------------------------------------------------------------------
 CHudElement *CHud::FindElement( const char *pName )
 {
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for ( int i = 0; i < m_HudList.Count(); i++ )
 	{
 		if ( V_stricmp( m_HudList[i]->GetName(), pName ) == 0 )
 			return m_HudList[i];

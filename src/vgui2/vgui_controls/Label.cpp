@@ -135,7 +135,7 @@ void Label::GetContentSize(int &wide, int &tall)
 	wide += iWide;
 
 	// addin the image offsets as well
-	for (int i=0; i < _imageDar.Size(); i++)
+	for (int i=0; i < _imageDar.Count(); i++)
 		wide += _imageDar[i].offset;
 
 	tall = std::max((ty1 - ty0) + _textInset[1], iTall);
@@ -914,7 +914,7 @@ int Label::SetTextImageIndex(int newIndex)
 //-----------------------------------------------------------------------------
 void Label::EnsureImageCapacity(int maxIndex)
 {
-	while (_imageDar.Size() <= maxIndex)
+	while (_imageDar.Count() <= maxIndex)
 	{
 		AddImage(NULL, 0);
 	}

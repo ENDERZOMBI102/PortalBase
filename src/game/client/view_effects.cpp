@@ -492,7 +492,7 @@ void CViewEffects::FadeCalculate( void )
 {
 	// Cycle through all fades and remove any that have finished (work backwards)
 	int i;
-	int iSize = m_FadeList.Size();
+	int iSize = m_FadeList.Count();
 	for (i = iSize-1; i >= 0; i-- )
 	{
 		screenfade_t *pFade = m_FadeList[i];
@@ -524,7 +524,7 @@ void CViewEffects::FadeCalculate( void )
 	m_FadeColorRGBA[0] = m_FadeColorRGBA[1] = m_FadeColorRGBA[2] = m_FadeColorRGBA[3] = 0;
 
 	// Cycle through all fades in the list and calculate the overall color/alpha
-	for ( i = 0; i < m_FadeList.Size(); i++ )
+	for ( i = 0; i < m_FadeList.Count(); i++ )
 	{
 		screenfade_t *pFade = m_FadeList[i];
 
@@ -564,11 +564,11 @@ void CViewEffects::FadeCalculate( void )
 	}
 
 	// Divide colors
-	if ( m_FadeList.Size() )
+	if ( m_FadeList.Count() )
 	{
-		m_FadeColorRGBA[0] /= m_FadeList.Size();
-		m_FadeColorRGBA[1] /= m_FadeList.Size();
-		m_FadeColorRGBA[2] /= m_FadeList.Size();
+		m_FadeColorRGBA[0] /= m_FadeList.Count();
+		m_FadeColorRGBA[1] /= m_FadeList.Count();
+		m_FadeColorRGBA[2] /= m_FadeList.Count();
 	}
 }
 
@@ -577,7 +577,7 @@ void CViewEffects::FadeCalculate( void )
 //-----------------------------------------------------------------------------
 void CViewEffects::ClearPermanentFades( void )
 {
-	int iSize = m_FadeList.Size();
+	int iSize = m_FadeList.Count();
 	for (int i =  iSize-1; i >= 0; i-- )
 	{
 		screenfade_t *pFade = m_FadeList[i];
@@ -596,7 +596,7 @@ void CViewEffects::ClearPermanentFades( void )
 //-----------------------------------------------------------------------------
 void CViewEffects::ClearAllFades( void )
 {
-	int iSize = m_FadeList.Size();
+	int iSize = m_FadeList.Count();
 	for (int i =  iSize-1; i >= 0; i-- )
 	{
 		delete m_FadeList[i];

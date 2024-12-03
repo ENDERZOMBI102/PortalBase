@@ -273,7 +273,7 @@ void CPDumpPanel::Paint()
 		}
 	}
 
-	int c = m_DumpEntityInfo.Size();
+	int c = m_DumpEntityInfo.Count();
 	int fonttall = vgui::surface()->GetFontTall( m_FontSmall ) - 3;
 	int fonttallMedium = vgui::surface()->GetFontTall( m_FontMedium );
 	int fonttallBig = vgui::surface()->GetFontTall( m_FontBig );

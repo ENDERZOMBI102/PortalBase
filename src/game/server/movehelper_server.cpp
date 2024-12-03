@@ -190,7 +190,7 @@ bool CMoveHelperServer::AddToTouched( const trace_t &tr, const Vector& impactvel
 	}
 
 	// Check for duplicate entities
-	for ( int j = m_TouchList.Size(); --j >= 0; )
+	for ( int j = m_TouchList.Count(); --j >= 0; )
 	{
 		if ( m_TouchList[j].trace.m_pEnt == tr.m_pEnt )
 		{
@@ -225,7 +225,7 @@ void CMoveHelperServer::ProcessImpacts( void )
 	Vector vel = m_pHostPlayer->GetAbsVelocity();
 
 	// Touch other objects that were intersected during the movement.
-	for (int i = 0 ; i < m_TouchList.Size(); i++)
+	for (int i = 0 ; i < m_TouchList.Count(); i++)
 	{
 		CBaseHandle entindex = m_TouchList[i].trace.m_pEnt->GetRefEHandle();
 

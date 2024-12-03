@@ -279,7 +279,7 @@ void CSheetSimulator::ComputeForces()
 
 	float springConstant;
 	int i;
-	for ( i = 0; i < m_Springs.Size(); ++i )
+	for ( i = 0; i < m_Springs.Count(); ++i )
 	{
 		// Hook's law for a damped spring:
 		// got two particles, a and b with positions xa and xb and velocities va and vb

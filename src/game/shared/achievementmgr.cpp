@@ -274,7 +274,7 @@ bool CAchievementMgr::Init()
 	// There can be only one achievement manager instance; no one else should be registered
 	IAchievementMgr *pAchievementMgr = engine->GetAchievementMgr();
 	Assert( NULL == pAchievementMgr );
-#endif IsDebug()
+#endif
 
 	// register ourselves
 	engine->SetAchievementMgr( this );
@@ -1894,7 +1894,7 @@ CON_COMMAND_F( achievement_mark_dirty, "Mark achievement data as dirty", FCVAR_C
 		return;
 	pAchievementMgr->SetDirty( true );
 }
-#endif IsDebug()
+#endif
 
 #endif // CLIENT_DLL
 

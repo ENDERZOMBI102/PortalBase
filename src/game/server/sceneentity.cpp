@@ -3457,7 +3457,7 @@ CBaseFlex *CSceneEntity::FindNamedActor( int index )
 
 	if ( !m_hActorList.IsValidIndex( index ) )
 	{
-		DevWarning( "Scene %s has %d actors, but scene entity only has %d actors\n", m_pScene->GetFilename(), m_pScene->GetNumActors(), m_hActorList.Size() );
+		DevWarning( "Scene %s has %d actors, but scene entity only has %d actors\n", m_pScene->GetFilename(), m_pScene->GetNumActors(), m_hActorList.Count() );
 		return NULL;
 	}
 

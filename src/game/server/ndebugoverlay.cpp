@@ -13,7 +13,7 @@
 #include "ndebugoverlay.h"
 #include "wcedit.h"
 
-#ifdef IsPosix()
+#if IsPosix()
 #include "ai_basenpc.h"
 #include "ai_network.h"
 #include "ai_networkmanager.h"

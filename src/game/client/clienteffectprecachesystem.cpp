@@ -26,7 +26,7 @@ CClientEffectPrecacheSystem	*ClientEffectPrecacheSystem()
 void CClientEffectPrecacheSystem::LevelInitPreEntity()
 {
 	//Precache all known effects
-	for ( int i = 0; i < m_Effects.Size(); i++ )
+	for ( int i = 0; i < m_Effects.Count(); i++ )
 	{
 		m_Effects[i]->Cache();
 	}
@@ -52,7 +52,7 @@ void CClientEffectPrecacheSystem::LevelShutdownPreEntity()
 void CClientEffectPrecacheSystem::LevelShutdownPostEntity()
 {
 	// mark all known effects as free
-	for ( int i = 0; i < m_Effects.Size(); i++ )
+	for ( int i = 0; i < m_Effects.Count(); i++ )
 	{
 		m_Effects[i]->Cache( false );
 	}

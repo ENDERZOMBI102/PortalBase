@@ -107,7 +107,7 @@ void CSoundscapeSystem::PrintDebugInfo()
 		Msg( "- %d: %s\n", id, pName );
 	}
 	Msg( "-------- SOUNDSCAPE ENTITIES -----\n" );
-	for( int entityIndex = 0; entityIndex < m_soundscapeEntities.Size(); ++entityIndex )
+	for( int entityIndex = 0; entityIndex < m_soundscapeEntities.Count(); ++entityIndex )
 	{
 		CEnvSoundscape *currentSoundscape = m_soundscapeEntities[entityIndex];
 		Msg("- %d: %s x:%.4f y:%.4f z:%.4f\n", 

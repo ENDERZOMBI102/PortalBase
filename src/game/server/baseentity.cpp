@@ -1675,7 +1675,7 @@ class CThinkContextsSaveDataOps : public CDefSaveRestoreOps
 
 		pSave->StartBlock();
 		// Now write out all the functions
-		for ( int i = 0; i < pUtlVector->Size(); i++ )
+		for ( int i = 0; i < pUtlVector->Count(); i++ )
 		{
 #if IsWindows()
 			void **ppV = (void**)&((*pUtlVector)[i].m_pfnThink);
@@ -1705,7 +1705,7 @@ class CThinkContextsSaveDataOps : public CDefSaveRestoreOps
 
 		pRestore->StartBlock();
 		// Now read in all the functions
-		for ( int i = 0; i < pUtlVector->Size(); i++ )
+		for ( int i = 0; i < pUtlVector->Count(); i++ )
 		{
 			bool bHasFunc;
 			pRestore->ReadBool( &bHasFunc, 1 );

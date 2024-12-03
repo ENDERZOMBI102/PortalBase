@@ -994,7 +994,7 @@ public:
 	{
 		// See if it's already loaded
 		int i;
-		for ( i = 0; i < m_FileList.Size(); i++ )
+		for ( i = 0; i < m_FileList.Count(); i++ )
 		{
 			CFlexSceneFile *file = m_FileList[ i ];
 			if ( file && !stricmp( file->filename, filename ) )
@@ -1037,7 +1037,7 @@ private:
 
 	void DeleteSceneFiles()
 	{
-		while ( m_FileList.Size() > 0 )
+		while ( m_FileList.Count() > 0 )
 		{
 			CFlexSceneFile *file = m_FileList[ 0 ];
 			m_FileList.Remove( 0 );

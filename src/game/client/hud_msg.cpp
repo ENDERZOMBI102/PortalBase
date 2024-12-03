@@ -31,7 +31,7 @@ void CHud::ResetHUD()
 	// clear all hud data
 	g_pClientMode->GetViewportAnimationController()->CancelAllAnimations();
 
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for ( int i = 0; i < m_HudList.Count(); i++ )
 	{
 		m_HudList[i]->Reset();
 	}

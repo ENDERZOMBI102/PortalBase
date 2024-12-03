@@ -2768,7 +2768,7 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
  	ctx.m_BuildWorldListNumber = view->BuildWorldListsNumber();
 
 	// We need to recompute translucency information for all detail props
-	for (int i = m_DetailObjectDict.Size(); --i >= 0; )
+	for (int i = m_DetailObjectDict.Count(); --i >= 0; )
 	{
 		if (modelinfo->ModelHasMaterialProxy( m_DetailObjectDict[i].m_pModel ))
 		{

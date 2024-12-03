@@ -997,9 +997,13 @@ set( CLIENT_BASE_SOURCE_FILES
 	"${SRCDIR}/game/shared/beam_flags.h"
 	"${SRCDIR}/game/shared/beam_shared.h"
 	"${SRCDIR}/game/shared/choreoactor.h"
+	"${SRCDIR}/game/shared/choreoactor.cpp"
 	"${SRCDIR}/game/shared/choreochannel.h"
+	"${SRCDIR}/game/shared/choreochannel.cpp"
 	"${SRCDIR}/game/shared/choreoevent.h"
+	"${SRCDIR}/game/shared/choreoevent.cpp"
 	"${SRCDIR}/game/shared/choreoscene.h"
+	"${SRCDIR}/game/shared/choreoscene.cpp"
 	"${SRCDIR}/game/shared/collisionproperty.h"
 	"${SRCDIR}/game/shared/death_pose.h"
 	"${SRCDIR}/game/shared/decals.h"
@@ -1198,7 +1202,6 @@ function( target_use_client_base target EXCLUDE_SOURCES )
 			particles
 
 			bitmap
-			choreoobjects
 			dmxloader
 #			${ASRC_tier02}
 			tier0

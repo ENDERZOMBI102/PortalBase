@@ -235,7 +235,7 @@ void CHudAnimationInfo::Paint()
 	char sz[ 256 ];
 	Q_snprintf( sz, sizeof( sz ), "%-30s %-20s (%i %i)", "Position", "pos", bounds[0], bounds[1] );
 	PaintString( x, y, sz, NULL );
-	Q_snprintf( sz, sizeof( sz ), "%-30s %-20s (%i %i)", "Size", "size", bounds[2], bounds[3] );
+	Q_snprintf( sz, sizeof( sz ), "%-30s %-20s (%i %i)", "Count", "size", bounds[2], bounds[3] );
 	PaintString( x, y, sz, NULL );
 }
 
@@ -301,7 +301,7 @@ CON_COMMAND_F_COMPLETION( cl_animationinfo, "Hud element to examine.", 0, HudEle
 	// Find it
 	CHudElement *element = NULL;
 	
-	for ( int i = 0; i < gHUD.m_HudList.Size(); i++ )
+	for ( int i = 0; i < gHUD.m_HudList.Count(); i++ )
 	{
 		if ( stricmp( gHUD.m_HudList[i]->GetName(), args[1]  ) == 0 )
 		{

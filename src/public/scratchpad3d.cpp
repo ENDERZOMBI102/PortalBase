@@ -90,7 +90,7 @@ void CScratchPad3D::CCommand_Polygon::Read( CFileRead *pFile )
 
 void CScratchPad3D::CCommand_Polygon::Write( IFileSystem* pFileSystem, FileHandle_t fp )
 {
-	int count = m_Verts.Size();
+	int count = m_Verts.Count();
 	pFileSystem->Write( &count, sizeof(count), fp );
 	
 	if( count )
@@ -198,7 +198,7 @@ void CScratchPad3D::DrawRectGeneric( int iPlane, int otherDim1, int otherDim2, f
 
 void CScratchPad3D::DeleteCommands()
 {
-	for( int i=0; i < m_Commands.Size(); i++ )
+	for( int i=0; i < m_Commands.Count(); i++ )
 		delete m_Commands[i];
 
 	m_Commands.RemoveAll();
@@ -454,7 +454,7 @@ void CScratchPad3D::Flush()
 	}
 	
 	// Append the new commands to the file.
-	for( int i=0; i < m_Commands.Size(); i++ )
+	for( int i=0; i < m_Commands.Count(); i++ )
 	{
 		m_pFileSystem->Write( &m_Commands[i]->m_iCommand, sizeof(m_Commands[i]->m_iCommand), fp );
 		m_Commands[i]->Write( m_pFileSystem, fp );

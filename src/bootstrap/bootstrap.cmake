@@ -14,5 +14,5 @@ set_target_properties( bootstrap
 )
 target_link_libraries( bootstrap
 	PRIVATE
-		SDL3::SDL3-static
+		SDL3::SDL3-static  # TODO: When we switch off SDL2 completely revert this to use the shared version
 )

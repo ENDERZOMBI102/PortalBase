@@ -85,7 +85,7 @@ static eventlist_t *ListFromString( const char *pString )
 static eventlist_t *ListFromEvent( int eventIndex )
 {
 	// ugly linear search
-	for ( int i = 0; i < g_EventList.Size(); i++ )
+	for ( int i = 0; i < g_EventList.Count(); i++ )
 	{
 		if ( g_EventList[i].eventIndex == eventIndex )
 		{

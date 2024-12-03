@@ -129,7 +129,7 @@ void CPredictableList::AddToPredictableList( ClientEntityHandle_t add ) {
 	m_Predictables.AddToTail( add );
 
 	// Maintain sort order by entindex
-	int count = m_Predictables.Size();
+	int count = m_Predictables.Count();
 	if ( count < 2 )
 		return;
 

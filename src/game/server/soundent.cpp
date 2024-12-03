@@ -663,7 +663,7 @@ int CSoundEnt::ClientSoundIndex ( edict_t *pClient )
 	{
 		Msg( "** ClientSoundIndex returning a bogus value! **\n" );
 	}
-#endif IsDebug()
+#endif
 
 	return iReturn;
 }

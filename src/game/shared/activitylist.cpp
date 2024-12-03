@@ -94,7 +94,7 @@ static activitylist_t *ListFromString( const char *pString )
 static activitylist_t *ListFromActivity( int activityIndex )
 {
 	// ugly linear search
-	for ( int i = 0; i < g_ActivityList.Size(); i++ )
+	for ( int i = 0; i < g_ActivityList.Count(); i++ )
 	{
 		if ( g_ActivityList[i].activityIndex == activityIndex )
 		{

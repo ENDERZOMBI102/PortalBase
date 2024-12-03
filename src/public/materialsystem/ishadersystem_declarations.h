@@ -1,18 +1,16 @@
-//===== Copyright © Valve Corporation, All rights reserved. ======//
-#ifndef ISHADER_DECLARATIONS_HDR
-#define ISHADER_DECLARATIONS_HDR
+//===== Copyright ï¿½ Valve Corporation, All rights reserved. ======//
+#pragma once
 
 //-----------------------------------------------------------------------------
 // Standard vertex shader constants
 //-----------------------------------------------------------------------------
-enum
-{
+enum {
 	// Standard vertex shader constants
 	VERTEX_SHADER_MATH_CONSTANTS0 = 0,
 	VERTEX_SHADER_MATH_CONSTANTS1 = 1,
 	VERTEX_SHADER_CAMERA_POS = 2,
-	VERTEX_SHADER_FLEXSCALE = 3,   // DX9 only
-	VERTEX_SHADER_LIGHT_INDEX = 3, // DX8 only
+	VERTEX_SHADER_FLEXSCALE = 3,    // DX9 only
+	VERTEX_SHADER_LIGHT_INDEX = 3,  // DX8 only
 	VERTEX_SHADER_MODELVIEWPROJ = 4,
 	VERTEX_SHADER_VIEWPROJ = 8,
 	VERTEX_SHADER_MODELVIEWPROJ_THIRD_ROW = 12,
@@ -69,8 +67,7 @@ class CBasePerMaterialContextData;
 //-----------------------------------------------------------------------------
 // Shader flags
 //-----------------------------------------------------------------------------
-enum ShaderFlags_t
-{
+enum ShaderFlags_t {
 	SHADER_NOT_EDITABLE = 0x1
 };
 
@@ -78,18 +75,15 @@ enum ShaderFlags_t
 //-----------------------------------------------------------------------------
 // Shader parameter flags
 //-----------------------------------------------------------------------------
-enum ShaderParamFlags_t
-{
+enum ShaderParamFlags_t {
 	SHADER_PARAM_NOT_EDITABLE = 0x1
 };
-
 
 
 //-----------------------------------------------------------------------------
 // Standard vertex shader constants
 //-----------------------------------------------------------------------------
-enum
-{
+enum {
 	// Standard vertex shader constants
 	VERTEX_SHADER_LIGHT_ENABLE_BOOL_CONST = 0,
 	VERTEX_SHADER_LIGHT_ENABLE_BOOL_CONST_COUNT = 4,
@@ -108,8 +102,7 @@ enum
 //-----------------------------------------------------------------------------
 // Shader dictionaries defined in DLLs
 //-----------------------------------------------------------------------------
-enum PrecompiledShaderType_t
-{
+enum PrecompiledShaderType_t {
 	PRECOMPILED_VERTEX_SHADER = 0,
 	PRECOMPILED_PIXEL_SHADER,
 
@@ -120,12 +113,8 @@ enum PrecompiledShaderType_t
 //-----------------------------------------------------------------------------
 // Flags field of PrecompiledShader_t
 //-----------------------------------------------------------------------------
-enum
-{
+enum {
 	// runtime flags
 	SHADER_IS_ASM = 0x1,
 	SHADER_FAILED_LOAD = 0x2,
 };
-
-
-#endif

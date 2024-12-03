@@ -3726,7 +3726,7 @@ bool CNPC_AntlionGuard::IsUnreachable(CBaseEntity *pEntity)
 
 	// Note that it's ok to remove elements while I'm iterating
 	// as long as I iterate backwards and remove them using FastRemove
-	for (int i=m_UnreachableEnts.Size()-1;i>=0;i--)
+	for (int i=m_UnreachableEnts.Count()-1;i>=0;i--)
 	{
 		// Remove any dead elements
 		if (m_UnreachableEnts[i].hUnreachableEnt == NULL)

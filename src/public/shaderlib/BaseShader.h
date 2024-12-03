@@ -1,12 +1,11 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:
+// Purpose: This is what all shaders inherit from.
 //
 // $NoKeywords: $
-// This is what all shaders inherit from.
+//
 //===========================================================================//
 #pragma once
-#include "convar.h"
 #include "materialsystem/IShader.h"
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "materialsystem/imaterialvar.h"
@@ -24,7 +23,7 @@ class IMaterialVar;
 // Note: if you add to these, add to s_StandardParams in CBaseShader.cpp
 enum ShaderMaterialVars_t {
 	FLAGS = 0,
-	FLAGS_DEFINED,// mask indicating if the flag was specified
+	FLAGS_DEFINED,  // mask indicating if the flag was specified
 	FLAGS2,
 	FLAGS_DEFINED2,
 	COLOR,
@@ -161,7 +160,7 @@ public:
 	bool TextureIsTranslucent( int textureVar, bool isBaseTexture );
 
 	// Returns the translucency...
-	float GetAlpha( IMaterialVar** params = NULL );
+	float GetAlpha( IMaterialVar** params = nullptr );
 
 	// Is the color var white?
 	bool IsWhite( int colorVar );
@@ -254,15 +253,15 @@ public:
 
 	void SetFlashlightFixedFunctionTextureTransform( MaterialMatrixMode_t matrix );
 
-	void GetColorParameter( IMaterialVar** params, float* pColorOut ) const;// return tint color (color*color2)
-	void ApplyColor2Factor( float* pColorOut ) const;                       // (*pColorOut) *= COLOR2
+	void GetColorParameter( IMaterialVar** params, float* pColorOut ) const;  // return tint color (color*color2)
+	void ApplyColor2Factor( float* pColorOut ) const;                         // (*pColorOut) *= COLOR2
 
 	static IMaterialVar** s_ppParams;
 
 protected:
 	SoftwareVertexShader_t m_SoftwareVertexShader;
 
-	static const char* s_pTextureGroupName;// Current material's texture group name.
+	static const char* s_pTextureGroupName;  // Current material's texture group name.
 	static IShaderShadow* s_pShaderShadow;
 	static IShaderDynamicAPI* s_pShaderAPI;
 	static IShaderInit* s_pShaderInit;
@@ -277,45 +276,48 @@ private:
 // Gets at the current materialvar flags
 //-----------------------------------------------------------------------------
 inline int CBaseShader::CurrentMaterialVarFlags() const {
-	return s_ppParams[ FLAGS ]->GetIntValue();
+	return s_ppParams[FLAGS]->GetIntValue();
 }
 
 //-----------------------------------------------------------------------------
 // Are we currently taking a snapshot?
 //-----------------------------------------------------------------------------
 inline bool CBaseShader::IsSnapshotting() const {
-	return ( s_pShaderShadow != NULL );
+	return s_pShaderShadow != nullptr;
 }
 
 //-----------------------------------------------------------------------------
 // Is the color var white?
 //-----------------------------------------------------------------------------
 inline bool CBaseShader::IsWhite( int colorVar ) {
-	if ( colorVar < 0 )
+	if ( colorVar < 0 ) {
 		return true;
+	}
 
-	if ( !s_ppParams[ colorVar ]->IsDefined() )
+	if ( not s_ppParams[colorVar]->IsDefined() ) {
 		return true;
+	}
 
-	float color[ 3 ];
-	s_ppParams[ colorVar ]->GetVecValue( color, 3 );
-	return ( color[ 0 ] >= 1.0f ) && ( color[ 1 ] >= 1.0f ) && ( color[ 2 ] >= 1.0f );
+	float color[3];
+	s_ppParams[colorVar]->GetVecValue( color, 3 );
+	return color[0] >= 1.0f and color[1] >= 1.0f and color[2] >= 1.0f;
 }
 
-
-class CBasePerMaterialContextData// shaders can keep per material data in classes descended from this
-{
+/**
+ * Shaders can keep per material data in classes descended from this
+ */
+class CBasePerMaterialContextData {
 public:
-	uint32 m_nVarChangeID;
-	bool m_bMaterialVarsChanged;// set by mat system when material vars change. shader should rehtink and then clear the var
-
-	ALWAYS_INLINE CBasePerMaterialContextData() {
-		m_bMaterialVarsChanged = true;
-		m_nVarChangeID = 0xffffffff;
-	}
+	CBasePerMaterialContextData() = default;
 
 	// virtual destructor so that derived classes can have their own data to be cleaned up on
 	// delete of material
-	virtual ~CBasePerMaterialContextData() {
-	}
+	virtual ~CBasePerMaterialContextData() = default;
+
+public:
+	uint32 m_nVarChangeID{ 0xffffffff };
+	/**
+	 * Set by mat system when material vars change. Shader should rethink and then clear the var.
+	 */
+	bool m_bMaterialVarsChanged{ true };
 };

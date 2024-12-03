@@ -196,9 +196,13 @@ set( SERVER_BASE_SOURCE_FILES
 	"${SERVER_BASE_DIR}/cbase.cpp"
 	"${SERVER_BASE_DIR}/cbase.h"
 	"${SRCDIR}/game/shared/choreoactor.h"
+	"${SRCDIR}/game/shared/choreoactor.cpp"
 	"${SRCDIR}/game/shared/choreochannel.h"
+	"${SRCDIR}/game/shared/choreochannel.cpp"
 	"${SRCDIR}/game/shared/choreoevent.h"
+	"${SRCDIR}/game/shared/choreoevent.cpp"
 	"${SRCDIR}/game/shared/choreoscene.h"
+	"${SRCDIR}/game/shared/choreoscene.cpp"
 	"${SERVER_BASE_DIR}/client.cpp"
 	"${SERVER_BASE_DIR}/client.h"
 	"${SRCDIR}/game/shared/collisionproperty.cpp"
@@ -979,7 +983,6 @@ function( target_use_server_base target EXCLUDE_SOURCES )
 		PRIVATE
 			$<${IS_WINDOWS}:winmm>
 
-			choreoobjects
 			particles
 			dmxloader
 			tier0
