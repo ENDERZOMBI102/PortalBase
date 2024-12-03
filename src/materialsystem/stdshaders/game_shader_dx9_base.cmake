@@ -2,9 +2,8 @@
 
 include_guard(GLOBAL)
 
-set(GAME_SHADER_DX9_BASE_DIR ${CMAKE_CURRENT_LIST_DIR})
-set(
-	GAME_SHADER_DX9_BASE_SOURCE_FILES
+set( GAME_SHADER_DX9_BASE_DIR ${CMAKE_CURRENT_LIST_DIR} )
+set( GAME_SHADER_DX9_BASE_SOURCE_FILES
 	"${GAME_SHADER_DX9_BASE_DIR}/BaseVSShader.cpp"
 
 	"${GAME_SHADER_DX9_BASE_DIR}/example_model_dx9.cpp"
@@ -32,30 +31,33 @@ set(
 	"${GAME_SHADER_DX9_BASE_DIR}/stdshader_dx9_30.txt"
 )
 
-function(target_use_game_shader_dx9_base target)
-	target_sources(
-		${target} PRIVATE
-		${GAME_SHADER_DX9_BASE_SOURCE_FILES}
+function( target_use_game_shader_dx9_base target )
+	target_sources( ${target}
+		PRIVATE
+			${GAME_SHADER_DX9_BASE_SOURCE_FILES}
 	)
 
-	target_include_directories(
-		${target} PRIVATE
-		"${GAME_SHADER_DX9_BASE_DIR}/fxctmp9"
-		"${GAME_SHADER_DX9_BASE_DIR}/vshtmp9"
+	target_include_directories( ${target}
+		PRIVATE
+			"${GAME_SHADER_DX9_BASE_DIR}/fxctmp9"
+			"${GAME_SHADER_DX9_BASE_DIR}/vshtmp9"
 	)
 
-	target_compile_definitions(
-		${target} PRIVATE
-		STDSHADER_DX9_DLL_EXPORT
-		FAST_MATERIALVAR_ACCESS
-		GAME_SHADER_DLL
-		$<$<NOT:${USE_GL}>:USE_ACTUAL_DX>
+	target_compile_definitions( ${target}
+		PRIVATE
+			STDSHADER_DX9_DLL_EXPORT
+			FAST_MATERIALVAR_ACCESS
+			GAME_SHADER_DLL
+			$<$<NOT:${USE_GL}>:USE_ACTUAL_DX>
 	)
 
-	target_link_libraries(
-		${target} PRIVATE
-		"$<${IS_WINDOWS}:version;winmm>"
-		mathlib
-		"${LIBPUBLIC}/shaderlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	target_link_libraries( ${target}
+		PRIVATE
+			"$<${IS_WINDOWS}:version;winmm>"
+			mathlib
+			tier0
+			tier1
+			vstdlib
+			shaderlib
 	)
 endfunction()

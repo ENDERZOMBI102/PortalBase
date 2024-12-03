@@ -11,7 +11,6 @@ endfunction()
 
 
 add_libpublic_static( particles )
-add_libpublic_static( choreoobjects )
 add_libpublic_static( dmxloader )
 add_libpublic_static( matsys_controls )
 add_libpublic_static( vtf )

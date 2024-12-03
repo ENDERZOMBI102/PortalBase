@@ -2,15 +2,15 @@
 
 include( "${SRCDIR}/lib/statics.cmake" )  # TODO: Remove when not needed anymore
 if ( ${BUILD_GROUP} STREQUAL "game" )
-	include( "${SRCDIR}/game/client/client_${BUILD_GAME}.cmake" )
-	include( "${SRCDIR}/game/server/server_${BUILD_GAME}.cmake" )
-	
 	include( "${SRCDIR}/mathlib/mathlib.cmake" )
 	include( "${SRCDIR}/raytrace/raytrace.cmake" )
 	include( "${SRCDIR}/tier1/tier1.cmake" )
 	include( "${SRCDIR}/tier2/tier2.cmake" )
 	include( "${SRCDIR}/tier3/tier3.cmake" )
 	include( "${SRCDIR}/vgui2/vgui_controls/vgui_controls.cmake" )
+
+	include( "${SRCDIR}/game/client/client_${BUILD_GAME}.cmake" )
+	include( "${SRCDIR}/game/server/server_${BUILD_GAME}.cmake" )
 
 elseif ( ${BUILD_GROUP} STREQUAL "everything" )
 	include( "${SRCDIR}/tier0/tier0.cmake" )
@@ -25,6 +25,7 @@ elseif ( ${BUILD_GROUP} STREQUAL "everything" )
 	include( "${SRCDIR}/vgui2/vgui_controls/vgui_controls.cmake" )
 	include( "${SRCDIR}/fgdlib/fgdlib.cmake" )
 	include( "${SRCDIR}/bitmap/bitmap.cmake" )
+	include( "${SRCDIR}/materialsystem/shaderlib/shaderlib.cmake" )
 
 	include( "${SRCDIR}/utils/vbsp/vbsp.cmake" )
 	include( "${SRCDIR}/utils/vrad/vrad_dll.cmake" )
@@ -45,7 +46,6 @@ elseif ( ${BUILD_GROUP} STREQUAL "everything" )
 
 	include( "${SRCDIR}/utils/captioncompiler/captioncompiler.cmake" )
 
-
 	if ( ${IS_WINDOWS} )
 		# those are still windows-only for now...
 		include( "${SRCDIR}/utils/height2normal/height2normal.cmake" )
@@ -58,8 +58,8 @@ elseif ( ${BUILD_GROUP} STREQUAL "everything" )
 	endif()
 
 	# Declare additional dependencies
-    add_dependencies( "client_${BUILD_GAME}" bootstrap inputsystem launcher )
-    add_dependencies( "server_${BUILD_GAME}" bootstrap inputsystem launcher )
+    add_dependencies( "client_${BUILD_GAME}" bootstrap #[[filesystem_stdio inputsystem launcher]] )
+    add_dependencies( "server_${BUILD_GAME}" bootstrap #[[inputsystem launcher]] )
 
 elseif ( ${BUILD_GROUP} STREQUAL "compilers" )
 	include( "${SRCDIR}/tier0/tier0.cmake" )
@@ -84,6 +84,7 @@ elseif ( ${BUILD_GROUP} STREQUAL "shaders" )
 	include( "${SRCDIR}/tier0/tier0.cmake" )
 	include( "${SRCDIR}/mathlib/mathlib.cmake" )
 	include( "${SRCDIR}/tier1/tier1.cmake" )
+	include( "${SRCDIR}/materialsystem/shaderlib/shaderlib.cmake" )
 
 	include( "${SRCDIR}/materialsystem/stdshaders/game_shader_dx9_${BUILD_GAME}.cmake" )
 elseif ( DEFINED BUILD_GROUP )
