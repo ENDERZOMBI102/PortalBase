@@ -39,8 +39,8 @@ public:
 
 #define CREATEINTERFACE_PROCNAME "CreateInterface"
 
-typedef void* ( *CreateInterfaceFn )( const char* pName, int* pReturnCode );
-typedef void* ( *InstantiateInterfaceFn )();
+using CreateInterfaceFn = void*(*)( const char* pName, int* pReturnCode );
+using InstantiateInterfaceFn = void*(*)();
 
 // Used internally to register classes.
 class InterfaceReg {
@@ -49,10 +49,10 @@ public:
 
 public:
 	InstantiateInterfaceFn m_CreateFn;
-	const char* m_pName;
+	const char* m_Name;
 
-	InterfaceReg* m_pNext;// For the global list.
-	static InterfaceReg* s_pInterfaceRegs;
+	InterfaceReg* m_Next;// For the global list.
+	static InterfaceReg* s_InterfaceRegs;
 };
 
 // Use this to expose an interface that can have multiple instances.
@@ -69,7 +69,7 @@ public:
 // Use this if you want to write the factory function.
 #if !defined( _STATIC_LINKED ) || !defined( _SUBSYSTEM )
 	#define EXPOSE_INTERFACE_FN( functionName, interfaceName, versionName ) \
-		static InterfaceReg __g_Create##interfaceName##_reg( functionName, versionName );
+		static InterfaceReg __g_Create##interfaceName##_reg( reinterpret_cast<InstantiateInterfaceFn>( functionName ), versionName );
 #else
 	#define EXPOSE_INTERFACE_FN( functionName, interfaceName, versionName )                   \
 		namespace _SUBSYSTEM {                                                                \
@@ -151,21 +151,29 @@ enum Sys_Flags {
 // The factory for that module should be passed on to dependent components for
 // proper versioning.
 //-----------------------------------------------------------------------------
+/**
+ * Loads a DLL/component from disk and returns a handle to it
+ * @param pModuleName filename of the component
+ * @param flags
+ * @return opaque handle to the module (hides system dependency)
+ */
 extern CSysModule* Sys_LoadModule( const char* pModuleName, Sys_Flags flags = SYS_NOFLAGS );
+/**
+ * Unloads a DLL/component
+ * @param pModule handle of the module to unload
+ */
 extern void Sys_UnloadModule( CSysModule* pModule );
 
-//-----------------------------------------------------------------------------
-// Purpose: Returns the last system error in human-readable form.
-// Output : statically allocated string with the error (hides system dependency)
-//-----------------------------------------------------------------------------
+/**
+ * Returns the last system error in human-readable form.
+ * @return statically allocated string with the error (hides system dependency)
+ */
 const char* Sys_LastErrorString();
 
 // This is a helper function to load a module, get its factory, and get a specific interface.
 // You are expected to free all of these things.
 // Returns false and cleans up if any of the steps fail.
 bool Sys_LoadInterface( const char* pModuleName, const char* pInterfaceVersionName, CSysModule** pOutModule, void** pOutInterface );
-
-bool Sys_IsDebuggerPresent();
 
 //-----------------------------------------------------------------------------
 // Purpose: Place this as a singleton at module scope (e.g.) and use it to get the factory from the specified module name.
@@ -183,6 +191,6 @@ public:
 
 private:
 	char const* m_pchModuleName;
-	CSysModule* m_hModule;
-	bool m_bLoadAttempted;
+	CSysModule* m_hModule{};
+	bool m_bLoadAttempted{};
 };

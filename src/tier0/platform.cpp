@@ -172,7 +172,7 @@ const tchar* Plat_GetCommandLine() {
 			return cmdline;
 		}
 
-		auto file{ std::fopen( "/proc/self/cmdline", "r" ) };
+		const auto file{ std::fopen( "/proc/self/cmdline", "r" ) };
 		std::fread( cmdline, 1, sizeof( cmdline ) - 1, file );
 		std::fclose( file );
 
@@ -198,7 +198,8 @@ const char* Plat_GetCommandLineA() {
 
 bool Plat_VerifyHardwareKeyDriver();
 
-bool Plat_VerifyHardwareKey();
+// FIXME: Implement this
+bool Plat_VerifyHardwareKey() { return true; }
 
 bool Plat_VerifyHardwareKeyPrompt();
 
@@ -208,7 +209,7 @@ void* Plat_SimpleLog( const tchar* file, int line );
 
 #if IsLinux()
 	PLATFORM_INTERFACE bool Plat_IsInDebugSession() {
-		static char buffer[32] { 0 };
+		static char buffer[32] { };
 		std::ifstream file{ "/proc/self/status" };
 
 		int tracer;
@@ -247,5 +248,4 @@ bool Is64BitOS() {
 	#else
 		#error "Is64BitOS: Not implemented"
 	#endif
-	return false;
 }

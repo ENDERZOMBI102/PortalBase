@@ -27,7 +27,7 @@ class IFileSystem;
 // Handle to a DLL
 //-----------------------------------------------------------------------------
 using AppModule_t = int32;
-static constexpr inline auto APP_MODULE_INVALID{ static_cast<AppModule_t>( ~0 ) };
+static constexpr inline AppModule_t APP_MODULE_INVALID{ ~0 };
 
 
 //-----------------------------------------------------------------------------
@@ -38,12 +38,12 @@ abstract_class IAppSystemGroup {
 public:
 	// An installed application creation function, you should tell the group
 	// the DLLs and the singleton interfaces you want to instantiate.
-	// Return false if there's any problems and the app will abort
+	// Return false if there are any problems and the app will abort
 	virtual bool Create() = 0;
 
 	// Allow the application to do some work after AppSystems are connected but
 	// before they are all Initialized.
-	// Return false if there's any problems and the app will abort
+	// Return false if there are any problems and the app will abort
 	virtual bool PreInit() = 0;
 
 	// Main loop implemented by the application
@@ -125,7 +125,7 @@ protected:
 	void* FindSystem( const char* pInterfaceName );
 	// Method to look up a named system, in a somewhat typesafe manner.
 	template<class T>
-	inline T* FindSystem( const char* pInterfaceName ) {
+	T* FindSystem( const char* pInterfaceName ) {
 		return static_cast<T*>( this->FindSystem( pInterfaceName ) );
 	}
 

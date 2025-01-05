@@ -53,6 +53,7 @@
 #define IsPlatformWindowsPC32() false
 #define IsPlatformWindowsPC64() false
 #define IsPlatformOpenGL() false
+#define IsXbox() false
 #define IsPosix() false
 #define IsLinux() false
 

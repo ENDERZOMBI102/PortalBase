@@ -71,12 +71,11 @@ public:
 	const T* Base() const { return m_Memory.Base(); }
 
 	// Returns the number of elements in the vector
-	// SIZE IS DEPRECATED!
 	int Count() const;
-	[[deprecated("don't use me! use `Count()`")]]
+	[[deprecated("Use `Count()` instead of this")]]
 	int Size() const;
 
-	/// are there no elements? For compatibility with lists.
+	// are there no elements? For compatibility with lists.
 	[[nodiscard]]
 	inline bool IsEmpty() const {
 		return Count() == 0;
