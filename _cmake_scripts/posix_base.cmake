@@ -12,6 +12,9 @@ add_compile_options(
 	$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>
 	-Werror=return-type
 	-fdiagnostics-color
+	# TODO: Enable these when ready
+	#-Werror=conversion
+	#-Wconversion
 	-Wno-narrowing
 	$<$<COMPILE_LANGUAGE:CXX>:-Winvalid-offsetof>
 	$<${IS_LINUX}:-U_FORTIFY_SOURCE>

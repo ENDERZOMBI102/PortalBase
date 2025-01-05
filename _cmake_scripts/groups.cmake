@@ -58,7 +58,7 @@ elseif ( ${BUILD_GROUP} STREQUAL "everything" )
 	endif()
 
 	# Declare additional dependencies
-    add_dependencies( "client_${BUILD_GAME}" bootstrap #[[filesystem_stdio inputsystem launcher]] )
+    add_dependencies( "client_${BUILD_GAME}" bootstrap filesystem_stdio launcher #[[ inputsystem]] )
     add_dependencies( "server_${BUILD_GAME}" bootstrap #[[inputsystem launcher]] )
 
 elseif ( ${BUILD_GROUP} STREQUAL "compilers" )

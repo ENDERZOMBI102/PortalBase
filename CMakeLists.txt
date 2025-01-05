@@ -90,7 +90,6 @@ include( "thirdparty/init.cmake" )
 
 # Init project structure
 include( "_cmake_scripts/pch_skip.cmake" )
-include( "_cmake_scripts/platform_dirs.cmake" )
 include( "_cmake_scripts/base.cmake" )
 include( "_cmake_scripts/video_base.cmake" )
 include( "_cmake_scripts/helpers.cmake" )
