@@ -67,7 +67,7 @@ public:
 private:
 	static uint32 PoolThreadFunc( void* pParam );
 private:
-	enum State {
+	enum State : int32 {
 		EXECUTING,
 		SUSPENDED
 	};

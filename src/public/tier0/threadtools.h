@@ -454,22 +454,23 @@ inline bool ThreadInterlockedAssignIf( int volatile* p, int value, int comperand
 
 template<typename T>
 class CInterlockedIntT {
+	static_assert( sizeof( T ) == sizeof( long ) );
 public:
-	CInterlockedIntT() : m_value( 0 ) { static_assert( sizeof( T ) == sizeof( long ) ); }
+	CInterlockedIntT() : m_value( {} ) {  }
 	CInterlockedIntT( T value ) : m_value( value ) {}
 
 	T GetRaw() const { return m_value; }
 
 	operator T() const { return m_value; }
 
-	bool operator!() const { return ( m_value == 0 ); }
-	bool operator==( T rhs ) const { return ( m_value == rhs ); }
-	bool operator!=( T rhs ) const { return ( m_value != rhs ); }
+	bool operator!() const { return m_value == 0; }
+	bool operator==( T rhs ) const { return m_value == rhs; }
+	bool operator!=( T rhs ) const { return m_value != rhs; }
 
-	T operator++() { return (T) ThreadInterlockedIncrement( reinterpret_cast<volatile long*>( &m_value ) ); }
+	T operator++() { return static_cast<T>( ThreadInterlockedIncrement( reinterpret_cast<volatile long*>( &m_value ) ) ); }
 	T operator++( int ) { return operator++() - 1; }
 
-	T operator--() { return (T) ThreadInterlockedDecrement( reinterpret_cast<volatile long*>( &m_value ) ); }
+	T operator--() { return static_cast<T>( ThreadInterlockedDecrement( reinterpret_cast<volatile long*>( &m_value ) ) ); }
 	T operator--( int ) { return operator--() + 1; }
 
 	bool AssignIf( T conditionValue, T newValue ) {
@@ -494,14 +495,14 @@ public:
 		do {
 			original = m_value;
 			result = original * multiplier;
-		} while ( !AssignIf( original, result ) );
+		} while ( not AssignIf( original, result ) );
 	}
 	void operator/=( T divisor ) {
 		T original, result;
 		do {
 			original = m_value;
 			result = original / divisor;
-		} while ( !AssignIf( original, result ) );
+		} while ( not AssignIf( original, result ) );
 	}
 
 	T operator+( T rhs ) const { return m_value + rhs; }
@@ -519,14 +520,14 @@ typedef CInterlockedIntT<unsigned> CInterlockedUInt;
 template<typename T>
 class CInterlockedPtr {
 public:
-	CInterlockedPtr() : m_value( 0 ) {}
+	CInterlockedPtr() : m_value( nullptr ) {}
 	CInterlockedPtr( T* value ) : m_value( value ) {}
 
 	operator T*() const { return m_value; }
 
-	bool operator!() const { return ( m_value == 0 ); }
-	bool operator==( T* rhs ) const { return ( m_value == rhs ); }
-	bool operator!=( T* rhs ) const { return ( m_value != rhs ); }
+	bool operator!() const { return m_value == nullptr; }
+	bool operator==( T* rhs ) const { return m_value == rhs; }
+	bool operator!=( T* rhs ) const { return m_value != rhs; }
 
 	#if defined( PLATFORM_64BITS )
 		T* operator++() { return ( (T*) ThreadInterlockedExchangeAdd64( (int64*) &m_value, sizeof( T ) ) ) + 1; }
@@ -544,30 +545,36 @@ public:
 
 		void operator+=( int add ) { ThreadInterlockedExchangeAdd64( (int64*) &m_value, add * sizeof( T ) ); }
 	#else
-		T* operator++() { return ( (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, sizeof( T ) ) ) + 1; }
-		T* operator++( int ) { return (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, sizeof( T ) ); }
+		T* operator++() { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), sizeof( T ) ) ) + 1; }
+		T* operator++( int ) { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), sizeof( T ) ) ); }
 
-		T* operator--() { return ( (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, -sizeof( T ) ) ) - 1; }
-		T* operator--( int ) { return (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, -sizeof( T ) ); }
+		T* operator--() { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), -sizeof( T ) ) ) - 1; }
+		T* operator--( int ) { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), -sizeof( T ) ) ); }
 
-		bool AssignIf( T* conditionValue, T* newValue ) { return ThreadInterlockedAssignPointerToConstIf( (void const**) &m_value, (void const*) newValue, (void const*) conditionValue ); }
+		bool AssignIf( T* conditionValue, T* newValue ) {
+			return ThreadInterlockedAssignPointerToConstIf(
+				static_cast<void const**>( &m_value ),
+				static_cast<void const*>( newValue ),
+				static_cast<void const*>( conditionValue )
+			);
+		}
 
 		T* operator=( T* newValue ) {
-			ThreadInterlockedExchangePointerToConst( (void const**) &m_value, (void const*) newValue );
+			ThreadInterlockedExchangePointerToConst( static_cast<void const**>( &m_value ), static_cast<void const*>( newValue ) );
 			return newValue;
 		}
 
-		void operator+=( int add ) { ThreadInterlockedExchangeAdd( (long*) &m_value, add * sizeof( T ) ); }
+		void operator+=( const int add ) { ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), add * sizeof( T ) ); }
 	#endif
 
-	void operator-=( int subtract ) { operator+=( -subtract ); }
+	void operator-=( const int subtract ) { operator+=( -subtract ); }
 
 	T* operator+( int rhs ) const { return m_value + rhs; }
 	T* operator-( int rhs ) const { return m_value - rhs; }
 	T* operator+( unsigned rhs ) const { return m_value + rhs; }
 	T* operator-( unsigned rhs ) const { return m_value - rhs; }
 	size_t operator-( T* p ) const { return m_value - p; }
-	size_t operator-( const CInterlockedPtr<T>& p ) const { return m_value - p.m_value; }
+	size_t operator-( const CInterlockedPtr& p ) const { return m_value - p.m_value; }
 
 private:
 	T* volatile m_value;
@@ -585,7 +592,7 @@ public:
 		: mCounter( counter ) {
 		Assert( mCounter != nullptr );
 
-		if ( ++( *mCounter ) != 1 ) {
+		if ( ++(*mCounter) != 1 ) {
 			DebuggerBreakIfDebugging_StagingOnly();
 		}
 
@@ -595,7 +602,7 @@ public:
 	}
 
 	inline ~ReentrancyVerifier() {
-		if ( --( *mCounter ) != 0 ) {
+		if ( --(*mCounter) != 0 ) {
 			DebuggerBreakIfDebugging_StagingOnly();
 		}
 	}
@@ -751,7 +758,7 @@ private:
 			}
 
 			m_depth -= 1;
-			if ( !m_depth ) {
+			if ( not m_depth ) {
 				ThreadMemoryBarrier();
 				ThreadInterlockedExchange( &m_ownerID, 0 );
 			}
@@ -782,7 +789,7 @@ private:
 	class ALIGN128 CAlignedThreadFastMutex : public CThreadFastMutex {
 	public:
 		CAlignedThreadFastMutex() {
-			Assert( (size_t) this % 128 == 0 && sizeof( *this ) == 128 );
+			Assert( reinterpret_cast<size_t>( this ) % 128 == 0 && sizeof( *this ) == 128 );
 		}
 
 	private:
@@ -835,18 +842,15 @@ public:
 
 	bool TryLock() {
 		if ( *pCondition ) return BaseClass::TryLock();
-		else
-			return true;
+		return true;
 	}
 	bool TryLock() const {
 		if ( *pCondition ) return BaseClass::TryLock();
-		else
-			return true;
+		return true;
 	}
 	bool AssertOwnedByCurrentThread() {
 		if ( *pCondition ) return BaseClass::AssertOwnedByCurrentThread();
-		else
-			return true;
+		return true;
 	}
 	void SetTrace( bool b ) {
 		if ( *pCondition ) BaseClass::SetTrace( b );
@@ -861,24 +865,24 @@ template<class BaseClass>
 class CThreadTerminalMutex : public BaseClass {
 public:
 	bool TryLock() {
-		if ( !BaseClass::TryLock() ) {
+		if ( not BaseClass::TryLock() ) {
 			DebuggerBreak();
 			return false;
 		}
 		return true;
 	}
 	bool TryLock() const {
-		if ( !BaseClass::TryLock() ) {
+		if ( not BaseClass::TryLock() ) {
 			DebuggerBreak();
 			return false;
 		}
 		return true;
 	}
 	void Lock() {
-		if ( !TryLock() ) BaseClass::Lock();
+		if ( not TryLock() ) BaseClass::Lock();
 	}
 	void Lock() const {
-		if ( !TryLock() ) BaseClass::Lock();
+		if ( not TryLock() ) BaseClass::Lock();
 	}
 };
 
@@ -911,8 +915,8 @@ private:
 	MUTEX_TYPE& m_lock;
 
 	// Disallow copying
-	CAutoLockT( const CAutoLockT<MUTEX_TYPE>& );
-	CAutoLockT& operator=( const CAutoLockT<MUTEX_TYPE>& );
+	CAutoLockT( const CAutoLockT& );
+	CAutoLockT& operator=( const CAutoLockT& );
 };
 
 typedef CAutoLockT<CThreadMutex> CAutoLock;
@@ -1180,7 +1184,7 @@ class ALIGN8 PLATFORM_CLASS CThreadSpinRWLock {
 public:
 	CThreadSpinRWLock() {
 		static_assert( sizeof( LockInfo_t ) == sizeof( int64 ) );
-		Assert( (intp) this % 8 == 0 );
+		Assert( reinterpret_cast<intp>( this ) % 8 == 0 );
 //		memset( this, 0, sizeof( *this ) );
 	}
 
@@ -1235,7 +1239,7 @@ public:
 	const char* GetName();
 	void SetName( const char* );
 
-	size_t CalcStackDepth( void* pStackVariable ) {
+	size_t CalcStackDepth( void* pStackVariable ) const {
 		return static_cast<byte*>( m_pStackBase ) - static_cast<byte*>( pStackVariable );
 	}
 
@@ -1518,7 +1522,7 @@ public:
 				SignalEvent.Wait();
 			}
 			QueueAccessMutex.Lock();
-			if ( !Head ) {
+			if ( not Head ) {
 				// multiple readers could make this null
 				QueueAccessMutex.Unlock();
 				continue;
@@ -1526,7 +1530,7 @@ public:
 			*pMsg = Head->Data;
 			const MsgNode* remove_this = Head;
 			Head = Head->Next;
-			if ( !Head ) {  // if empty, fix tail ptr
+			if ( not Head ) {  // if empty, fix tail ptr
 				Tail = nullptr;
 			}
 			QueueAccessMutex.Unlock();
@@ -1726,21 +1730,21 @@ inline bool CThreadSpinRWLock::AssignIf( const LockInfo_t& newValue, const LockI
 	return ThreadInterlockedAssignIf64( (int64*) &m_lockInfo, *( (int64*) &newValue ), *( (int64*) &comperand ) );
 }
 
-inline bool CThreadSpinRWLock::TryLockForWrite( const uint32 threadId ) {
+inline bool CThreadSpinRWLock::TryLockForWrite( const uint32 pThreadId ) {
 	// In order to grab a write lock, there can be no readers and no owners of the write lock
-	if ( m_lockInfo.m_nReaders > 0 || ( m_lockInfo.m_writerId && m_lockInfo.m_writerId != threadId ) ) {
+	if ( m_lockInfo.m_nReaders > 0 || ( m_lockInfo.m_writerId && m_lockInfo.m_writerId != pThreadId ) ) {
 		return false;
 	}
 
 	static const LockInfo_t oldValue{ 0, 0 };
-	LockInfo_t newValue{ threadId, 0 };
+	LockInfo_t newValue{ pThreadId, 0 };
 	const bool bSuccess{ AssignIf( newValue, oldValue ) };
 	return bSuccess;
 }
 
 inline bool CThreadSpinRWLock::TryLockForWrite() {
 	m_nWriters++;
-	if ( !TryLockForWrite( ThreadGetCurrentId() ) ) {
+	if ( not TryLockForWrite( ThreadGetCurrentId() ) ) {
 		m_nWriters--;
 		return false;
 	}
@@ -1770,7 +1774,7 @@ inline void CThreadSpinRWLock::LockForWrite() {
 
 	m_nWriters++;
 
-	if ( !TryLockForWrite( threadId ) ) {
+	if ( not TryLockForWrite( threadId ) ) {
 		ThreadPause();
 		SpinLockForWrite( threadId );
 	}
