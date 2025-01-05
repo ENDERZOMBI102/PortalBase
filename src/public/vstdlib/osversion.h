@@ -13,9 +13,9 @@
 #pragma once
 #include "vstdlib/vstdlib.h"
 
-// TODO: Add missing newer versions
 // OS types we know about
 // Must be in ascending capability order, we use this for min OS requirements
+// TODO: Add missing newer versions
 enum EOSType {
 	k_eOSUnknown = -1,
 	k_eMacOSUnknown = -102,
@@ -48,7 +48,7 @@ enum EOSType {
 };
 
 VSTDLIB_INTERFACE const char* GetNameFromOSType( EOSType eOSType );
-VSTDLIB_INTERFACE const char* GetOSDetailString( char* pchOutBuf, int cchOutBuf );
+VSTDLIB_INTERFACE const char* GetOSDetailString( char* oBuffer, int pBufferSize );
 VSTDLIB_INTERFACE EOSType GetOSType();
 VSTDLIB_INTERFACE bool OSTypesAreCompatible( EOSType eOSTypeDetected, EOSType eOSTypeRequired );
-VSTDLIB_INTERFACE const char* GetPlatformName( bool* pbIs64Bit );
+VSTDLIB_INTERFACE const char* GetPlatformName( bool* pIs64Bit );
