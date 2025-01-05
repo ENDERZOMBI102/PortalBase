@@ -54,10 +54,10 @@ function( target_use_game_shader_dx9_base target )
 	target_link_libraries( ${target}
 		PRIVATE
 			"$<${IS_WINDOWS}:version;winmm>"
-			mathlib
 			tier0
 			tier1
+			mathlib
 			vstdlib
-			shaderlib
+			shaderlib2
 	)
 endfunction()

@@ -1,33 +1,16 @@
 //========= Copyright � 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Header: $
 // $NoKeywords: $
 //=============================================================================//
-
-#ifndef SHADERDLL_GLOBAL_H
-#define SHADERDLL_GLOBAL_H
-
-#ifdef _WIN32
 #pragma once
-#endif
 
-
-//-----------------------------------------------------------------------------
-// forward declarations
-//-----------------------------------------------------------------------------
 class IShaderSystem;
 
 
-//-----------------------------------------------------------------------------
-// forward declarations
-//-----------------------------------------------------------------------------
-inline IShaderSystem *GetShaderSystem()
-{
+inline IShaderSystem* GetShaderSystem() {
 	extern IShaderSystem* g_pSLShaderSystem;
 	return g_pSLShaderSystem;
 }
-
-
-#endif	// SHADERDLL_GLOBAL_H

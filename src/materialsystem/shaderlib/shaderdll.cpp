@@ -11,30 +11,55 @@
 #include "mathlib/mathlib.h"
 #include "shaderlib_cvar.h"
 #include "tier0/dbg.h"
+#include "tier1/tier1.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
-IMaterialSystemHardwareConfig* g_pHardwareConfig;
-const MaterialSystem_Config_t* g_pConfig;
-namespace { CShaderDLL* s_pShaderDLL; }
+IMaterialSystemHardwareConfig* g_pHardwareConfig{ nullptr };
+const MaterialSystem_Config_t* g_pConfig{ nullptr };
+bool g_shaderConfigDumpEnable{ false };
+// local to shaderlib
+IShaderSystem* g_pSLShaderSystem{nullptr};
+namespace { CShaderDLL* s_pShaderDLL{ nullptr }; }
 
 
 CShaderDLL::CShaderDLL() {
 	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f );
 }
 
-bool CShaderDLL::Connect( CreateInterfaceFn pFactory ) {
-	g_pHardwareConfig = static_cast<IMaterialSystemHardwareConfig*>( pFactory( MATERIALSYSTEM_HARDWARECONFIG_INTERFACE_VERSION, NULL ));
-	g_pConfig = static_cast<const MaterialSystem_Config_t*>( pFactory( MATERIALSYSTEM_CONFIG_VERSION, NULL ));
-	InitShaderLibCVars( pFactory );
+//-----------------------------------------------------------------------------
+// Connect, disconnect...
+//-----------------------------------------------------------------------------
+bool CShaderDLL::Connect( const CreateInterfaceFn pFactory, const bool pIsMaterialSystem ) {
+	g_pHardwareConfig = static_cast<IMaterialSystemHardwareConfig*>( pFactory( MATERIALSYSTEM_HARDWARECONFIG_INTERFACE_VERSION, nullptr ) );
+	g_pConfig = static_cast<const MaterialSystem_Config_t*>( pFactory( MATERIALSYSTEM_CONFIG_VERSION, nullptr ) );
+	g_pSLShaderSystem = static_cast<IShaderSystem*>( pFactory( SHADERSYSTEM_INTERFACE_VERSION, nullptr ) );
 
-	return g_pConfig != nullptr and g_pHardwareConfig != nullptr;
+	if ( not pIsMaterialSystem ) {
+		ConnectTier1Libraries( &pFactory, 1 );
+		InitShaderLibCVars( pFactory );
+	}
+
+	return g_pConfig != nullptr and g_pHardwareConfig != nullptr and g_pSLShaderSystem != nullptr;
 }
 
-void CShaderDLL::Disconnect() {
+void CShaderDLL::Disconnect( const bool pIsMaterialSystem ) {
+	if ( not pIsMaterialSystem ) {
+		ConVar_Unregister();
+		DisconnectTier1Libraries();
+	}
+
 	g_pHardwareConfig = nullptr;
 	g_pConfig = nullptr;
+	g_pSLShaderSystem = nullptr;
+}
+
+bool CShaderDLL::Connect( const CreateInterfaceFn pFactory ) {
+	return Connect( pFactory, false );
+}
+void CShaderDLL::Disconnect() {
+	Disconnect( false );
 }
 
 int CShaderDLL::ShaderCount() const {
@@ -76,5 +101,7 @@ IShaderDLLInternal* GetShaderDLLInternal() {
 	return s_pShaderDLL;
 }
 
-
-
+//-----------------------------------------------------------------------------
+// Singleton interface
+//-----------------------------------------------------------------------------
+EXPOSE_INTERFACE_FN( GetShaderDLLInternal, IShaderDLLInternal, SHADER_DLL_INTERFACE_VERSION );

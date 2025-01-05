@@ -87,22 +87,22 @@ public:
 	// Methods inherited from IShader
 	virtual char const* GetFallbackShader( IMaterialVar** params ) const { return 0; }
 	virtual int GetNumParams() const;
-	virtual char const* GetParamName( int paramIndex ) const;
-	virtual char const* GetParamHelp( int paramIndex ) const;
-	virtual ShaderParamType_t GetParamType( int paramIndex ) const;
-	virtual char const* GetParamDefault( int paramIndex ) const;
-	virtual int GetParamFlags( int nParamIndex ) const;
+	virtual char const* GetParamName( int pParamIndex ) const;
+	virtual char const* GetParamHelp( int pParamIndex ) const;
+	virtual ShaderParamType_t GetParamType( int pParamIndex ) const;
+	virtual char const* GetParamDefault( int pParamIndex ) const;
+	virtual int GetParamFlags( int pParamIndex ) const;
 
-	virtual void InitShaderParams( IMaterialVar** ppParams, const char* pMaterialName );
-	virtual void InitShaderInstance( IMaterialVar** ppParams, IShaderInit* pShaderInit, const char* pMaterialName, const char* pTextureGroupName );
-	virtual void DrawElements( IMaterialVar** params, int nModulationFlags, IShaderShadow* pShaderShadow, IShaderDynamicAPI* pShaderAPI,
-							   VertexCompressionType_t vertexCompression, CBasePerMaterialContextData** pContext );
+	virtual void InitShaderParams( IMaterialVar** pParams, const char* pMaterialName );
+	virtual void InitShaderInstance( IMaterialVar** pParams, IShaderInit* pShaderInit, const char* pMaterialName, const char* pTextureGroupName );
+	virtual void DrawElements( IMaterialVar** pParams, int pModulationFlags, IShaderShadow* pShaderShadow, IShaderDynamicAPI* pShaderAPI,
+							   VertexCompressionType_t pVertexCompression, CBasePerMaterialContextData** pContext );
 
 	virtual const SoftwareVertexShader_t GetSoftwareVertexShader() const { return m_SoftwareVertexShader; }
 
 	virtual int ComputeModulationFlags( IMaterialVar** params, IShaderDynamicAPI* pShaderAPI );
-	virtual bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar** params, bool bCheckSpecificToThisFrame = true ) const;
-	virtual bool NeedsFullFrameBufferTexture( IMaterialVar** params, bool bCheckSpecificToThisFrame = true ) const;
+	virtual bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar** params, bool pCheckSpecificToThisFrame = true ) const;
+	virtual bool NeedsFullFrameBufferTexture( IMaterialVar** params, bool pCheckSpecificToThisFrame = true ) const;
 	virtual bool IsTranslucent( IMaterialVar** params ) const;
 
 public:
@@ -115,7 +115,7 @@ public:
 	void SetInitialShadowState();
 
 	// Draws a snapshot
-	void Draw( bool bMakeActualDrawCall = true );
+	void Draw( bool pMakeActualDrawCall = true );
 
 	// Are we currently taking a snapshot?
 	bool IsSnapshotting() const;
@@ -136,28 +136,28 @@ public:
 	CMeshBuilder* MeshBuilder();
 
 	// Loads a texture
-	void LoadTexture( int nTextureVar, int nAdditionalCreationFlags = 0 );
+	void LoadTexture( int pTextureVar, int pAdditionalCreationFlags = 0 );
 
 	// Loads a bumpmap
-	void LoadBumpMap( int nTextureVar );
+	void LoadBumpMap( int pTextureVar );
 
 	// Loads a cubemap
-	void LoadCubeMap( int nTextureVar, int nAdditionalCreationFlags = 0 );
+	void LoadCubeMap( int pTextureVar, int pAdditionalCreationFlags = 0 );
 
 	// get the shaderapi handle for a texture. BE CAREFUL WITH THIS.
-	ShaderAPITextureHandle_t GetShaderAPITextureBindHandle( int nTextureVar, int nFrameVar, int nTextureChannel = 0 );
+	ShaderAPITextureHandle_t GetShaderAPITextureBindHandle( int pTextureVar, int pFrameVar, int pTextureChannel = 0 );
 
 
 	// Binds a texture
-	void BindTexture( Sampler_t sampler1, Sampler_t sampler2, int nTextureVar, int nFrameVar = -1 );
-	void BindTexture( Sampler_t sampler1, int nTextureVar, int nFrameVar = -1 );
-	void BindTexture( Sampler_t sampler1, ITexture* pTexture, int nFrame = 0 );
-	void BindTexture( Sampler_t sampler1, Sampler_t sampler2, ITexture* pTexture, int nFrame = 0 );
+	void BindTexture( Sampler_t pSampler1, Sampler_t pSampler2, int pTextureVar, int pFrameVar = -1 );
+	void BindTexture( Sampler_t pSampler1, int pTextureVar, int pFrameVar = -1 );
+	void BindTexture( Sampler_t pSampler1, ITexture* pTexture, int pFrame = 0 );
+	void BindTexture( Sampler_t pSampler1, Sampler_t pSampler2, ITexture* pTexture, int pFrame = 0 );
 
 	void GetTextureDimensions( float* pOutWidth, float* pOutHeight, int nTextureVar );
 
 	// Is the texture translucent?
-	bool TextureIsTranslucent( int textureVar, bool isBaseTexture );
+	bool TextureIsTranslucent( int pTextureVar, bool pIsBaseTexture );
 
 	// Returns the translucency...
 	float GetAlpha( IMaterialVar** params = nullptr );
@@ -190,8 +190,8 @@ public:
 	bool IsAlphaModulating();
 	bool IsColorModulating();
 	void ComputeModulationColor( float* color );
-	void SetModulationShadowState( int tintVar = -1 );
-	void SetModulationDynamicState( int tintVar = -1 );
+	void SetModulationShadowState( int pTintVar = -1 );
+	void SetModulationDynamicState( int pTintVar = -1 );
 
 	// Helpers for HDR
 	bool IsHDREnabled();
@@ -225,9 +225,9 @@ public:
 										int frameVar, int maskOffsetVar, int maskScaleVar, int tintVar = -1 );
 
 	// Additive masked environment map
-	void FixedFunctionAdditiveMaskedEnvmapPass( int envMapVar, int envMapMaskVar,
-												int baseTextureVar, int envMapFrameVar, int envMapMaskFrameVar,
-												int frameVar, int maskOffsetVar, int maskScaleVar, int tintVar = -1 );
+	void FixedFunctionAdditiveMaskedEnvmapPass( int pEnvMapVar, int pEnvMapMaskVar,
+												int pBaseTextureVar, int pEnvMapFrameVar, int pEnvMapMaskFrameVar,
+												int pFrameVar, int pMaskOffsetVar, int pMaskScaleVar, int pEnvMapTintVar = -1 );
 
 	// Modulate by detail texture pass
 	void FixedFunctionMultiplyByDetailPass( int baseTextureVar, int frameVar,
@@ -248,10 +248,10 @@ public:
 
 	void DrawFlashlight_dx70( IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
 							  IShaderShadow* pShaderShadow,
-							  int flashlightTextureVar, int flashlightTextureFrameVar,
-							  bool suppress_lighting = false );
+							  int pFlashlightTextureVar, int pFlashlightTextureFrameVar,
+							  bool pSuppressLighting = false );
 
-	void SetFlashlightFixedFunctionTextureTransform( MaterialMatrixMode_t matrix );
+	void SetFlashlightFixedFunctionTextureTransform( MaterialMatrixMode_t pMatrix );
 
 	void GetColorParameter( IMaterialVar** params, float* pColorOut ) const;  // return tint color (color*color2)
 	void ApplyColor2Factor( float* pColorOut ) const;                         // (*pColorOut) *= COLOR2
