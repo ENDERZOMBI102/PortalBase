@@ -141,12 +141,13 @@ static_assert( sizeof(  int32 ) == 4 );
 static_assert( sizeof( uint32 ) == 4 );
 static_assert( sizeof(  int64 ) == 8 );
 static_assert( sizeof( uint64 ) == 8 );
-static_assert( sizeof(  intp ) == sizeof(void*) ); // intp is an integer that can accommodate a pointer
-static_assert( sizeof( uintp ) == sizeof(void*) ); //  ( ie, sizeof(intp) >= sizeof(int) && sizeof(intp) >= sizeof(void *) )
+static_assert( sizeof(  intp  ) == sizeof(void*) ); // intp is an integer that can accommodate a pointer
+static_assert( sizeof( uintp  ) == sizeof(void*) ); //  ( ie, sizeof(intp) >= sizeof(int) && sizeof(intp) >= sizeof(void *) )
+static_assert( sizeof( float32 ) == 4 );
+static_assert( sizeof( float64 ) == 8 );
 
 // TODO: Verify if this is still needed, with most probability not.
 #if defined( COMPILER_MSVC )
-	#pragma once
 	// Ensure that everybody has the right compiler version installed. The version
 	// number can be obtained by looking at the compiler output when you type 'cl'
 	// and removing the last two digits and the periods: 16.00.40219.01 becomes 160040219
@@ -181,8 +182,7 @@ static_assert( sizeof( uintp ) == sizeof(void*) ); //  ( ie, sizeof(intp) >= siz
 	#define NO_VTABLE
 #endif
 
-// This indicates that a function never returns, which helps with
-// generating accurate compiler warnings
+// This indicates that a function never returns, which helps with generating accurate compiler warnings
 #define NORETURN [[noreturn]]
 
 // This can be used to declare an abstract (interface only) class.
