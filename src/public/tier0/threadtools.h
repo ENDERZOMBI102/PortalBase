@@ -545,26 +545,21 @@ public:
 
 		void operator+=( int add ) { ThreadInterlockedExchangeAdd64( (int64*) &m_value, add * sizeof( T ) ); }
 	#else
-		T* operator++() { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), sizeof( T ) ) ) + 1; }
-		T* operator++( int ) { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), sizeof( T ) ) ); }
+		// TODO: Changing these casts breaks many things, fire this out
+		T* operator++() { return (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, sizeof( T ) ) + 1; }
+		T* operator++( int ) { return (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, sizeof( T ) ); }
 
-		T* operator--() { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), -sizeof( T ) ) ) - 1; }
-		T* operator--( int ) { return static_cast<T*>( ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), -sizeof( T ) ) ); }
+		T* operator--() { return (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, -sizeof( T ) ) - 1; }
+		T* operator--( int ) { return (T*) ThreadInterlockedExchangeAdd( (long*) &m_value, -sizeof( T ) ); }
 
-		bool AssignIf( T* conditionValue, T* newValue ) {
-			return ThreadInterlockedAssignPointerToConstIf(
-				static_cast<void const**>( &m_value ),
-				static_cast<void const*>( newValue ),
-				static_cast<void const*>( conditionValue )
-			);
-		}
+		bool AssignIf( T* conditionValue, T* newValue ) { return ThreadInterlockedAssignPointerToConstIf( (void const**) &m_value, (void const*) newValue, (void const*) conditionValue ); }
 
 		T* operator=( T* newValue ) {
-			ThreadInterlockedExchangePointerToConst( static_cast<void const**>( &m_value ), static_cast<void const*>( newValue ) );
+			ThreadInterlockedExchangePointerToConst( (void const**) &m_value, (void const*) newValue );
 			return newValue;
 		}
 
-		void operator+=( const int add ) { ThreadInterlockedExchangeAdd( static_cast<long*>( &m_value ), add * sizeof( T ) ); }
+		void operator+=( const int add ) { ThreadInterlockedExchangeAdd( (long*) &m_value, add * sizeof( T ) ); }
 	#endif
 
 	void operator-=( const int subtract ) { operator+=( -subtract ); }
