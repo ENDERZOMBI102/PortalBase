@@ -456,7 +456,7 @@ template<typename T>
 class CInterlockedIntT {
 	static_assert( sizeof( T ) == sizeof( long ) );
 public:
-	CInterlockedIntT() : m_value( {} ) {  }
+	CInterlockedIntT() : m_value{} {  }
 	CInterlockedIntT( T value ) : m_value( value ) {}
 
 	T GetRaw() const { return m_value; }

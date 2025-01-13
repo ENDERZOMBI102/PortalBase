@@ -8,6 +8,7 @@ set( FILESYSTEM_STDIO_SOURCE_FILES
 	"${FILESYSTEM_STDIO_DIR}/driver/fsdriver.cpp"
 	"${FILESYSTEM_STDIO_DIR}/driver/packfsdriver.cpp"
 	"${FILESYSTEM_STDIO_DIR}/driver/plainfsdriver.cpp"
+	"${FILESYSTEM_STDIO_DIR}/driver/rootfsdriver.cpp"
 
 	# Header files
 	"${FILESYSTEM_STDIO_DIR}/basefilesystem.hpp"
@@ -16,6 +17,7 @@ set( FILESYSTEM_STDIO_SOURCE_FILES
 	"${FILESYSTEM_STDIO_DIR}/driver/fsdriver.hpp"
 	"${FILESYSTEM_STDIO_DIR}/driver/packfsdriver.hpp"
 	"${FILESYSTEM_STDIO_DIR}/driver/plainfsdriver.hpp"
+	"${FILESYSTEM_STDIO_DIR}/driver/rootfsdriver.hpp"
 
 	# Public
 	"${SRCDIR}/public/filesystem.h"

@@ -77,6 +77,7 @@ winding_t* AllocStackWinding( pstack_t* stack ) {
 	}
 
 	Error( "Out of memory. AllocStackWinding: failed" );
+	exit(1);
 }
 
 void FreeStackWinding( winding_t* w, pstack_t* stack ) {

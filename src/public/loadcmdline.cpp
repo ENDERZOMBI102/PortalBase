@@ -75,8 +75,8 @@ void LoadCmdLineFromFile( int& argc, char**& argv, const char* keyname, const ch
 	auto* kv = new KeyValues( "CommandLine" );
 
 	char filename[ 512 ];
-	Q_snprintf( filename, sizeof( filename ), "%s/cfg/commandline.cfg", gamedir );
-
+	bool endsWithSlash{ gamedir[strlen( gamedir ) - 1] == '/' };
+	Q_snprintf( filename, sizeof( filename ), "%s%scfg/commandline.cfg", gamedir, endsWithSlash ? "" : "/" );
 	if ( kv->LoadFromFile( g_pFileSystem, filename ) ) {
 		// Load the commandline arguments for this app
 		KeyValues* appKey = kv->FindKey( keyname );

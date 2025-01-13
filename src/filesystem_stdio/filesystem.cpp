@@ -6,7 +6,7 @@
 #include "driver/fsdriver.hpp"
 #include "driver/packfsdriver.hpp"
 #include "driver/plainfsdriver.hpp"
-#include "tier0/icommandline.h"
+#include "driver/rootfsdriver.hpp"
 #include "platform.h"
 #include "utlbuffer.h"
 #include <algorithm>
@@ -88,9 +88,10 @@ auto CFileSystemStdio::Init() -> InitReturnVal_t {
 	}
 
 	// FIXME: This is only correct on *nix
-	s_RootFsDriver = new CPlainFsDriver( 0, "/", "/" );
+	s_RootFsDriver = new CRootFsDriver();
 
-	Log( "[AuroraSource|FileSystem] Filesystem module ready!" );
+	m_Initialized = true;
+	Log( "[FileSystem] Filesystem module ready!\n" );
 	return InitReturnVal_t::INIT_OK;
 }
 auto CFileSystemStdio::Shutdown() -> void {
@@ -149,10 +150,8 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 	// parse the options
 	const auto mode{ parseOpenMode( pOptions ) };
 
-	// fix double leading `/` (???)
-	if ( pFileName[0] == '/' and pFileName[1] == '/' ) {
-		pFileName += 1;
-	}
+	// check for leading double `/` regression
+	Assert( pFileName[0] != '/' or pFileName[1] != '/' );
 
 	// absolute paths get special treatment
 	if ( V_IsAbsolutePath( pFileName ) ) {
@@ -171,7 +170,7 @@ FileHandle_t CFileSystemStdio::Open( const char* pFileName, const char* pOptions
 	// if we got a pathID, only look into that SearchPath
 	if ( pathID != nullptr ) {
 		if ( m_SearchPaths.Find( pathID ) == CUtlDict<SearchPath>::InvalidIndex() ) {
-			Warning( "[AuroraSource|FileSystem] `Open()` Was given a pathID (%s) which wasn't loaded, may be a bug!\n", pathID );
+			Warning( "[FileSystem] `Open()` Was given a pathID (%s) which wasn't loaded, may be a bug!\n", pathID );
 			return nullptr;
 		}
 
@@ -337,7 +336,7 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 	AssertFatalMsg( pPath, "Was given an empty path!!" );
 
 	// calculate base dir (current `-game` dir)
-	char absolute[1024];
+	char absolute[MAX_PATH] { };
 	if ( not V_IsAbsolutePath( pPath ) ) {
 		AssertFatalMsg( _getcwd( absolute, std::size( absolute ) ), "V_MakeAbsolutePath: _getcwd failed." );
 
@@ -346,6 +345,8 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 	} else {
 		// already absolute, just copy
 		V_strcpy_safe( absolute, pPath );
+		// even if absolute, paths may have relative `/../` elements
+		V_RemoveDotSlashes( absolute );
 	}
 
 	// if the path is non-existent, do nothing
@@ -356,7 +357,7 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 			return;
 		}
 		// yes, but doesn't exist, check if there is a `_dir` one instead
-		char tmp[1024];
+		char tmp[MAX_PATH];
 		V_StripExtension( absolute, tmp, std::size( tmp ) );
 		V_strcat_safe( tmp, "_dir.vpk" );
 		if ( not FileExists( tmp ) ) {

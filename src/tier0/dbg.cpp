@@ -194,7 +194,8 @@ void Error( const tchar* pMsg, ... ) {
 	va_start( args, pMsg );
 	SpewInternal( SpewType_t::SPEW_ERROR, pMsg, args );
 	va_end( args );
-	// for some reason, this had a `exit(1);`...
+	// for some reason, all errors are fatal...
+	exit(1);
 }
 
 // ---- Dev*

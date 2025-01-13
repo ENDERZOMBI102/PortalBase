@@ -1977,9 +1977,8 @@ bool V_MakeRelativePath( const char* pFullPath, const char* pDirectory, char* pR
 //-----------------------------------------------------------------------------
 // small helper function shared by lots of modules
 //-----------------------------------------------------------------------------
-bool V_IsAbsolutePath( const char* pStr ) {
-	bool bIsAbsolute = ( pStr[ 0 ] && pStr[ 1 ] == ':' ) || pStr[ 0 ] == '/' || pStr[ 0 ] == '\\';
-	return bIsAbsolute;
+bool V_IsAbsolutePath( const char* pPath ) {
+	return ( pPath[0] and pPath[1] == ':' ) or pPath[0] == '/' or pPath[0] == '\\';
 }
 
 
@@ -2557,21 +2556,16 @@ bool BGetLocalFormattedTime( time_t timeVal, char* pchTime, int cubTime ) {
 	return BGetLocalFormattedDateAndTime( timeVal, nullptr, 0, pchTime, cubTime );
 }
 
-/**
- * Generate a filename from the given parameters.
- * @param dstBuffer a char buffer where the filename will end in.
- * @param bufSize the size of the buffer that was given.
- * @param prefix the prefix that will be applied to the file's name.
- */
+// ASRC EDIT START
 auto TemporaryFileName( char *dstBuffer, size_t bufSize, const char* prefix ) -> void {
 	// use a safe name in the cwd
 	std::error_code error;
-	auto tempDir = std::filesystem::temp_directory_path( error );
+	const auto tempDir{ std::filesystem::temp_directory_path( error ) };
 	if ( error.value() != 0 ) {
 		Error( "TemporaryFileName: Failed to get temp directory path. (%s)\n", error.message().c_str() );
 	}
 
-	auto id = std::time( nullptr ) & 0x0000FFFF;
+	const long id{ std::time( nullptr ) & 0x0000FFFF };
 	std::snprintf( dstBuffer, bufSize, "%s%s%ld", tempDir.c_str(), prefix, id );
 }
-
+// ASRC EDIT END

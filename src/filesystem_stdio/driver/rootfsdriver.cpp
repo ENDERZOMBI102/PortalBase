@@ -1,7 +1,7 @@
 //
 // Created by ENDERZOMBI102 on 23/02/2024.
 //
-#include "plainfsdriver.hpp"
+#include "rootfsdriver.hpp"
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -13,24 +13,24 @@
 #include "tier0/memdbgon.h"
 
 
-CPlainFsDriver::CPlainFsDriver( int32 pId, const char* pAbsolute, const char* pPath )
-	: m_iId( pId ), m_szNativePath( V_strdup( pPath ) ), m_szNativeAbsolutePath( V_strdup( pAbsolute ) ), CFsDriver() { }
-auto CPlainFsDriver::GetNativePath() const -> const char* {
-	return this->m_szNativePath;
+CRootFsDriver::CRootFsDriver() : CFsDriver{} {}
+
+auto CRootFsDriver::GetNativePath() const -> const char* {
+	return "";
 }
-auto CPlainFsDriver::GetNativeAbsolutePath() const -> const char* {
-	return this->m_szNativeAbsolutePath.c_str();
+auto CRootFsDriver::GetNativeAbsolutePath() const -> const char* {
+	return "";
 }
-auto CPlainFsDriver::GetIdentifier() const -> int32 {
-	return this->m_iId;
+auto CRootFsDriver::GetIdentifier() const -> int32 {
+	return 0;
 }
-auto CPlainFsDriver::GetType() const -> const char* {
-	return "plain";
+auto CRootFsDriver::GetType() const -> const char* {
+	return "root";
 }
-auto CPlainFsDriver::Shutdown() -> void {}
+auto CRootFsDriver::Shutdown() -> void {}
 
 // FS interaction
-auto CPlainFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor* {
+auto CRootFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor* {
 	AssertFatalMsg( pPath, "Was given a `NULL` file path!" );
 	// we assume that the path is already absolute
 	AssertFatalMsg( V_IsAbsolutePath( pPath ), "Was given a non-absolute file path!" );
@@ -78,19 +78,19 @@ auto CPlainFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor
 	desc->m_Handle = file;
 	return desc;
 }
-auto CPlainFsDriver::Read( const FileDescriptor* pDesc, void* pBuffer, uint32 pCount ) -> int32 {
+auto CRootFsDriver::Read( const FileDescriptor* pDesc, void* pBuffer, uint32 pCount ) -> int32 {
 	AssertFatalMsg( pDesc, "Was given a `NULL` file handle!" );
 	AssertFatalMsg( pBuffer, "Was given a `NULL` buffer ptr!" );
 
 	return pread64( static_cast<int>( pDesc->m_Handle ), pBuffer, pCount, static_cast<__off64_t>( pDesc->m_Offset ) );
 }
-auto CPlainFsDriver::Write( const FileDescriptor* pDesc, const void* pBuffer, uint32 pCount ) -> int32 {
+auto CRootFsDriver::Write( const FileDescriptor* pDesc, const void* pBuffer, uint32 pCount ) -> int32 {
 	AssertFatalMsg( pDesc, "Was given a `NULL` file handle!" );
 	AssertFatalMsg( pBuffer, "Was given a `NULL` buffer ptr!" );
 
 	return pwrite64( static_cast<int>( pDesc->m_Handle ), pBuffer, pCount, static_cast<__off64_t>( pDesc->m_Offset ) );
 }
-auto CPlainFsDriver::Flush( const FileDescriptor* pDesc ) -> bool {
+auto CRootFsDriver::Flush( const FileDescriptor* pDesc ) -> bool {
 	AssertFatalMsg( pDesc, "Was given a `NULL` file handle!" );
 
 	#if IsWindows()
@@ -99,13 +99,13 @@ auto CPlainFsDriver::Flush( const FileDescriptor* pDesc ) -> bool {
 
 	return true;
 }
-auto CPlainFsDriver::Close( const FileDescriptor* pDesc ) -> void {
+auto CRootFsDriver::Close( const FileDescriptor* pDesc ) -> void {
 	close( static_cast<int>( pDesc->m_Handle ) );
 }
 
 // TODO: Verify if this is feature-complete
-auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool {
-	auto path{ V_strdup( pPattern ) };
+auto CRootFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool {
+	const auto path{ V_strdup( pPattern ) };
 	V_StripFilename( path );
 
 	// first check if we can open the dir
@@ -113,10 +113,10 @@ auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pRe
 	if ( dir == nullptr ) {
 		return false;
 	}
-	char buffer[1024];
+	char buffer[MAX_PATH] { };
 	// iterate in it
 	for ( const auto* entry{ readdir( dir ) }; entry != nullptr; entry = readdir( dir ) ) {
-		V_ComposeFileName( path, entry->d_name, buffer, 1024 );
+		V_ComposeFileName( path, entry->d_name, buffer, std::size( buffer ) );
 		if ( Wildcard::Match( buffer, pPattern, true ) ) {
 			// printf( "%s: %s -> %s | %s\n", __FUNCTION__, pPattern, buffer, entry->d_name );
 			pResult.AddToTail( V_strdup( entry->d_name ) );
@@ -126,9 +126,9 @@ auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pRe
 	delete[] path;
 	return true;
 }
-auto CPlainFsDriver::Create( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* { return {}; }
-auto CPlainFsDriver::Remove( const FileDescriptor* pDesc ) -> void { }
-auto CPlainFsDriver::Stat( const FileDescriptor* pDesc ) -> std::optional<StatData> {
+auto CRootFsDriver::Create( const char* pPath, FileType pType, OpenMode pMode ) -> FileDescriptor* { return {}; }
+auto CRootFsDriver::Remove( const FileDescriptor* pDesc ) -> void { }
+auto CRootFsDriver::Stat( const FileDescriptor* pDesc ) -> std::optional<StatData> {
 	// get stat data
 	struct stat64 it {};
 	if ( fstat64( static_cast<int>( pDesc->m_Handle ), &it ) != 0 ) {

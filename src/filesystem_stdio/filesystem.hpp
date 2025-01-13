@@ -404,7 +404,7 @@ private:
 	struct SearchPath {
 		SearchPath() = default;
 		~SearchPath() {
-			Warning( "called" );
+			Warning( "~SearchPath called\n" );
 		}
 		SearchPath( const SearchPath& other ) {// copy-constructor-but-actually-move
 			m_Drivers = other.m_Drivers;
@@ -419,7 +419,7 @@ private:
 	struct FindState {
 		FindState() = default;
 		~FindState() {
-			Warning( "called" );
+			Warning( "~FindState called\n" );
 		}
 		FindState( const FindState& other ) {  // copy-constructor-but-actually-move
 			m_Paths = other.m_Paths;
