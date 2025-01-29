@@ -16,13 +16,13 @@
 CPlainFsDriver::CPlainFsDriver( int32 pId, const char* pAbsolute, const char* pPath )
 	: m_iId( pId ), m_szNativePath( V_strdup( pPath ) ), m_szNativeAbsolutePath( V_strdup( pAbsolute ) ), CFsDriver() { }
 auto CPlainFsDriver::GetNativePath() const -> const char* {
-	return this->m_szNativePath;
+	return m_szNativePath;
 }
 auto CPlainFsDriver::GetNativeAbsolutePath() const -> const char* {
-	return this->m_szNativeAbsolutePath.c_str();
+	return m_szNativeAbsolutePath.c_str();
 }
 auto CPlainFsDriver::GetIdentifier() const -> int32 {
-	return this->m_iId;
+	return m_iId;
 }
 auto CPlainFsDriver::GetType() const -> const char* {
 	return "plain";
@@ -32,9 +32,11 @@ auto CPlainFsDriver::Shutdown() -> void {}
 // FS interaction
 auto CPlainFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor* {
 	AssertFatalMsg( pPath, "Was given a `NULL` file path!" );
-	// we assume that the path is already absolute
-	AssertFatalMsg( V_IsAbsolutePath( pPath ), "Was given a non-absolute file path!" );
 	AssertFatalMsg( pMode, "Was given an empty open mode!" );
+
+	// create the full path
+	char buffer[1024];
+	V_ComposeFileName( m_szNativeAbsolutePath.c_str(), pPath, buffer, 1024 );
 
 	#if IsLinux()
 		int32_t mode2{ 0 };
