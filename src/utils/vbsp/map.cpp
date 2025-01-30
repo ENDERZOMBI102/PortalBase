@@ -2928,11 +2928,13 @@ ChunkFileResult_t CMapFile::LoadConnectionsKeyCallback(const char *szKey, const 
 	strcpy(pOutput->key, szKey);
 	strcpy(pOutput->value, szValue);
 
-	if ( g_mStataCompat ) {
+	// TODO: Actual compat, not this crap
+	if ( g_bStrataCompat ) {
 		// Strata Source's hammer uses `` to delimit outputs, not `,`, to better support vscript
 		for ( int i = 0; i < strlen( szValue ); i++ ) {
-			if ( pOutput->value[ i ] == '\u001B' )
+			if ( pOutput->value[ i ] == '\u001B' ) {
 				pOutput->value[ i ] = ',';
+			}
 		}
 	}
 
