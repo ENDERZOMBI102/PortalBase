@@ -13,8 +13,8 @@
 #include "tier0/memdbgon.h"
 
 
-CPlainFsDriver::CPlainFsDriver( int32 pId, const char* pAbsolute, const char* pPath )
-	: m_iId( pId ), m_szNativePath( V_strdup( pPath ) ), m_szNativeAbsolutePath( V_strdup( pAbsolute ) ), CFsDriver() { }
+CPlainFsDriver::CPlainFsDriver( const int32 pId, const char* pAbsolute, const char* pPath )
+	: m_iId{ pId }, m_szNativePath{ V_strdup( pPath ) }, m_szNativeAbsolutePath{ V_strdup( pAbsolute ) } { }
 auto CPlainFsDriver::GetNativePath() const -> const char* {
 	return m_szNativePath;
 }
@@ -35,7 +35,7 @@ auto CPlainFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor
 	AssertFatalMsg( pMode, "Was given an empty open mode!" );
 
 	// create the full path
-	char buffer[1024];
+	char buffer[MAX_PATH];
 	V_ComposeFileName( m_szNativeAbsolutePath.c_str(), pPath, buffer, 1024 );
 
 	#if IsLinux()
@@ -66,7 +66,7 @@ auto CPlainFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor
 			mode2 |= O_CREAT;
 		}
 
-		int file{ open( pPath, mode2 ) };
+		int file{ open( buffer, mode2 ) };
 
 		// Check if we got a valid handle, TODO: Actual error handling
 		if ( file == -1 ) {
@@ -107,7 +107,7 @@ auto CPlainFsDriver::Close( const FileDescriptor* pDesc ) -> void {
 
 // TODO: Verify if this is feature-complete
 auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pResult ) -> bool {
-	auto path{ V_strdup( pPattern ) };
+	const auto path{ V_strdup( pPattern ) };
 	V_StripFilename( path );
 
 	// first check if we can open the dir
@@ -115,9 +115,9 @@ auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pRe
 	if ( dir == nullptr ) {
 		return false;
 	}
-	char buffer[1024];
 	// iterate in it
 	for ( const auto* entry{ readdir( dir ) }; entry != nullptr; entry = readdir( dir ) ) {
+		char buffer[MAX_PATH];
 		V_ComposeFileName( path, entry->d_name, buffer, 1024 );
 		if ( Wildcard::Match( buffer, pPattern, true ) ) {
 			// printf( "%s: %s -> %s | %s\n", __FUNCTION__, pPattern, buffer, entry->d_name );
