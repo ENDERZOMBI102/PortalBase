@@ -192,9 +192,9 @@ public:
 		float dz = pLeaf->maxs[ 2 ] - pLeaf->mins[ 2 ];
 		bool bValid = false;
 		for ( int i = 0; i < 1000 && !bValid; i++ ) {
-			samplePosition.x = pLeaf->mins[ 0 ] + m_random.RandomFloat( 0, dx );
-			samplePosition.y = pLeaf->mins[ 1 ] + m_random.RandomFloat( 0, dy );
-			samplePosition.z = pLeaf->mins[ 2 ] + m_random.RandomFloat( 0, dz );
+			samplePosition.x = pLeaf->mins[ 0 ] + RandomFloat( 0, dx );
+			samplePosition.y = pLeaf->mins[ 1 ] + RandomFloat( 0, dy );
+			samplePosition.z = pLeaf->mins[ 2 ] + RandomFloat( 0, dz );
 			bValid = true;
 
 			for ( int j = leafPlanes.Count(); --j >= 0 && bValid; ) {
@@ -238,7 +238,6 @@ public:
 
 private:
 	int m_iThread;
-	CUniformRandomStream m_random;
 };
 
 // gets a list of the planes pointing into a leaf
@@ -475,10 +474,10 @@ void ComputeAmbientForLeaf( int iThread, int leafID, CUtlVector<ambientsample_t>
 		// NOTE: We copy the nearest non-solid leaf sample pointers into this leaf at the end
 		return;
 	}
-	Vector cube[ 6 ];
+	Vector cube[ 6 ] { };
 	for ( int i = 0; i < sampleCount; i++ ) {
 		// compute each candidate sample and add to the list
-		Vector samplePosition;
+		Vector samplePosition{};
 		sampler.GenerateLeafSamplePosition( leafID, leafPlanes, samplePosition );
 		ComputeAmbientFromSphericalSamples( iThread, samplePosition, cube );
 		// note this will remove the least valuable sample once the limit is reached
