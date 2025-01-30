@@ -9,6 +9,7 @@
 #include "GameEventListener.h"
 #include "igamesystem.h"
 
+
 class CMumbleSystem : public CBaseGameSystemPerFrame, public CGameEventListener {
 public:
 	// Methods of IGameSystem
@@ -21,10 +22,10 @@ public:
 	virtual void FireGameEvent( IGameEvent* event );
 
 private:
-	char m_szSteamIDCurrentServer[ 32 ];
-	int m_cubSteamIDCurrentServer;
-	bool m_bHasSetPlayerUniqueId;
-	int m_nTeamSetInUniqueId;
+	char m_szSteamIDCurrentServer[32] { };
+	int32 m_cubSteamIDCurrentServer{};
+	bool m_bHasSetPlayerUniqueId{};
+	int32 m_nTeamSetInUniqueId{};
 };
 
 IGameSystem* MumbleSystem();
