@@ -482,7 +482,70 @@ void CFileSystemStdio::MarkPathIDByRequestOnly( const char* pPathID, bool bReque
 	delete[] pathID;
 }
 
-const char* CFileSystemStdio::RelativePathToFullPath( const char* pFileName, const char* pPathID, char* pDest, int maxLenInChars, PathTypeFilter_t pathFilter, PathTypeQuery_t* pPathType ) { AssertUnreachable(); return {}; }
+const char* CFileSystemStdio::RelativePathToFullPath( const char* pFileName, const char* pPathID, char* pDest, int maxLenInChars, PathTypeFilter_t pathFilter, PathTypeQuery_t* pPathType ) {
+	const auto helper = [pathFilter, pFileName, pPathType]( const SearchPath* searchPath ) -> CFsDriver* {
+		for ( const auto& driver : searchPath->m_Drivers ) {
+			const bool isPack{ V_strcmp( driver->GetType(), "pack" ) == 0 };
+
+			// apply type filtering
+			if ( ( pathFilter == PathTypeFilter_t::FILTER_CULLPACK and isPack ) or ( pathFilter == PathTypeFilter_t::FILTER_CULLNONPACK and not isPack ) ) {
+				continue;
+			}
+
+			// fill out the type query
+			if ( pPathType ) {
+				// TODO: How to impl `PATH_IS_REMOTE`?
+				if ( isPack ) {
+					*pPathType |= PATH_IS_PACKFILE;
+					if ( V_strstr( driver->GetNativePath(), ".bsp" ) ) {
+						*pPathType |= PATH_IS_MAPPACKFILE;
+					}
+				} else {
+					*pPathType |= PATH_IS_NORMAL;
+				}
+			}
+
+			if ( const auto desc = driver->Open( pFileName, { .read = true } ) ) {
+				driver->Close( desc );  // no need for the file anymore
+				driver->AddRef();       // Make sure we don't lose it
+				return driver;
+			}
+		}
+
+		return nullptr;
+	};
+
+	CFsDriver* drvr{ nullptr };
+	// if we got a pathID, only look into that SearchPath
+	if ( pPathID != nullptr ) {
+		if ( m_SearchPaths.Find( pPathID ) == CUtlDict<SearchPath>::InvalidIndex() ) {
+			Warning( "[FileSystem] `RelativePathToFullPath()` Was given a pathID (%s) which wasn't loaded, may be a bug!\n", pPathID );
+			return nullptr;
+		}
+
+		// find the right driver
+		drvr = helper( m_SearchPaths[pPathID] );
+	} else {
+		// else, look into all clients
+		for ( const auto& [_, searchPath] : m_SearchPaths ) {
+			// find the right driver
+			if ( (drvr = helper( searchPath )) ) {
+				break;
+			}
+		}
+	}
+
+	// did we actually find it?
+	if ( drvr == nullptr ) {
+		Warning( "[FileSystem] `RelativePathToFullPath()` Failed to resolve full path of `%s`\n", pFileName );
+		return nullptr;
+	}
+
+	// build the absolute path
+	V_MakeAbsolutePath( pDest, maxLenInChars, pFileName, drvr->GetNativeAbsolutePath() );
+
+	return pDest;
+}
 
 int CFileSystemStdio::GetSearchPath( const char* pathID, bool bGetPackFiles, char* pDest, int maxLenInChars ) {
 	if ( m_SearchPaths.Find( pathID ) == CUtlDict<SearchPath>::InvalidIndex() ) {
