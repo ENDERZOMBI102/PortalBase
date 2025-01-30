@@ -36,7 +36,7 @@ auto CPlainFsDriver::Open( const char* pPath, OpenMode pMode ) -> FileDescriptor
 
 	// create the full path
 	char buffer[MAX_PATH];
-	V_ComposeFileName( m_szNativeAbsolutePath.c_str(), pPath, buffer, 1024 );
+	V_ComposeFileName( m_szNativeAbsolutePath.c_str(), pPath, buffer, std::size( buffer ) );
 
 	#if IsLinux()
 		int32_t mode2{ 0 };
@@ -118,7 +118,7 @@ auto CPlainFsDriver::ListDir( const char* pPattern, CUtlVector<const char*>& pRe
 	// iterate in it
 	for ( const auto* entry{ readdir( dir ) }; entry != nullptr; entry = readdir( dir ) ) {
 		char buffer[MAX_PATH];
-		V_ComposeFileName( path, entry->d_name, buffer, 1024 );
+		V_ComposeFileName( path, entry->d_name, buffer, std::size( buffer ) );
 		if ( Wildcard::Match( buffer, pPattern, true ) ) {
 			// printf( "%s: %s -> %s | %s\n", __FUNCTION__, pPattern, buffer, entry->d_name );
 			pResult.AddToTail( V_strdup( entry->d_name ) );

@@ -1770,18 +1770,17 @@ void V_ExtractFileExtension( const char* path, char* dest, int destSize ) {
 //				if there is no extension
 //-----------------------------------------------------------------------------
 const char* V_GetFileExtension( const char* path ) {
-	const char* src;
-
-	src = path + strlen( path ) - 1;
+	const char* src{ path + strlen( path ) - 1 };
 
 	//
 	// back up until a . or the start
 	//
-	while ( src != path && *( src - 1 ) != '.' )
+	while ( src != path and *( src - 1 ) != '.' ) {
 		src--;
+	}
 
 	// check to see if the '.' is part of a pathname
-	if ( src == path || PATHSEPARATOR( *src ) ) {
+	if ( src == path or PATHSEPARATOR( *src ) ) {
 		return nullptr;// no extension
 	}
 

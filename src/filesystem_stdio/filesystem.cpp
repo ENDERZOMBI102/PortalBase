@@ -351,8 +351,9 @@ void CFileSystemStdio::AddSearchPath( const char* pPath, const char* pathID, Sea
 
 	// if the path is non-existent, do nothing
 	if ( not FileExists( absolute ) ) {
+		const auto ext{ V_GetFileExtension( absolute ) };
 		// was a vpk requested?
-		if ( V_strcmp( V_GetFileExtension( absolute ), "vpk" ) != 0 ) {
+		if ( ext == nullptr or V_strcmp( ext, "vpk" ) != 0 ) {
 			// no, nothing to do
 			return;
 		}
