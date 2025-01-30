@@ -113,6 +113,7 @@ void SetLowPriority() {
 
 void ThreadSetDefault() {
 	if ( numthreads == -1 ) { // not set manually
+		// TODO: Add parameter to do `-1` on thread count, to save a core for the system
 		#if IsWindows()
 			SYSTEM_INFO info;
 			GetSystemInfo( &info );
