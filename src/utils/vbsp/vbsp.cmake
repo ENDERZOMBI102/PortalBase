@@ -169,8 +169,8 @@ target_link_libraries(vbsp
 		lzma
 		mathlib
 		tier2
-		"${LIBPUBLIC}/vtf${CMAKE_STATIC_LIBRARY_SUFFIX}"
-		"${LIBPUBLIC}/bitmap${CMAKE_STATIC_LIBRARY_SUFFIX}"
+		vtf
+		bitmap
 		tier1
 		tier0
 		vstdlib
